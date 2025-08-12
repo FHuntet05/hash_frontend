@@ -1,46 +1,26 @@
-// frontend/src/store/userStore.js (VERSIÓN FINAL v32.0 - SIMPLE Y COMPLETA)
+// frontend/src/store/userStore.js (VERSIÓN MEGA FÁBRICA - SINCRONIZADA Y LIMPIA)
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import api from '../api/axiosConfig';
-
-// Interceptores (SIN CAMBIOS)
-api.interceptors.request.use(
-  (config) => {
-    const token = useUserStore.getState().token;
-    if (token) config.headers['Authorization'] = `Bearer ${token}`;
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response && error.response.status === 401) {
-      const useUserStore = (await import('./userStore')).default;
-      useUserStore.getState().logout();
-    }
-    return Promise.reject(error);
-  }
-);
+import api from '../api/axiosConfig'; // La configuración de Axios ya tiene los interceptores inteligentes
 
 const useUserStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       // --- ESTADOS DEL STORE ---
       user: null, 
       token: null, 
       isAuthenticated: false, 
       isLoadingAuth: true, 
       settings: null,
+      isHydrated: false,
       
       /**
        * Sincroniza los datos del usuario de Telegram con el backend.
-       * Esta función NO envía ningún código de referido.
        * @param {object} telegramUser - El objeto `user` de `window.Telegram.WebApp.initDataUnsafe`.
        */
       syncUserWithBackend: async (telegramUser) => {
-        set({ isLoadingAuth: true });
+        // No seteamos isLoadingAuth a true aquí, lo dejamos en el estado inicial
         try {
           console.log('[Store] Enviando datos de usuario al backend para sincronizar...');
           const response = await api.post('/auth/sync', { telegramUser });
@@ -68,15 +48,11 @@ const useUserStore = create(
       },
 
       /**
-       * Actualiza parcialmente el estado del usuario.
-       * Útil para operaciones que devuelven un objeto de usuario actualizado,
-       * como reclamar recompensas o comprar mejoras.
-       * @param {object} newUserData - Los nuevos campos para fusionar con el usuario existente.
+       * Actualiza completamente el objeto de usuario en el store.
+       * @param {object} newUserObject - El nuevo objeto de usuario completo.
        */
-      updateUser: (newUserData) => {
-        set((state) => ({
-          user: state.user ? { ...state.user, ...newUserData } : newUserData,
-        }));
+      setUser: (newUserObject) => {
+        set({ user: newUserObject });
       },
       
       /**
@@ -87,14 +63,26 @@ const useUserStore = create(
           user: null,
           token: null,
           isAuthenticated: false,
-          isLoadingAuth: false
+          isLoadingAuth: false,
+          settings: null,
         })
-      }
+      },
+      
+      // Función para marcar que la rehidratación desde el localStorage ha terminado
+      setHydrated: () => {
+        set({ isHydrated: true });
+      },
     }),
     {
-      name: 'neuro-link-storage',
+      name: 'mega-fabrica-user-storage', // Nombre actualizado para evitar colisiones
       storage: createJSONStorage(() => localStorage),
+      // Solo persistimos el token. El usuario y los settings se deben obtener frescos del backend.
       partialize: (state) => ({ token: state.token }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.setHydrated();
+        }
+      }
     }
   )
 );

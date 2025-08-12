@@ -1,79 +1,65 @@
-// frontend/pages/HomePage.jsx (VERSIÓN RESTAURACIÓN TOTAL v33.1 - i18n)
+// frontend/src/pages/HomePage.jsx (VERSIÓN MEGA FÁBRICA v1.0)
 
 import React from 'react';
-import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import useUserStore from '../store/userStore';
-import api from '../api/axiosConfig';
-import { useTranslation } from 'react-i18next'; // i18n
 
-// --- IMPORTS COMPLETOS DE COMPONENTES DE UI ---
-import UserInfoHeader from '../components/home/UserInfoHeader';
-import RealTimeClock from '../components/home/RealTimeClock';
-import AnimatedCounter from '../components/home/AnimatedCounter';
-import TaskCenter from '../components/home/TaskCenter';
-import NotificationFeed from '../components/home/NotificationFeed';
-import { useMiningLogic } from '../hooks/useMiningLogic';
-import AuthErrorScreen from '../components/AuthErrorScreen';
+// Componentes a crear en futuros pasos
+// import MiningRigAnimation from '../components/home/MiningRigAnimation';
+// import PurchasedFactoryList from '../components/home/PurchasedFactoryList';
+// import TaskCenter from '../components/home/TaskCenter';
+
+const UserBalanceDisplay = ({ balance }) => {
+    // Componente defensivo: verifica que el balance sea un número antes de usar toFixed.
+    const formattedBalance = typeof balance === 'number' ? balance.toFixed(4) : '0.0000';
+    return (
+        <div className="text-center p-4 bg-dark-secondary rounded-lg border border-white/10">
+            <p className="text-sm text-text-secondary uppercase tracking-widest">Saldo Disponible</p>
+            <p className="text-4xl font-bold text-white mt-1">
+                {formattedBalance} <span className="text-2xl text-accent-start">USDT</span>
+            </p>
+        </div>
+    );
+};
 
 const HomePage = () => {
-    const { t } = useTranslation(); // i18n
-    const { user, updateUser } = useUserStore();
+    const { t } = useTranslation();
+    const { user } = useUserStore();
 
+    // GUARDIA DE SEGURIDAD:
+    // Este es el cambio más importante. No intentamos renderizar nada si el objeto `user` aún no está cargado.
+    // El UserGatekeeper ya muestra un loader, así que aquí podemos mostrar un loader simple o nada.
     if (!user) {
-        return <AuthErrorScreen message={t('homePage.errors.noUser')} />; // i18n
+        return <div className="flex items-center justify-center h-full"><p>Cargando datos del usuario...</p></div>;
     }
     
-    const { accumulatedNtx, countdown, progress, buttonState } = useMiningLogic(
-        user.lastMiningClaim,
-        user.effectiveMiningRate ?? 0,
-        user.miningStatus ?? 'IDLE'
-    );
-
-    const handleStartMining = async () => {
-        toast.loading(t('homePage.toasts.startingCycle'), { id: 'mining_control' }); // i18n
-        try {
-            const response = await api.post('/wallet/start-mining');
-            updateUser(response.data.user);
-            toast.success(t('homePage.toasts.cycleStarted'), { id: 'mining_control' }); // i18n
-        } catch (error) { toast.error(error.response?.data?.message || t('common.error'), { id: 'mining_control' }); } // i18n
-    };
-    const handleClaim = async () => {
-        toast.loading(t('homePage.toasts.claiming'), { id: 'mining_control' }); // i18n
-        try {
-            const response = await api.post('/wallet/claim');
-            updateUser(response.data.user);
-            toast.success(response.data.message, { id: 'mining_control' });
-        } catch (error) { toast.error(error.response?.data?.message || t('common.error'), { id: 'mining_control' }); } // i18n
-    };
-    const renderControlButton = () => {
-        switch (buttonState) {
-            case 'SHOW_START': return <button onClick={handleStartMining} className="w-full py-4 bg-blue-500 text-white text-lg font-bold rounded-full shadow-glow transform active:scale-95 transition-all">{t('homePage.buttons.start')}</button>; // i18n
-            case 'SHOW_CLAIM': return <button onClick={handleClaim} className="w-full py-4 bg-gradient-to-r from-accent-start to-accent-end text-white text-lg font-bold rounded-full shadow-glow transform active:scale-95 transition-all">{t('homePage.buttons.claim')}</button>; // i18n
-            default: return null; 
-        }
-    };
-    const shouldShowButton = buttonState === 'SHOW_START' || buttonState === 'SHOW_CLAIM';
-    
     return (
-        <div className="flex flex-col h-full animate-fade-in gap-4 overflow-y-auto pb-4">
-            <div className="px-4 pt-4 space-y-4">
-                <UserInfoHeader />
-                <RealTimeClock />
+        <div className="flex flex-col h-full animate-fade-in gap-6 overflow-y-auto p-4 pb-24">
+            {/* Sección 1: Balance del Usuario */}
+            <UserBalanceDisplay balance={user.balance?.usdt} />
+
+            {/* Sección 2: Animación del Rig de Minería (Platzhalter) */}
+            <div className="w-full h-48 bg-dark-secondary rounded-lg flex items-center justify-center text-text-secondary border border-white/10">
+                {/* <MiningRigAnimation /> */}
+                <p>Aquí irá la animación del Rig de Minería</p>
             </div>
-            <div className="flex flex-col items-center justify-center text-center px-4">
-                <video src="/assets/mining-animation.webm" autoPlay loop muted playsInline className="w-48 h-48 mx-auto" />
-                <AnimatedCounter value={parseFloat(accumulatedNtx.toFixed(2))} />
-                <div className="w-full max-w-xs mx-auto mt-4 space-y-3">
-                    <div className="w-full bg-dark-secondary rounded-full h-6 shadow-inner overflow-hidden">
-                        <div className="bg-gradient-to-r from-accent-start to-accent-end h-6 rounded-full transition-all duration-1000" style={{width: `${progress}%`}} />
-                    </div>
-                    <p className="text-text-secondary text-base font-mono">{countdown}</p>
+
+            {/* Sección 3: "Mis Fábricas" (Platzhalter) */}
+            <div>
+                <h2 className="text-xl font-bold text-white mb-3">Mis Fábricas</h2>
+                <div className="bg-dark-secondary rounded-lg p-4 min-h-[10rem] flex items-center justify-center text-text-secondary border border-white/10">
+                    {/* <PurchasedFactoryList factories={user.purchasedFactories} /> */}
+                    <p>Aquí se listarán las fábricas compradas</p>
                 </div>
             </div>
-            <div className="flex-grow flex flex-col px-4 space-y-4">
-                <div className="w-full h-16 flex items-center justify-center">{renderControlButton()}</div>
-                <div className={!shouldShowButton ? 'flex-grow' : ''}><TaskCenter /></div>
-                <NotificationFeed />
+
+             {/* Sección 4: "Tareas" (Platzhalter) */}
+             <div>
+                <h2 className="text-xl font-bold text-white mb-3">Tareas</h2>
+                <div className="bg-dark-secondary rounded-lg p-4 min-h-[8rem] flex items-center justify-center text-text-secondary border border-white/10">
+                    {/* <TaskCenter /> */}
+                    <p>Aquí irá el centro de tareas</p>
+                </div>
             </div>
         </div>
     );
