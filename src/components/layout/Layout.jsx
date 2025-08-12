@@ -1,17 +1,46 @@
-// --- START OF FILE src/components/layout/Layout.jsx ---
-
-// frontend/src/components/layout/Layout.jsx (MODIFICADO: Barra de navegación con nuevo estilo sólido)
+// RUTA: frontend/src/components/layout/Layout.jsx (VERSIÓN ESTABLE CON GUARDIA DE DATOS)
 import React, { useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import BottomNavBar from './BottomNavBar';
 import FloatingSupportButton from '../common/FloatingSupportButton';
 import './LayoutAnimations.css';
+import useUserStore from '../../store/userStore'; // Importación clave
+import Loader from '../common/Loader'; // Se asume que tiene un componente Loader
 
 const Layout = () => {
   const location = useLocation();
   const dragContainerRef = useRef(null);
 
-  const backgroundClass = location.pathname === '/' 
+  // --- INICIO DE LA MODIFICACIÓN CRÍTICA ---
+  // Nos suscribimos al estado de autenticación del usuario.
+  const { isAuthenticated, isLoadingAuth } = useUserStore();
+
+  // GUARDIA DE CARGA: Mientras se verifica la autenticación, mostramos un loader.
+  // Esto previene que cualquier componente hijo intente renderizar con datos nulos.
+  if (isLoadingAuth) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-internal-background bg-cover bg-center">
+        <Loader text="Cargando sesión..." />
+      </div>
+    );
+  }
+
+  // GUARDIA DE ERROR: Si la autenticación falla, mostramos un mensaje claro.
+  if (!isAuthenticated) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-internal-background bg-cover bg-center p-4">
+        <div className="text-center text-white bg-red-900/50 p-6 rounded-lg border border-red-500">
+            <h2 className="text-xl font-bold">Error de Autenticación</h2>
+            <p className="mt-2 text-text-secondary">No se pudo verificar tu sesión. Por favor, reinicia la aplicación desde Telegram.</p>
+        </div>
+      </div>
+    );
+  }
+  // --- FIN DE LA MODIFICACIÓN CRÍTICA ---
+
+  // Si pasamos las guardias, significa que 'isAuthenticated' es true y el objeto 'user' está disponible.
+  // Ahora es seguro renderizar el resto de la aplicación.
+  const backgroundClass = location.pathname === '/home' // Ajustado para la ruta correcta
     ? 'bg-space-background bg-cover bg-center' 
     : 'bg-internal-background bg-cover bg-center';
 
@@ -25,15 +54,6 @@ const Layout = () => {
         </main>
         
         <footer className="fixed bottom-0 left-0 right-0 w-full max-w-lg mx-auto z-50 p-4">
-          {/* --- CAMBIO DE ESTILO DE LA BARRA DE NAVEGACIÓN --- */}
-          {/*
-            - Antes: bg-black/50 backdrop-blur-lg rounded-full shadow-glow border border-white/10
-            - Ahora: 
-              - bg-slate-900: Fondo sólido oscuro, similar al de los items del ranking.
-              - rounded-xl: Bordes suavemente redondeados, no en forma de píldora. (Puedes probar con 'rounded-lg' o 'rounded-2xl' si prefieres).
-              - border border-white/10: Se mantiene un borde sutil para definir la forma.
-            - Se han eliminado 'backdrop-blur-lg' y 'shadow-glow'.
-          */}
           <div className="bg-slate-900 rounded-xl border border-white/10">
             <BottomNavBar />
           </div>
@@ -46,4 +66,3 @@ const Layout = () => {
 };
 
 export default Layout;
-// --- END OF FILE src/components/layout/Layout.jsx ---
