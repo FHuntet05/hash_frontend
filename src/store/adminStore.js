@@ -1,5 +1,4 @@
-// RUTA: frontend/src/store/adminStore.js (LIMPIEZA POST-UNIFICACIÓN)
-
+// RUTA: frontend/src/store/adminStore.js (FINAL CON MANEJO DE RESETEO)
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import api from '../api/axiosConfig';
@@ -11,47 +10,66 @@ const useAdminStore = create(
       token: null,
       isAuthenticated: false,
       isLoading: false,
-      isHydrated: false,
+      isHydrated: false, // Flag para saber si Zustand ha cargado los datos del localStorage
 
       login: async (username, password) => {
         set({ isLoading: true });
         try {
           const { data } = await api.post('/auth/login/admin', { username, password });
           
-          if (data.twoFactorRequired) {
-            set({ isLoading: false });
-            return { success: true, twoFactorRequired: true, userId: data.userId };
+          // Si el login es exitoso pero se requiere cambio de contraseña
+          if (data.passwordResetRequired) {
+            // Guardamos el token temporalmente para autorizar la siguiente petición de cambio de contraseña.
+            // NO marcamos como autenticado para forzar el flujo de reseteo.
+            set({ token: data.token, isLoading: false });
+            return { success: true, passwordResetRequired: true };
           }
-          
+
+          // Si el login es normal y exitoso
           set({
-            admin: { username: data.username, role: data.role, isTwoFactorEnabled: data.isTwoFactorEnabled },
+            admin: data.admin,
             token: data.token,
             isAuthenticated: true,
             isLoading: false,
           });
-          // [AUTENTICACIÓN UNIFICADA] - La siguiente línea ya NO es necesaria.
-          // api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-          return { success: true, twoFactorRequired: false };
+          return { success: true, passwordResetRequired: false };
 
         } catch (error) {
           const message = error.response?.data?.message || 'Error al iniciar sesión.';
-          set({ isLoading: false });
+          set({ isLoading: false, token: null, admin: null, isAuthenticated: false });
           return { success: false, message };
         }
       },
 
+      // Función centralizada para actualizar el estado del admin tras un login exitoso
+      // (sea normal, con 2FA, o tras un reseteo de contraseña).
+      setAdminAndToken: (token, adminData) => {
+        set({
+            admin: adminData,
+            token: token,
+            isAuthenticated: true,
+            isLoading: false,
+        });
+      },
+
+      // Función para desloguear al administrador
+      logout: () => {
+        set({ admin: null, token: null, isAuthenticated: false });
+      },
+      
+      // Función para marcar que la rehidratación desde el localStorage ha terminado
+      setHydrated: () => {
+        set({ isHydrated: true });
+      },
+
+      // Mantengo estas funciones por si las necesita para el 2FA, pero la lógica necesita ser actualizada
+      // para usar setAdminAndToken
       completeTwoFactorLogin: async (userId, token) => {
         set({ isLoading: true });
         try {
           const { data } = await api.post('/auth/2fa/verify-login', { userId, token });
-          set({
-            admin: { username: data.username, role: data.role, isTwoFactorEnabled: data.isTwoFactorEnabled },
-            token: data.token,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-          // [AUTENTICACIÓN UNIFICADA] - La siguiente línea ya NO es necesaria.
-          // api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+          // Llamamos a la función centralizada
+          get().setAdminAndToken(data.token, { username: data.username, role: data.role, isTwoFactorEnabled: data.isTwoFactorEnabled });
           return { success: true };
         } catch (error) {
           const message = error.response?.data?.message || 'Error al verificar el token.';
@@ -60,38 +78,26 @@ const useAdminStore = create(
         }
       },
 
-      logout: () => {
-        set({ admin: null, token: null, isAuthenticated: false });
-        // [AUTENTICACIÓN UNIFICADA] - La siguiente línea ya NO es necesaria, 
-        // porque el interceptor de request dejará de encontrar un token y no lo añadirá.
-        // delete api.defaults.headers.common['Authorization'];
-      },
-
       setTwoFactorEnabled: (status) => {
         set((state) => ({ admin: state.admin ? { ...state.admin, isTwoFactorEnabled: status } : null }));
       },
 
-      setHydrated: () => {
-        set({ isHydrated: true });
-      },
     }),
     {
-      name: 'neuro-link-admin-storage',
+      name: 'mega-fabrica-admin-storage', // Nombre actualizado para evitar colisiones
       storage: createJSONStorage(() => localStorage),
+      // Solo persistimos los datos esenciales de la sesión.
       partialize: (state) => ({ 
         token: state.token, 
         admin: state.admin, 
         isAuthenticated: state.isAuthenticated 
       }),
       onRehydrateStorage: () => (state) => {
-        state.setHydrated();
-        
-        // [AUTENTICACIÓN UNIFICADA] - Esta lógica ya no es necesaria aquí.
-        // El interceptor de request se encargará de esto en cada llamada.
-        // const currentToken = state.token;
-        // if (currentToken) {
-        //   api.defaults.headers.common['Authorization'] = `Bearer ${currentToken}`;
-        // }
+        // Cuando Zustand termina de leer del localStorage, llamamos a setHydrated.
+        // Esto es crucial para que AdminProtectedRoute sepa cuándo puede tomar una decisión.
+        if (state) {
+          state.setHydrated();
+        }
       }
     }
   )

@@ -1,4 +1,4 @@
-// frontend/src/api/axiosConfig.js (VERSIÓN UNIFICADA Y ROBUSTA v25.0)
+// frontend/src/api/axiosConfig.js (VERSIÓN INTELIGENTE Y UNIFICADA)
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
@@ -8,18 +8,23 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// [AUTENTICACIÓN UNIFICADA] - INICIO DE LA MODIFICACIÓN CRÍTICA
-// Se añade un interceptor de PETICIÓN (request).
-// Este se ejecuta ANTES de que cada petición sea enviada.
+// Interceptor de Petición (Request)
+// Se ejecuta ANTES de que cada petición sea enviada.
 api.interceptors.request.use(
   async (config) => {
-    // 1. Importamos dinámicamente el userStore para obtener el estado más reciente.
-    // Esto evita dependencias circulares y asegura que usamos la fuente de verdad principal.
+    // Importamos dinámicamente ambos stores para obtener el estado más reciente.
+    // Esto evita dependencias circulares y asegura que usamos la fuente de verdad correcta.
+    const useAdminStore = (await import('../store/adminStore')).default;
     const useUserStore = (await import('../store/userStore')).default;
-    const token = useUserStore.getState().token;
 
-    // 2. Si existe un token en el userStore, lo inyectamos en la cabecera.
-    // Esto funciona tanto para usuarios normales como para administradores con acceso directo.
+    const adminToken = useAdminStore.getState().token;
+    const userToken = useUserStore.getState().token;
+
+    // LÓGICA DE PRIORIDAD: Si existe un token de admin, se usa ese.
+    // Si no, se busca un token de usuario. Esto asegura que las sesiones
+    // del panel de admin siempre tengan prioridad.
+    const token = adminToken || userToken;
+    
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -31,17 +36,32 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-// [AUTENTICACIÓN UNIFICADA] - FIN DE LA MODIFICACIÓN CRÍTICA
 
-
-// El interceptor de respuesta se mantiene, es útil para el deslogueo automático.
+// Interceptor de Respuesta (Response)
+// Se ejecuta DESPUÉS de recibir una respuesta del servidor.
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    // Si el servidor nos devuelve un 401 (No Autorizado), significa que nuestro
+    // token es inválido o ha expirado. Limpiamos la sesión local para forzar un nuevo login.
     if (error.response && error.response.status === 401) {
-      console.warn('[Axios Interceptor] Error 401. Deslogueando usuario.');
+      console.warn('[Axios Interceptor] Error 401. Deslogueando sesión activa.');
+      
+      const useAdminStore = (await import('../store/adminStore')).default;
       const useUserStore = (await import('../store/userStore')).default;
-      useUserStore.getState().logout();
+
+      // Desloguea la sesión que esté activa.
+      if (useAdminStore.getState().isAuthenticated) {
+        useAdminStore.getState().logout();
+      }
+      if (useUserStore.getState().isAuthenticated) {
+        useUserStore.getState().logout();
+      }
+      
+      // Opcional: Redirigir a la página de login si es un error de admin
+      if (window.location.pathname.startsWith('/admin')) {
+        window.location.href = '/admin/login';
+      }
     }
     return Promise.reject(error);
   }
