@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/HomePage.jsx (VERSIÓN MEGA FÁBRICA FINAL - UI RENOVADA)
+// RUTA: frontend/src/pages/HomePage.jsx (VERSIÓN MEGA FÁBRICA FINAL - UI RENOVADA v2)
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,15 +34,14 @@ const UserBalanceDisplay = ({ balance, productionBalance }) => {
     );
 };
 
-// Componente de la Animación de la Fábrica
+// Componente de la Animación de la Fábrica con integración de gradiente.
 const FactoryAnimation = () => {
     return (
-        <div className="w-full h-48 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 border border-slate-700 overflow-hidden shadow-lg">
+        // Contenedor principal: relativo para posicionar la superposición.
+        <div className="relative w-full h-48 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 border border-slate-700 overflow-hidden shadow-lg">
             {/* 
-              NOTA DE ARQUITECTURA: Usamos la etiqueta <video> en lugar de un GIF.
-              Es más eficiente en tamaño de archivo y ofrece mayor calidad.
-              'autoPlay', 'loop', 'muted' y 'playsInline' son cruciales para una reproducción fluida y automática en todos los dispositivos.
-              El video debe estar en la carpeta `public/animations/factory-animation.mp4`
+              NOTA DE ARQUITECTURA: El video sigue siendo la base.
+              Se mantiene en la capa inferior del stack.
             */}
             <video
                 src="/animations/factory-animation.mp4"
@@ -51,6 +50,18 @@ const FactoryAnimation = () => {
                 muted
                 playsInline
                 className="w-full h-full object-cover"
+            />
+            {/* 
+              NUEVO: Capa de Superposición de Gradiente.
+              - `absolute inset-0`: Cubre exactamente el mismo espacio que el video.
+              - `bg-gradient-to-b`: Crea un gradiente de arriba hacia abajo.
+              - `from-slate-800`: El color superior es el fondo de la tarjeta, creando una fusión perfecta.
+              - `to-transparent`: Se desvanece a transparente, revelando el video nítidamente.
+              - `opacity-80`: Ajustamos la opacidad del velo para un efecto más sutil.
+            */}
+            <div 
+                className="absolute inset-0 bg-gradient-to-b from-slate-800 to-transparent opacity-80"
+                aria-hidden="true" // Es un elemento puramente decorativo.
             />
         </div>
     );
