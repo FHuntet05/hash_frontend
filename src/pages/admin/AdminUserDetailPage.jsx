@@ -7,9 +7,10 @@ import Loader from '../../components/common/Loader';
 import { HiArrowLeft, HiOutlinePencil, HiOutlinePlusCircle, HiOutlineNoSymbol, HiOutlineCheckCircle, HiOutlineArrowUpOnSquare, HiOutlineArrowDownOnSquare, HiOutlineKey } from 'react-icons/hi2';
 import EditUserModal from './components/EditUserModal';
 import AdjustBalanceModal from './components/AdjustBalanceModal';
-import PromoteAdminModal from './components/PromoteAdminModal'; // Se importa el nuevo componente modal
+import PromoteAdminModal from './components/PromoteAdminModal';
 import useAdminStore from '../../store/adminStore';
 
+// Leemos el ID del Super Admin desde las variables de entorno del frontend.
 const SUPER_ADMIN_TELEGRAM_ID = import.meta.env.VITE_SUPER_ADMIN_TELEGRAM_ID;
 
 // --- COMPONENTE INTERNO: UserInfoCard ---
@@ -89,12 +90,7 @@ const TransactionsTable = ({ userId }) => {
             <div className="overflow-x-auto">
                 <table className="w-full text-left">
                     <thead className="text-xs text-text-secondary uppercase bg-dark-tertiary">
-                        <tr>
-                            <th className="p-3">Fecha</th>
-                            <th className="p-3">Tipo</th>
-                            <th className="p-3">Monto</th>
-                            <th className="p-3">Descripción</th>
-                        </tr>
+                        <tr><th className="p-3">Fecha</th><th className="p-3">Tipo</th><th className="p-3">Monto</th><th className="p-3">Descripción</th></tr>
                     </thead>
                     <tbody>
                         {transactions.items.map(tx => (
@@ -118,7 +114,6 @@ const TransactionsTable = ({ userId }) => {
     </div>
     );
 };
-
 
 // --- COMPONENTE PRINCIPAL: AdminUserDetailPage ---
 const AdminUserDetailPage = () => {
@@ -164,13 +159,9 @@ const AdminUserDetailPage = () => {
     const handleSetUserStatus = async (newStatus) => {
         const actionText = newStatus === 'banned' ? 'Baneando' : 'Activando';
         const promise = api.put(`/admin/users/${id}/status`, { status: newStatus });
-        
         toast.promise(promise, {
             loading: `${actionText} usuario...`,
-            success: () => {
-                fetchAllDetails();
-                return `Usuario ${actionText.toLowerCase().slice(0, -1)}o con éxito.`;
-            },
+            success: () => { fetchAllDetails(); return `Usuario ${actionText.toLowerCase().slice(0, -1)}o con éxito.`; },
             error: (err) => err.response?.data?.message || `No se pudo cambiar el estado del usuario.`
         });
     };

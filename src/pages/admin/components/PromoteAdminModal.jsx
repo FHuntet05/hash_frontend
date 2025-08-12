@@ -16,11 +16,12 @@ const PromoteAdminModal = ({ user, onPromote, onClose }) => {
             alert('La contraseña debe tener al menos 6 caracteres.');
             return;
         }
+        // Llama a la función del componente padre con el ID del usuario y la contraseña.
         onPromote(user._id, password);
     };
 
     return (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 animate-fade-in-fast">
             <div className="bg-dark-secondary rounded-lg border border-white/10 shadow-xl w-full max-w-md">
                 <div className="p-6 border-b border-white/10 flex justify-between items-center">
                     <h2 className="text-xl font-bold">Promover a Administrador</h2>
@@ -38,8 +39,9 @@ const PromoteAdminModal = ({ user, onPromote, onClose }) => {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-dark-primary rounded-lg border border-white/10"
+                                className="w-full pl-10 pr-4 py-2 bg-dark-primary rounded-lg border border-white/10 focus:ring-accent-start focus:border-accent-start"
                                 required
+                                autoFocus
                             />
                         </div>
                     </div>
@@ -51,7 +53,7 @@ const PromoteAdminModal = ({ user, onPromote, onClose }) => {
                                 type="password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-dark-primary rounded-lg border border-white/10"
+                                className="w-full pl-10 pr-4 py-2 bg-dark-primary rounded-lg border border-white/10 focus:ring-accent-start focus:border-accent-start"
                                 required
                             />
                         </div>
