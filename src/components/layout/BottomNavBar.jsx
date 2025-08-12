@@ -1,20 +1,21 @@
-// --- START OF FILE src/components/layout/BottomNavBar.jsx ---
-
-// src/components/layout/BottomNavBar.jsx (MODIFICADO: Se elimina el efecto de brillo del ícono)
+// RUTA: src/components/layout/BottomNavBar.jsx (VERSIÓN MEGA FÁBRICA - SINCRONIZADA)
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { HiHome, HiChartBar, HiWrenchScrewdriver, HiUsers, HiUser } from 'react-icons/hi2';
 import { motion } from 'framer-motion';
 
-import useTeamStore from '../../store/teamStore';
-import useToolsStore from '../../store/toolsStore';
+// NOTA: Se eliminan las importaciones de stores de Zustand que no se utilizan directamente aquí
+// para mantener el componente más limpio.
+// import useTeamStore from '../../store/teamStore';
+// import useToolsStore from '../../store/toolsStore';
 
 const navItems = [
-  { to: '/', labelKey: 'nav.home', Icon: HiHome },
+  { to: '/home', labelKey: 'nav.home', Icon: HiHome }, // MODIFICADO: Apunta a /home en lugar de /
   { to: '/ranking', labelKey: 'nav.ranking', Icon: HiChartBar },
-  { to: '/tools', labelKey: 'nav.upgrade', Icon: HiWrenchScrewdriver, prefetch: () => useToolsStore.getState().fetchTools() },
-  { to: '/team', labelKey: 'nav.team', Icon: HiUsers, prefetch: () => useTeamStore.getState().fetchTeamStats() },
+  // MODIFICACIÓN CRÍTICA: La ruta ahora es '/factories' y la etiqueta 'nav.factories'
+  { to: '/factories', labelKey: 'nav.factories', Icon: HiWrenchScrewdriver },
+  { to: '/team', labelKey: 'nav.team', Icon: HiUsers },
   { to: '/profile', labelKey: 'nav.profile', Icon: HiUser },
 ];
 
@@ -40,7 +41,6 @@ const NavItem = ({ to, labelKey, Icon, isRoot, prefetch }) => {
         return (
           <div className="flex flex-col items-center justify-center w-full h-full pt-1">
             <div className="relative mb-1">
-              {/* --- CAMBIO: SE HA ELIMINADO EL motion.div DEL EFECTO GLOW --- */}
               <motion.div 
                 className="relative"
                 animate={{ y: isActive ? -4 : 0 }}
@@ -73,7 +73,7 @@ const BottomNavBar = () => {
             to={item.to} 
             labelKey={item.labelKey} 
             Icon={item.Icon} 
-            isRoot={item.to === '/'} 
+            isRoot={item.to === '/home'} // MODIFICADO: La raíz ahora es /home
             prefetch={item.prefetch}
         />
       ))}
@@ -82,4 +82,3 @@ const BottomNavBar = () => {
 };
 
 export default BottomNavBar;
-// --- END OF FILE src/components/layout/BottomNavBar.jsx ---

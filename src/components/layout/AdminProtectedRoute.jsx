@@ -1,16 +1,34 @@
-// frontend/src/components/layout/AdminProtectedRoute.jsx (VERSIÓN SIMPLIFICADA Y CORRECTA)
+// frontend/src/components/layout/AdminProtectedRoute.jsx (VERSIÓN CON ADMIN STORE)
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import useUserStore from '../../store/userStore';
+import useAdminStore from '../../store/adminStore'; // MODIFICADO: Se usa el store de admin
 import Loader from '../common/Loader';
 
 const AdminProtectedRoute = () => {
-  // La única fuente de verdad es el userStore.
-  const { user, isAuthenticated, isLoadingAuth } = useUserStore();
+  // MODIFICADO: La fuente de verdad ahora es useAdminStore
+  const { admin, isAuthenticated, isLoading, isHydrated, setHydrated } = useAdminStore();
 
-  // 1. Mientras se verifica la autenticación inicial, mostramos un loader.
-  if (isLoadingAuth) {
+  // El estado de 'isHydrated' nos dice si Zustand ha terminado de cargar los datos desde localStorage.
+  // Es necesario esperar a que esto ocurra para tomar una decisión.
+  useEffect(() => {
+    // Esta función se llama desde el store cuando la rehidratación termina.
+    // La llamamos aquí también por si el store ya se rehidrató.
+    useAdminStore.persist.rehydrate();
+  }, []);
+
+
+  // Mientras los datos persistidos se cargan, mostramos un loader.
+  if (!isHydrated) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center bg-dark-primary">
+        <Loader text="Cargando sesión de admin..." />
+      </div>
+    );
+  }
+
+  // Si está cargando una petición de login, también esperamos.
+  if (isLoading) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-dark-primary">
         <Loader text="Verificando sesión..." />
@@ -18,13 +36,11 @@ const AdminProtectedRoute = () => {
     );
   }
 
-  // 2. Una vez que la carga ha terminado, la única condición es: ¿Está el usuario autenticado Y es admin?
-  // Esta doble verificación asegura que solo los administradores autenticados pasen.
-  const isAuthorizedAdmin = isAuthenticated && user?.role === 'admin';
+  // La condición de acceso es simple: ¿está el admin autenticado en su propio store?
+  const isAuthorizedAdmin = isAuthenticated && admin?.role === 'admin';
   
-  // 3. Si es un administrador autorizado, se le da acceso.
-  // Si no, se le redirige a la página de inicio del usuario, que es la ruta segura por defecto.
-  return isAuthorizedAdmin ? <Outlet /> : <Navigate to="/home" replace />;
+  // Si está autorizado, se le da acceso. Si no, se le redirige a la página de login.
+  return isAuthorizedAdmin ? <Outlet /> : <Navigate to="/admin/login" replace />;
 };
 
 export default AdminProtectedRoute;
