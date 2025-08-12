@@ -1,19 +1,11 @@
-// RUTA: frontend/src/pages/admin/components/Sidebar.jsx (MODIFICADO PARA MOBILE)
+// RUTA: frontend/src/pages/admin/components/Sidebar.jsx (SINCRONIZADO CON MEGA FÁBRICA)
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
-  HiOutlineHome, 
-  HiOutlineUsers, 
-  HiOutlineReceiptRefund, 
-  HiOutlineQuestionMarkCircle, 
-  HiOutlineWrenchScrewdriver, 
-  HiOutlineCog6Tooth, 
-  HiOutlineBuildingLibrary, 
-  HiOutlineShieldCheck, 
-  HiOutlineFunnel,
-  HiOutlineMegaphone,
-  HiOutlineCommandLine 
+  HiOutlineHome, HiOutlineUsers, HiOutlineReceiptRefund, HiOutlineQuestionMarkCircle, 
+  HiOutlineWrenchScrewdriver, HiOutlineCog6Tooth, HiOutlineBuildingLibrary, HiOutlineShieldCheck, 
+  HiOutlineFunnel, HiOutlineMegaphone, HiOutlineCommandLine 
 } from 'react-icons/hi2';
 
 const navLinks = [
@@ -25,12 +17,12 @@ const navLinks = [
   { name: 'Dispensador Gas', href: '/admin/gas-dispenser', icon: HiOutlineFunnel },
   { name: 'Notificaciones', href: '/admin/notifications', icon: HiOutlineMegaphone },
   { name: 'Monitor Blockchain', href: '/admin/blockchain-monitor', icon: HiOutlineCommandLine },
-  { name: 'Fábricas', href: '/admin/tools', icon: HiOutlineWrenchScrewdriver }, // MODIFICADO: Rebranding
+  // MODIFICADO: Nombre y ruta actualizados a 'Fábricas'
+  { name: 'Fábricas', href: '/admin/factories', icon: HiOutlineWrenchScrewdriver },
   { name: 'Seguridad', href: '/admin/security', icon: HiOutlineShieldCheck },
   { name: 'Ajustes', href: '/admin/settings', icon: HiOutlineCog6Tooth },
 ];
 
-// MODIFICADO: El componente ahora acepta una prop opcional 'onLinkClick'
 const Sidebar = ({ onLinkClick = () => {} }) => {
     const linkClasses = "flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary hover:bg-accent-start/10 hover:text-white transition-colors";
     const activeLinkClasses = "bg-accent-start/20 text-white font-bold";
@@ -46,7 +38,6 @@ const Sidebar = ({ onLinkClick = () => {} }) => {
             <NavLink
               key={link.name}
               to={link.href}
-              // MODIFICADO: Se añade un onClick para cerrar el drawer en móvil
               onClick={onLinkClick}
               className={({ isActive }) => `${linkClasses} ${isActive ? activeLinkClasses : ''}`}
             >

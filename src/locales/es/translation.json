@@ -89,7 +89,7 @@
             "errorLoading": "No se pudieron cargar los detalles del equipo."
         }
     },
-    "toolsPage": {
+    "factoryPage": {
         "hoursOfWork": "Horas de trabajo",
         "miningSpeed": "Velocidad de minería",
         "perDay": "NTX/Día",
