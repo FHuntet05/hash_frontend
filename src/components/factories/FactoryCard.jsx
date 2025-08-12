@@ -1,7 +1,12 @@
-// src/components/tools/ToolCard.jsx (VERSIÓN FINAL CON LÓGICA DE BLOQUEO Y CONTADOR)
+// RUTA: frontend/src/components/factories/FactoryCard.jsx (NUEVO, ANTES ToolCard.jsx)
 import React from 'react';
 
-const ToolCard = ({ tool, onBuyClick, ownedCount, isLocked }) => {
+const FactoryCard = ({ factory, onBuyClick, ownedCount = 0 }) => {
+  // En la nueva lógica, una fábrica no se puede comprar más de una vez si no es apilable.
+  // Por ahora, asumimos que no hay bloqueos y el botón siempre se muestra si no se posee.
+  // La lógica de 'isLocked' se simplifica o elimina dependiendo de las reglas de negocio futuras.
+  const isLocked = ownedCount > 0; // Ejemplo simple: si ya tienes 1, se bloquea.
+
   return (
     <div className={`
       bg-dark-secondary/70 backdrop-blur-lg rounded-2xl p-5 border flex flex-col gap-4 text-white
@@ -10,35 +15,32 @@ const ToolCard = ({ tool, onBuyClick, ownedCount, isLocked }) => {
       {/* Cabecera de la tarjeta */}
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1">
-          {/* Se mantiene el título original */}
-          <h3 className="text-xl font-bold">{tool.name}</h3> 
+          <h3 className="text-xl font-bold">{factory.name}</h3> 
         </div>
         <img 
-          src={tool.imageUrl || '/assets/images/tool-placeholder.png'} 
-          alt={tool.name} 
+          src={factory.imageUrl || '/assets/images/tool-placeholder.png'} 
+          alt={factory.name} 
           className={`w-16 h-16 object-contain flex-shrink-0 ${isLocked ? 'opacity-50' : ''}`}
         />
       </div>
 
-      {/* Detalles de la herramienta */}
+      {/* Detalles de la fábrica */}
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
-          <span className="text-text-secondary">Producción por hora</span> 
-          <span className="font-semibold">{tool.miningBoost || 0} NTX/24h</span>
+          <span className="text-text-secondary">Producción Diaria</span> 
+          {/* MODIFICADO: Muestra la producción diaria en USDT */}
+          <span className="font-semibold">{factory.dailyProduction || 0} USDT</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-text-secondary">Días válidos</span>
-          <span className="font-semibold">{tool.durationDays || 0}</span>
+          <span className="text-text-secondary">Vida Útil</span>
+          <span className="font-semibold">{factory.durationDays || 0} Días</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-text-secondary">Precio</span>
-          <span className="font-bold text-xl text-green-400">{tool.price || 0} USDT</span>
+          <span className="font-bold text-xl text-green-400">{factory.price || 0} USDT</span>
         </div>
       </div>
       
-      {/* --- INICIO DE LA NUEVA LÓGICA --- */}
-
-      {/* Indicador de herramientas poseídas (solo si es > 0) */}
       {ownedCount > 0 && (
         <div className="text-center text-xs text-accent-start bg-accent-start/10 py-1 rounded-md">
           Posees: {ownedCount}
@@ -47,7 +49,7 @@ const ToolCard = ({ tool, onBuyClick, ownedCount, isLocked }) => {
 
       {/* Botón de compra condicional */}
       <button 
-        onClick={() => onBuyClick(tool)}
+        onClick={() => onBuyClick(factory)}
         disabled={isLocked}
         className={`
           w-full mt-2 py-3 text-white font-bold rounded-full transition-all duration-150
@@ -57,12 +59,10 @@ const ToolCard = ({ tool, onBuyClick, ownedCount, isLocked }) => {
           }
         `}
       >
-        {isLocked ? 'ADQUIRIDO' : 'COMPRAR YA'}
+        {isLocked ? 'ADQUIRIDA' : 'COMPRAR AHORA'}
       </button>
-      {/* --- FIN DE LA NUEVA LÓGICA --- */}
-
     </div>
   );
 };
 
-export default ToolCard;
+export default FactoryCard;
