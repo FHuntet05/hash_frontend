@@ -1,8 +1,8 @@
-// frontend/src/pages/admin/components/EditUserModal.jsx (COMPLETO)
+// frontend/src/pages/admin/components/EditUserModal.jsx (RECONSTRUIDO CON GESTIÓN DE CREDENCIALES)
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { HiXMark } from 'react-icons/hi2';
+import { HiXMark, HiOutlineUser, HiOutlineCurrencyDollar, HiOutlineLockClosed } from 'react-icons/hi2';
 
 const backdropVariants = {
   hidden: { opacity: 0 },
@@ -17,18 +17,17 @@ const modalVariants = {
 
 const EditUserModal = ({ user, onSave, onClose }) => {
   const [formData, setFormData] = useState({
-    role: 'user',
+    username: '',
     balanceUsdt: 0,
-    balanceNtx: 0,
+    password: '', // Nuevo campo para la contraseña
   });
 
-  // Cuando el modal se abre, poblamos el formulario con los datos del usuario
   useEffect(() => {
     if (user) {
       setFormData({
-        role: user.role,
+        username: user.username,
         balanceUsdt: user.balance.usdt,
-        balanceNtx: user.balance.ntx,
+        password: '', // El campo de contraseña siempre empieza vacío por seguridad
       });
     }
   }, [user]);
@@ -37,14 +36,29 @@ const EditUserModal = ({ user, onSave, onClose }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      // Convertimos a número si el campo es de balance
-      [name]: name.includes('balance') ? Number(value) : value,
+      [name]: name === 'balanceUsdt' ? Number(value) : value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(user._id, formData);
+    
+    // Creamos un objeto con los datos a enviar.
+    // Solo incluimos la contraseña si el campo no está vacío.
+    const dataToSend = {
+      username: formData.username,
+      balanceUsdt: formData.balanceUsdt,
+    };
+
+    if (formData.password) {
+      if (formData.password.length < 6) {
+        alert('La nueva contraseña debe tener al menos 6 caracteres.');
+        return;
+      }
+      dataToSend.password = formData.password;
+    }
+
+    onSave(user._id, dataToSend);
   };
 
   if (!user) return null;
@@ -68,23 +82,31 @@ const EditUserModal = ({ user, onSave, onClose }) => {
 
         <form onSubmit={handleSubmit}>
           <main className="p-6 space-y-4">
-            {/* Campo Rol */}
+            {/* Campo Username */}
             <div>
-              <label htmlFor="role" className="block mb-2 text-sm font-medium text-text-secondary">Rol</label>
-              <select name="role" id="role" value={formData.role} onChange={handleChange} className="bg-black/20 border border-white/10 text-white text-sm rounded-lg focus:ring-accent-start focus:border-accent-start block w-full p-2.5">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
+              <label htmlFor="username" className="block mb-2 text-sm font-medium text-text-secondary">Nombre de Usuario</label>
+              <div className="relative">
+                <HiOutlineUser className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
+                <input type="text" name="username" id="username" value={formData.username} onChange={handleChange} className="w-full pl-10 pr-4 py-2 bg-black/20 rounded-lg border border-white/10 focus:ring-accent-start focus:border-accent-start"/>
+              </div>
             </div>
+
             {/* Campo Balance USDT */}
             <div>
               <label htmlFor="balanceUsdt" className="block mb-2 text-sm font-medium text-text-secondary">Balance (USDT)</label>
-              <input type="number" name="balanceUsdt" id="balanceUsdt" value={formData.balanceUsdt} onChange={handleChange} className="bg-black/20 border border-white/10 text-white text-sm rounded-lg focus:ring-accent-start focus:border-accent-start block w-full p-2.5" step="0.01" />
+              <div className="relative">
+                <HiOutlineCurrencyDollar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
+                <input type="number" name="balanceUsdt" id="balanceUsdt" value={formData.balanceUsdt} onChange={handleChange} className="w-full pl-10 pr-4 py-2 bg-black/20 rounded-lg border border-white/10 focus:ring-accent-start focus:border-accent-start" step="0.01" />
+              </div>
             </div>
-            {/* Campo Balance NTX */}
+
+            {/* Campo Password (Opcional) */}
             <div>
-              <label htmlFor="balanceNtx" className="block mb-2 text-sm font-medium text-text-secondary">Balance (NTX)</label>
-              <input type="number" name="balanceNtx" id="balanceNtx" value={formData.balanceNtx} onChange={handleChange} className="bg-black/20 border border-white/10 text-white text-sm rounded-lg focus:ring-accent-start focus:border-accent-start block w-full p-2.5" step="1" />
+              <label htmlFor="password" className="block mb-2 text-sm font-medium text-text-secondary">Restablecer Contraseña (Opcional)</label>
+              <div className="relative">
+                 <HiOutlineLockClosed className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
+                <input type="password" name="password" id="password" value={formData.password} onChange={handleChange} placeholder="Dejar en blanco para no cambiar" className="w-full pl-10 pr-4 py-2 bg-black/20 rounded-lg border border-white/10 focus:ring-accent-start focus:border-accent-start"/>
+              </div>
             </div>
           </main>
           
