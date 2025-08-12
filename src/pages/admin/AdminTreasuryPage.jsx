@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/admin/AdminTreasuryPage.jsx (v39.3 - LÓGICA DE CONFIRMACIÓN ROBUSTA)
+// RUTA: frontend/src/pages/admin/AdminTreasuryPage.jsx (CON PERMISOS SUPER ADMIN Y LIMPIEZA DE TRON)
 
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../api/axiosConfig';
@@ -6,6 +6,9 @@ import toast from 'react-hot-toast';
 import { HiOutlineBanknotes, HiOutlineCpuChip, HiOutlineArrowDownTray, HiOutlineTrash } from 'react-icons/hi2';
 import SweepConfirmationModal from './components/SweepConfirmationModal';
 import SweepReportModal from './components/SweepReportModal';
+import useAdminStore from '../../store/adminStore';
+
+const SUPER_ADMIN_TELEGRAM_ID = import.meta.env.VITE_SUPER_ADMIN_TELEGRAM_ID;
 
 const SummaryCard = ({ title, amount, currency, icon }) => (
   <div className="bg-dark-tertiary p-4 rounded-lg border border-white/10 flex items-center gap-4">
@@ -45,7 +48,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 };
 
 const AdminTreasuryPage = () => {
-    const [data, setData] = useState({ wallets: [], summary: { usdt: 0, bnb: 0, trx: 0 }, pagination: { currentPage: 1, totalPages: 0, totalWallets: 0 } });
+    const [data, setData] = useState({ wallets: [], summary: { usdt: 0, bnb: 0 }, pagination: { currentPage: 1, totalPages: 0, totalWallets: 0 } });
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedWallets, setSelectedWallets] = useState(new Set());
@@ -54,6 +57,9 @@ const AdminTreasuryPage = () => {
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [sweepContext, setSweepContext] = useState(null);
     const [sweepReport, setSweepReport] = useState(null);
+
+    const { admin } = useAdminStore();
+    const isSuperAdmin = admin?.telegramId?.toString() === SUPER_ADMIN_TELEGRAM_ID;
 
     const fetchTreasuryData = useCallback(async (page) => {
         setIsLoading(true);
@@ -96,40 +102,33 @@ const AdminTreasuryPage = () => {
         }
     };
 
-    const handleOpenUsdtSweepModal = (chain) => {
+    const handleOpenUsdtSweepModal = () => {
         if (selectedWallets.size === 0) {
-            toast.error(`Por favor, seleccione las wallets de la cadena ${chain} que desea barrer.`);
+            toast.error(`Por favor, seleccione las wallets que desea barrer.`);
             return;
         }
-
         const walletsSeleccionadas = data.wallets.filter(w => selectedWallets.has(w.address));
         const walletsCandidatas = walletsSeleccionadas.filter(w =>
-            w.chain === chain && w.usdtBalance > 0.000001 && w.gasBalance >= w.estimatedRequiredGas 
+            w.chain === 'BSC' && w.usdtBalance > 0.000001 && w.gasBalance >= w.estimatedRequiredGas 
         );
-
         if (walletsCandidatas.length === 0) {
             toast.error("Ninguna de las wallets seleccionadas tiene USDT y gas suficiente para el barrido.");
             return;
         }
-
         const totalUsdtToSweep = walletsCandidatas.reduce((sum, w) => sum + w.usdtBalance, 0);
-        setSweepContext({ chain, token: 'USDT', walletsCandidatas, totalUsdtToSweep });
+        setSweepContext({ chain: 'BSC', token: 'USDT', walletsCandidatas, totalUsdtToSweep });
         setIsSweepModalOpen(true);
     };
 
-    // [CORRECCIÓN] - Lógica de confirmación simplificada y más robusta.
     const handleSweepConfirm = async (recipientAddress) => {
         setIsSweepModalOpen(false);
-
         const payload = {
             chain: sweepContext.chain,
             token: sweepContext.token,
             recipientAddress: recipientAddress,
             walletsToSweep: sweepContext.walletsCandidatas.map(w => w.address)
         };
-
         const sweepPromise = api.post('/admin/sweep-funds', payload);
-
         toast.promise(sweepPromise, {
           loading: `Ejecutando barrido de ${payload.walletsToSweep.length} wallets...`,
           success: (res) => {
@@ -143,52 +142,38 @@ const AdminTreasuryPage = () => {
         });
     };
 
-    const handleSweepGas = async (chain) => {
+    const handleSweepGas = async () => {
         if (selectedWallets.size === 0) {
             toast.error("Por favor, selecciona al menos una wallet.");
             return;
         }
-
-        const walletsToSweepAddresses = Array.from(selectedWallets);
-        let recipientAddress = '';
-        let currency = '';
-
-        if (chain === 'BSC') {
-            recipientAddress = "0xc5a3d612a5A07C3f4eFdB00A26335D657EE093bE"; 
-            currency = 'BNB';
-        } else if (chain === 'TRON') {
-            recipientAddress = "TTzEPPZm7nWLd7M4AvQU3ecH7TmESEDabW"; 
-            currency = 'TRX';
-        }
-
+        const recipientAddress = "0xc5a3d612a5A07C3f4eFdB00A26335D657EE093bE"; // Reemplazar con su dirección real
         if (recipientAddress.includes("...")) {
-            toast.error(`Dirección de wallet central para ${chain} no configurada en el frontend.`);
+            toast.error(`La dirección de la billetera central de BNB no está configurada en el frontend.`);
             return;
         }
-
+        const walletsToSweepAddresses = Array.from(selectedWallets);
         const sweepGasPromise = api.post('/admin/sweep-gas', {
-            chain: chain,
-            recipientAddress: recipientAddress,
+            chain: 'BSC',
+            recipientAddress,
             walletsToSweep: walletsToSweepAddresses
         });
-
         toast.promise(sweepGasPromise, {
-            loading: `Barriendo gas ${currency} de ${walletsToSweepAddresses.length} wallets...`,
+            loading: `Barriendo gas BNB de ${walletsToSweepAddresses.length} wallets...`,
             success: (res) => {
                 setSweepReport(res.data);
                 setIsReportModalOpen(true);
                 setSelectedWallets(new Set());
                 fetchTreasuryData(currentPage);
-                return `Operación de barrido de gas ${currency} completada. Revisa el reporte.`;
+                return `Operación de barrido de gas BNB completada. Revisa el reporte.`;
             },
-            error: (err) => err.response?.data?.message || `Error crítico durante el barrido de ${currency}.`
+            error: (err) => err.response?.data?.message || `Error crítico durante el barrido de BNB.`
         });
     };
     
     const isAllOnPageSelected = selectedWallets.size > 0 && data.wallets.length > 0 && selectedWallets.size === data.wallets.length;
     const bnbWalletsSelected = data.wallets.some(w => selectedWallets.has(w.address) && w.chain === 'BSC' && w.gasBalance > 0);
-    const trxWalletsSelected = data.wallets.some(w => selectedWallets.has(w.address) && w.chain === 'TRON' && w.gasBalance > 0);
-
+    
     return (
         <>
             <div className="space-y-6">
@@ -196,32 +181,25 @@ const AdminTreasuryPage = () => {
                     <h1 className="text-2xl font-semibold mb-1">Tesorería de Depósitos</h1>
                     <p className="text-text-secondary">Seleccione wallets para barrer USDT o el gas restante.</p>
                 </div>
-                
                 <div>
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                         <h2 className="text-xl font-semibold">Resumen por Página</h2>
                         <div className="flex flex-wrap gap-2">
-                             <button onClick={() => handleSweepGas('BSC')} disabled={!bnbWalletsSelected || isLoading} className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
-                                <HiOutlineTrash /> Barrer Gas BNB
-                            </button>
-                             <button onClick={() => handleSweepGas('TRON')} disabled={!trxWalletsSelected || isLoading} className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
-                                <HiOutlineTrash /> Barrer Gas TRX
-                            </button>
-                            <button onClick={() => handleOpenUsdtSweepModal('BSC')} disabled={selectedWallets.size === 0 || isLoading} className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
+                             {isSuperAdmin && (
+                                <button onClick={handleSweepGas} disabled={!bnbWalletsSelected || isLoading} className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
+                                    <HiOutlineTrash /> Barrer Gas BNB
+                                </button>
+                             )}
+                            <button onClick={handleOpenUsdtSweepModal} disabled={selectedWallets.size === 0 || isLoading} className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
                                 <HiOutlineArrowDownTray /> Barrer USDT (BSC)
-                            </button>
-                            <button onClick={() => handleOpenUsdtSweepModal('TRON')} disabled={selectedWallets.size === 0 || isLoading} className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
-                                <HiOutlineArrowDownTray /> Barrer USDT (TRON)
                             </button>
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <SummaryCard title="Total USDT en Página" amount={data.summary.usdt} currency="USDT" icon={<HiOutlineBanknotes className="w-6 h-6 text-green-400"/>} />
                         <SummaryCard title="Total BNB en Página" amount={data.summary.bnb} currency="BNB" icon={<HiOutlineCpuChip className="w-6 h-6 text-yellow-400"/>} />
-                        <SummaryCard title="Total TRX en Página" amount={data.summary.trx} currency="TRX" icon={<HiOutlineCpuChip className="w-6 h-6 text-red-400"/>} />
                     </div>
                 </div>
-
                 <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
                     <h2 className="text-xl font-semibold mb-4">Wallets con Saldo ({data.pagination.totalWallets || 0} en total)</h2>
                     <div className="overflow-x-auto">
@@ -244,10 +222,10 @@ const AdminTreasuryPage = () => {
                                             <td className="p-3"><input type="checkbox" className="form-checkbox bg-dark-tertiary rounded" checked={selectedWallets.has(wallet.address)} onChange={() => handleWalletSelection(wallet.address)} /></td>
                                             <td className="p-3 font-medium">{wallet.user?.username || 'N/A'}</td>
                                             <td className="p-3 font-mono text-sm">{wallet.address}</td>
-                                            <td className="p-3"><span className={`px-2 py-1 text-xs font-bold rounded-full ${wallet.chain === 'BSC' ? 'bg-yellow-400/20 text-yellow-300' : 'bg-red-400/20 text-red-300'}`}>{wallet.chain}</span></td>
+                                            <td className="p-3"><span className={`px-2 py-1 text-xs font-bold rounded-full bg-yellow-400/20 text-yellow-300`}>BSC</span></td>
                                             <td className="p-3 text-right font-mono text-green-400">{parseFloat(wallet.usdtBalance).toFixed(6)}</td>
-                                            <td className="p-3 text-right font-mono text-text-secondary">{parseFloat(wallet.gasBalance).toFixed(6)} {wallet.chain === 'BSC' ? 'BNB' : 'TRX'}</td>
-                                            <td className="p-3 text-right font-mono text-yellow-400">{parseFloat(wallet.estimatedRequiredGas).toFixed(6)} {wallet.chain === 'BSC' ? 'BNB' : 'TRX'}</td>
+                                            <td className="p-3 text-right font-mono text-text-secondary">{parseFloat(wallet.gasBalance).toFixed(6)} BNB</td>
+                                            <td className="p-3 text-right font-mono text-yellow-400">{parseFloat(wallet.estimatedRequiredGas).toFixed(6)} BNB</td>
                                         </tr>
                                     )) : (
                                         <tr><td colSpan="7" className="text-center p-6 text-text-secondary">No se encontraron wallets en esta página.</td></tr>
@@ -259,7 +237,6 @@ const AdminTreasuryPage = () => {
                     {!isLoading && <Pagination currentPage={currentPage} totalPages={data.pagination.totalPages} onPageChange={handlePageChange} />}
                 </div>
             </div>
-            
             <SweepConfirmationModal isOpen={isSweepModalOpen} onClose={() => setIsSweepModalOpen(false)} onConfirm={handleSweepConfirm} context={sweepContext} />
             <SweepReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} report={sweepReport} />
         </>
