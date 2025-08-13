@@ -1,14 +1,14 @@
-// RUTA: frontend/src/components/layout/Layout.jsx (VERSIÓN CON RUTA CORREGIDA)
+// RUTA: frontend/src/components/layout/Layout.jsx (VERSIÓN CON RUTA CORREGIDA DEFINITIVA)
 
 import React, { useRef } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 // --- INICIO DE LA CORRECCIÓN CRÍTICA ---
-// La ruta anterior era './components/nav/BottomNav', lo cual es incorrecto desde este archivo.
-// La ruta correcta sube un nivel ('..') desde 'layout' para llegar a 'components',
-// y luego baja a 'nav'.
-import BottomNav from '../nav/BottomNav'; 
+// Basado en la estructura de archivos, el archivo se llama 'BottomNavBar.jsx' y está
+// en el mismo directorio. La ruta correcta es './BottomNavBar'.
+// Nota: Importamos 'BottomNavBar' pero podemos seguir llamándolo 'BottomNav' en este archivo.
+import BottomNav from './BottomNavBar'; 
 // --- FIN DE LA CORRECCIÓN CRÍTICA ---
 
 import useUserStore from '../../store/userStore';
