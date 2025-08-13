@@ -1,18 +1,23 @@
-// RUTA: frontend/src/Layout.jsx (VERSIÓN "MEGA FÁBRICA" - REVISIÓN CON SOPORTE)
+// RUTA: frontend/src/components/layout/Layout.jsx (VERSIÓN CON RUTA CORREGIDA)
 
-import React, { useRef } from 'react'; // Importamos useRef
+import React, { useRef } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
-import BottomNav from './components/nav/BottomNav';
-import useUserStore from './store/userStore';
-import Loader from './components/common/Loader';
-import FloatingSupportButton from './components/common/FloatingSupportButton'; // Importamos el botón
+// --- INICIO DE LA CORRECCIÓN CRÍTICA ---
+// La ruta anterior era './components/nav/BottomNav', lo cual es incorrecto desde este archivo.
+// La ruta correcta sube un nivel ('..') desde 'layout' para llegar a 'components',
+// y luego baja a 'nav'.
+import BottomNav from '../nav/BottomNav'; 
+// --- FIN DE LA CORRECCIÓN CRÍTICA ---
+
+import useUserStore from '../../store/userStore';
+import Loader from '../common/Loader';
+import FloatingSupportButton from '../common/FloatingSupportButton';
 
 const Layout = () => {
-  const dragContainerRef = useRef(null); // Creamos la referencia para el contenedor de arrastre
+  const dragContainerRef = useRef(null);
 
-  // --- GUARDIA DE AUTENTICACIÓN (Sin cambios) ---
   const { isAuthenticated, isLoadingAuth } = useUserStore();
 
   if (isLoadingAuth) {
@@ -33,15 +38,9 @@ const Layout = () => {
       </div>
     );
   }
-  // --- FIN DE LA GUARDIA ---
 
   return (
     <div className="h-screen w-screen flex justify-center bg-black">
-      {/* 
-        NOTA DE ARQUITECTURA: Asignamos la referencia al contenedor principal de la app.
-        Cualquier elemento arrastrable dentro de este div (como el botón de soporte)
-        estará confinado a sus límites.
-      */}
       <div ref={dragContainerRef} className="h-full w-full max-w-lg relative bg-slate-900 text-slate-50 font-sans overflow-hidden">
         
         <main className="h-full w-full overflow-y-auto">
@@ -50,7 +49,6 @@ const Layout = () => {
         
         <BottomNav />
         
-        {/* REINTEGRADO: El botón de soporte flotante se renderiza aquí */}
         <FloatingSupportButton dragRef={dragContainerRef} />
 
         <Toaster
