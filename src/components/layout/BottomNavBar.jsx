@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/layout/BottomNavBar.jsx (ANIMACIÓN Y ESTILO CORREGIDOS)
+// RUTA: frontend/src/components/layout/BottomNavBar.jsx (RECONSTRUCCIÓN FINAL - ANCLADO Y LIMPIO)
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
@@ -16,24 +16,22 @@ const NavItem = ({ to, label, IconOutline, IconSolid }) => {
         <NavLink
             to={to}
             end={to === '/home'}
-            className="flex-1 flex justify-center items-center h-full group"
+            // El 'group' ya no es necesario con este diseño más simple
+            className={({ isActive }) =>
+                `flex flex-col items-center justify-center flex-1 h-full pt-2 pb-1 transition-colors duration-200
+                ${isActive 
+                    ? 'text-accent-primary' 
+                    : 'text-text-secondary hover:text-text-primary'
+                }`
+            }
         >
             {({ isActive }) => (
-                <div 
-                    className={`flex items-center justify-center gap-2 py-2 px-4 rounded-full transition-all duration-300
-                        ${isActive 
-                            ? 'bg-accent-primary/10 text-accent-primary' 
-                            : 'text-text-secondary group-hover:text-text-primary'
-                        }`
-                    }
-                >
-                    {isActive ? <IconSolid className="w-5 h-5" /> : <IconOutline className="w-5 h-5" />}
-                    <span className={`text-sm font-bold transition-all duration-300 
-                        ${isActive ? 'block' : 'hidden md:block'} `}
-                    >
-                        {label}
-                    </span>
-                </div>
+                <>
+                    {/* El ícono siempre es visible */}
+                    {isActive ? <IconSolid className="w-6 h-6" /> : <IconOutline className="w-6 h-6" />}
+                    {/* El texto siempre es visible debajo del ícono */}
+                    <span className="text-xs mt-1 font-medium">{label}</span>
+                </>
             )}
         </NavLink>
     );
@@ -52,16 +50,16 @@ const BottomNavBar = () => {
     ];
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 p-3 z-50">
-            <nav 
-                className="max-w-lg mx-auto h-16 bg-card/80 backdrop-blur-lg rounded-2xl border border-white/20 shadow-medium"
-                style={{ WebkitBackdropFilter: 'blur(16px)', backdropFilter: 'blur(16px)' }}
-            >
-                <div className="flex justify-around items-center h-full px-2">
-                    {navItems.map(item => <NavItem key={item.to} {...item} />)}
-                </div>
-            </nav>
-        </div>
+        // Se elimina el 'div' contenedor con padding.
+        // El 'nav' ahora está anclado a la parte inferior.
+        <nav 
+            className="fixed bottom-0 left-0 right-0 h-16 max-w-lg mx-auto bg-card/80 backdrop-blur-lg border-t border-white/20"
+            style={{ WebkitBackdropFilter: 'blur(16px)', backdropFilter: 'blur(16px)' }}
+        >
+            <div className="flex justify-around items-center h-full">
+                {navItems.map(item => <NavItem key={item.to} {...item} />)}
+            </div>
+        </nav>
     );
 };
 
