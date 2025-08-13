@@ -1,27 +1,28 @@
-// RUTA: frontend/src/components/nav/BottomNav.jsx (REDISÉÑO COMPLETO "MEGA FÁBRICA")
+// RUTA: frontend/src/components/layout/BottomNavBar.jsx (RECONSTRUIDO Y SINCRONIZADO)
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-    HiOutlineHome, HiOutlineBuildingStorefront, HiOutlineUserGroup, HiOutlineUserCircle,
-    HiMiniHome, HiMiniBuildingStorefront, HiMiniUserGroup, HiMiniUserCircle
+    HiOutlineHome, HiMiniHome,
+    HiOutlineChartBar, HiMiniChartBar,
+    HiOutlineBuildingStorefront, HiMiniBuildingStorefront,
+    HiOutlineUserGroup, HiMiniUserGroup,
+    HiOutlineUserCircle, HiMiniUserCircle
 } from 'react-icons/hi2';
 
 const NavItem = ({ to, label, IconOutline, IconSolid }) => {
     return (
         <NavLink
             to={to}
-            end={to === '/'} // 'end' prop para que '/' no coincida con otras rutas
             className={({ isActive }) =>
-                `flex flex-col items-center justify-center w-full h-full pt-2 pb-1 transition-colors duration-200 ${
-                    isActive ? 'text-sky-400' : 'text-slate-400 hover:text-slate-200'
+                `flex flex-col items-center justify-center w-full h-full pt-2 pb-1 transition-colors duration-200 group ${
+                    isActive ? 'text-accent-primary' : 'text-text-secondary hover:text-text-primary'
                 }`
             }
         >
             {({ isActive }) => (
                 <>
-                    {/* Lógica simple: icono sólido si está activo, de contorno si no. */}
                     {isActive ? <IconSolid className="w-6 h-6" /> : <IconOutline className="w-6 h-6" />}
                     <span className="text-xs mt-1 font-medium">{label}</span>
                 </>
@@ -30,11 +31,14 @@ const NavItem = ({ to, label, IconOutline, IconSolid }) => {
     );
 };
 
-const BottomNav = () => {
+const BottomNavBar = () => {
     const { t } = useTranslation();
 
     const navItems = [
-        { to: '/', label: t('nav.home', 'Inicio'), IconOutline: HiOutlineHome, IconSolid: HiMiniHome },
+        // RUTA CORREGIDA: Apunta a '/home'
+        { to: '/home', label: t('nav.home', 'Inicio'), IconOutline: HiOutlineHome, IconSolid: HiMiniHome },
+        // NUEVO: Ítem de Ranking añadido
+        { to: '/ranking', label: t('nav.ranking', 'Ranking'), IconOutline: HiOutlineChartBar, IconSolid: HiMiniChartBar },
         { to: '/factories', label: t('nav.factories', 'Tienda'), IconOutline: HiOutlineBuildingStorefront, IconSolid: HiMiniBuildingStorefront },
         { to: '/team', label: t('nav.team', 'Equipo'), IconOutline: HiOutlineUserGroup, IconSolid: HiMiniUserGroup },
         { to: '/profile', label: t('nav.profile', 'Perfil'), IconOutline: HiOutlineUserCircle, IconSolid: HiMiniUserCircle },
@@ -42,9 +46,8 @@ const BottomNav = () => {
 
     return (
         <nav 
-            className="fixed bottom-0 left-0 right-0 h-16 bg-slate-900/80 backdrop-blur-lg border-t border-slate-700/80 shadow-t-lg z-50"
+            className="fixed bottom-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-lg border-t border-border/80 shadow-t-lg z-50"
             style={{
-                // Aseguramos compatibilidad con navegadores más antiguos para el backdrop-filter
                 WebkitBackdropFilter: 'blur(16px)',
                 backdropFilter: 'blur(16px)',
             }}
@@ -58,4 +61,4 @@ const BottomNav = () => {
     );
 };
 
-export default BottomNav;
+export default BottomNavBar;

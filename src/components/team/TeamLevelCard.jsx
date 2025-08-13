@@ -1,46 +1,50 @@
-// RUTA: frontend/src/components/team/TeamLevelCard.jsx (REDISEÑO COMPLETO)
+// RUTA: frontend/src/components/team/TeamLevelCard.jsx (RECONSTRUIDO PARA MOSTRAR COMISIÓN)
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { HiUserGroup, HiCheckCircle, HiChevronRight } from 'react-icons/hi2';
+import { useTranslation } from 'react-i18next';
+import { HiUserGroup, HiCheckCircle } from 'react-icons/hi2';
 
-const TeamLevelCard = ({ level, members, validMembers, commissionRate }) => {
-  const navigate = useNavigate();
+// NOTA DE ARQUITECTURA: El componente ahora espera 'totalCommission' en lugar de 'commissionRate'.
+const TeamLevelCard = ({ level, members, validMembers, totalCommission }) => {
+    const { t } = useTranslation();
 
-  const handleViewDetails = () => {
-    navigate(`/team/level/${level}`);
-  };
+    // Formateamos la comisión para asegurar que siempre tenga dos decimales.
+    const formattedCommission = (totalCommission || 0).toFixed(2);
 
-  return (
-    <div className="bg-slate-800 rounded-lg p-4 flex items-center justify-between border border-slate-700 shadow-lg">
-      {/* Lado Izquierdo: Información del Nivel */}
-      <div className="flex-grow">
-        <h3 className="text-lg font-bold text-slate-50">Nivel {level}</h3>
-        <p className="text-xs text-lime-400 mt-1">Comisión: {commissionRate}%</p>
-        
-        <div className="flex items-center gap-4 mt-3 text-sm text-slate-400">
-          <div className="flex items-center gap-1.5">
-            <HiUserGroup className="w-4 h-4 text-slate-500" />
-            <span>{members} Miembros</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <HiCheckCircle className="w-4 h-4 text-green-500" />
-            <span>{validMembers} Válidos</span>
-          </div>
+    return (
+        // Contenedor principal: ancho completo, usando colores semánticos.
+        <div className="w-full bg-card rounded-lg p-4 border border-border shadow-lg">
+            
+            {/* Cabecera: Nivel y total de miembros */}
+            <div className="flex justify-between items-center">
+                <h3 className="text-lg font-bold text-text-primary">
+                    {t('teamPage.levelLabel', 'Nivel {{level}}', { level })}
+                </h3>
+                <div className="flex items-center gap-1.5 text-sm text-text-secondary">
+                    <HiUserGroup className="w-5 h-5" />
+                    <span>{t('teamPage.members', '{{count}} Miembros', { count: members })}</span>
+                </div>
+            </div>
+
+            {/* Cuerpo: La cifra más importante, la comisión obtenida */}
+            <div className="mt-3 text-center border-t border-border pt-3">
+                <p className="text-sm text-text-secondary uppercase tracking-wider">
+                    {t('teamPage.commissionEarned', 'Comisión Obtenida')}
+                </p>
+                <p className="text-4xl font-bold text-accent-secondary mt-1">
+                    {formattedCommission} <span className="text-2xl">USDT</span>
+                </p>
+            </div>
+
+            {/* Pie: Detalle de miembros válidos */}
+            <div className="mt-3 text-center">
+                <p className="text-xs text-text-tertiary flex items-center justify-center gap-1.5">
+                    <HiCheckCircle className="w-4 h-4 text-status-success" />
+                    <span>{t('teamPage.validMembers', '{{count}} miembros válidos', { count: validMembers })}</span>
+                </p>
+            </div>
         </div>
-      </div>
-
-      {/* Lado Derecho: Botón de Acción */}
-      <div className="flex-shrink-0">
-        <button
-          onClick={handleViewDetails}
-          className="p-3 rounded-full bg-slate-700 hover:bg-slate-600 active:bg-slate-500 transition-colors"
-        >
-          <HiChevronRight className="w-5 h-5 text-slate-300" />
-        </button>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default TeamLevelCard;

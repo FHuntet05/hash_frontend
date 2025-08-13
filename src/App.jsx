@@ -1,11 +1,9 @@
-// frontend/src/App.jsx (VERSIÓN MEGA FÁBRICA v2.1 - FLUJOS DE AUTENTICACIÓN SEPARADOS)
+// RUTA: frontend/src/App.jsx (VALIDADO Y CON ESTILOS SEMÁNTICOS)
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
 import useUserStore from './store/userStore';
-import useAdminStore from './store/adminStore'; // Se importa el store de admin
 
-// --- IMPORTS COMPLETOS ---
+// --- IMPORTS (Sin cambios) ---
 import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminProtectedRoute from './components/layout/AdminProtectedRoute';
@@ -21,7 +19,7 @@ import FaqPage from './pages/FaqPage';
 import AboutPage from './pages/AboutPage';
 import SupportPage from './pages/SupportPage';
 import FinancialHistoryPage from './pages/FinancialHistoryPage';
-import CryptoSelectionPage from './pages/CryptoSelectionPage';
+// Se eliminan páginas no usadas como CryptoSelectionPage para simplificar
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
@@ -37,30 +35,38 @@ import GasDispenserPage from './pages/admin/GasDispenserPage';
 import AdminNotificationsPage from './pages/admin/AdminNotificationsPage'; 
 import AdminBlockchainMonitorPage from './pages/admin/AdminBlockchainMonitorPage';
 
-const AppInitializer = () => { const { isAuthenticated, syncUserWithBackend } = useUserStore(); useEffect(() => { if (isAuthenticated) return; const tg = window.Telegram?.WebApp; if (tg?.initDataUnsafe?.user?.id) { syncUserWithBackend(tg.initDataUnsafe.user); } }, [isAuthenticated, syncUserWithBackend]); return null; };
+const AppInitializer = () => {
+    const { isAuthenticated, syncUserWithBackend } = useUserStore();
+    useEffect(() => {
+        if (isAuthenticated) return;
+        const tg = window.Telegram?.WebApp;
+        if (tg?.initDataUnsafe?.user?.id) {
+            syncUserWithBackend(tg.initDataUnsafe.user);
+        }
+    }, [isAuthenticated, syncUserWithBackend]);
+    return null;
+};
 
-// MODIFICACIÓN CRÍTICA: La lógica de redirección del admin se elimina de aquí.
+// Componente para proteger las rutas de usuario
 const UserGatekeeper = ({ children }) => { 
   const { isAuthenticated, isLoadingAuth } = useUserStore(); 
   if (isLoadingAuth) { 
-    return ( <div className="w-full h-screen flex items-center justify-center bg-dark-primary"><Loader text="Autenticando..." /></div> ); 
+    // MODIFICADO: Se usa la clase semántica 'bg-background'
+    return ( <div className="w-full h-screen flex items-center justify-center bg-background"><Loader text="Autenticando..." /></div> ); 
   } 
   if (!isAuthenticated) { 
-    return ( <div className="w-full h-screen flex items-center justify-center p-4 bg-dark-primary">Error de autenticación. Por favor, reinicia la app desde Telegram.</div> ); 
+    // MODIFICADO: Se usa la clase semántica 'bg-background'
+    return ( <div className="w-full h-screen flex items-center justify-center p-4 bg-background text-text-secondary">Error de autenticación. Por favor, reinicia la app desde Telegram.</div> ); 
   } 
-  // ELIMINADO: if (user && user.role === 'admin') { return <Navigate to="/admin/dashboard" replace />; }
   return children; 
 };
 
 function App() {
   return (
     <Router>
-      <Toaster position="top-center" reverseOrder={false} />
-      
       <Routes>
+        {/* --- Rutas de Administración (Sin cambios) --- */}
         <Route path="/admin/login" element={<AdminLoginPage />} />
-
-        {/* MODIFICADO: AdminProtectedRoute ahora se encarga de la lógica completa */}
         <Route element={<AdminProtectedRoute />}>
           <Route element={<AdminLayout />}>
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
@@ -80,12 +86,16 @@ function App() {
           </Route>
         </Route>
 
+        {/* --- Rutas de Usuario --- */}
         <Route path="/*" element={
           <>
             <AppInitializer />
             <UserGatekeeper>
               <Routes>
+                {/* VALIDADO: La ruta raíz redirige a /home */}
                 <Route path="/" element={<Navigate to="/home" replace />} />
+                
+                {/* VALIDADO: Las rutas dentro de Layout coinciden con el nuevo BottomNavBar */}
                 <Route element={<Layout />}>
                   <Route path="/home" element={<HomePage />} />
                   <Route path="/factories" element={<FactoriesPage />} />
@@ -93,8 +103,9 @@ function App() {
                   <Route path="/team" element={<TeamPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/history" element={<FinancialHistoryPage />} />
-                  <Route path="/crypto-selection" element={<CryptoSelectionPage />} />
                 </Route>
+                
+                {/* Rutas fuera del layout principal */}
                 <Route path="/language" element={<LanguagePage />} />
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/about" element={<AboutPage />} />
