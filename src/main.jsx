@@ -1,14 +1,16 @@
-// src/main.jsx
+// RUTA: frontend/src/main.jsx (CORRECCIÓN CRÍTICA DE IMPORTACIÓN CSS)
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 
-// LA LÍNEA CLAVE: Asegúrate de que esta ruta sea exacta.
-// Si tu archivo está en 'src/styles/global.css', esta es la importación correcta.
-import './styles/global.css';
+// --- CORRECCIÓN CRÍTICA DE RUTA DE ESTILOS ---
+// La línea anterior importaba './styles/global.css', que no contiene los estilos de Tailwind.
+// Se ha cambiado a './index.css', que es el archivo correcto con los estilos de Tailwind.
+import './index.css'; 
+// --- FIN DE LA CORRECCIÓN ---
 
-// La importación de i18n también debe estar aquí.
+// La importación de i18n se mantiene aquí, ya es correcta.
 import './i18n'; 
 
 ReactDOM.createRoot(document.getElementById('root')).render(

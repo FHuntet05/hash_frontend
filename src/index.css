@@ -1,45 +1,32 @@
-/* RUTA: frontend/src/index.css (VERSIÓN MEGA FÁBRICA - CON VARIABLES CSS) */
+/* RUTA: frontend/src/index.css (RECONSTRUIDO PARA TEMA CLARO) */
 
-/* Importaciones base de Tailwind CSS */
+/* 1. Importaciones base de Tailwind CSS. Esto es lo que lee el tailwind.config.js
+      y genera todas nuestras clases de utilidad. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* 
-  Definición de variables CSS globales basadas en nuestra paleta de tailwind.config.js.
-  Esto centraliza aún más nuestros colores y los hace accesibles desde cualquier parte
-  de la aplicación, incluyendo JavaScript o estilos en línea.
+   2. Estilos base para la etiqueta <body>.
+      Estos estilos se aplican a toda la aplicación.
 */
-@layer base {
-  :root {
-    --color-background: #0f172a;
-    --color-card: #1e293b;
-    --color-card-hover: #334155;
-    
-    --color-text-primary: #f8fafc;
-    --color-text-secondary: #94a3b8;
-    --color-text-tertiary: #64748b;
-    
-    --color-accent-primary: #38bdf8;
-    --color-accent-primary-hover: #0ea5e9;
-    --color-accent-secondary: #a3e635;
-    --color-accent-secondary-hover: #84cc16;
+body {
+  /* Aplica el color de fondo 'background' definido en tailwind.config.js */
+  @apply bg-background; 
+  
+  /* Aplica el color de texto 'primary' definido en tailwind.config.js */
+  @apply text-text-primary;
+  
+  /* Establece una fuente sans-serif limpia y moderna para toda la app. */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 
-    --color-status-success: #22c55e;
-    --color-status-warning: #facc15;
-    --color-status-danger: #ef4444;
-    --color-status-danger-hover: #dc2626;
-
-    --color-border: #334155;
-  }
+  /* Mejora el renderizado de las fuentes. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* 
-  Esta regla es crucial. Le decimos al navegador que el cuerpo 
-  de la página NO TENGA NINGÚN COLOR DE FONDO, para que
-  pueda verse el fondo que definimos en nuestro Layout.
+  NOTA DE ARQUITECTURA: La sección ':root' ha sido eliminada.
+  Nuestra única fuente de verdad para los colores es ahora 'tailwind.config.js'.
+  Esto evita conflictos y simplifica el mantenimiento.
 */
-body {
-  background-color: transparent;
-  color: var(--color-text-primary); /* Aseguramos un color de texto base por defecto */
-}

@@ -1,50 +1,45 @@
-// RUTA: frontend/tailwind.config.js (VERSIÓN FINAL - TEMA CLARO "FÁBRICA DIURNA")
+// RUTA: frontend/tailwind.config.js (VERSIÓN FINAL v3.1 - FONDO BLANCO HUESO)
 
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      // --- NUEVA PALETA SEMÁNTICA PARA TEMA CLARO ---
       colors: {
+        // --- PALETA SEMÁNTICA "CRISTALINO Y ENERGÉTICO" ---
         // Fondos
-        background: '#f1f5f9', // Equivalente a slate-100 (Gris muy claro)
-        card: {
-          DEFAULT: '#ffffff', // Blanco puro
-          hover: '#f8fafc',  // Equivalente a slate-50 (Blanco hueso para hover)
-        },
+        background: '#f8fafc', // slate-50 (Blanco Hueso, según su última directiva)
+        card: '#ffffff',       // Blanco puro (para usar con transparencia, ej: bg-card/70)
 
         // Texto
         text: {
-          primary: '#1e293b',   // Equivalente a slate-800 (Texto oscuro principal)
-          secondary: '#64748b', // Equivalente a slate-500
-          tertiary: '#94a3b8',  // Equivalente a slate-400
+          primary: '#1e293b',   // slate-800
+          secondary: '#475569', // slate-600
+          tertiary: '#94a3b8',  // slate-400
         },
 
-        // Acentos de color (Estos se mantienen, pero ahora sobre fondo claro)
+        // Acentos (Azul, Verde, Naranja)
         accent: {
-          primary: '#0ea5e9',   // Equivalente a sky-500 (Un azul ligeramente más oscuro para mejor contraste)
-          primary_hover: '#0284c7', // Equivalente a sky-600
-          secondary: '#84cc16', // Equivalente a lime-500 (Verde ligeramente más oscuro)
-          secondary_hover: '#65a30d', // Equivalente a lime-600
+          primary: '#0ea5e9',         // sky-500 (Azul)
+          primary_hover: '#0284c7',   // sky-600
+          secondary: '#84cc16',       // lime-500 (Verde)
+          secondary_hover: '#65a30d', // lime-600
+          tertiary: '#f97316',        // orange-500 (Naranja)
+          tertiary_hover: '#ea580c',  // orange-600
         },
         
-        // Colores de Estado (Se mantienen)
         status: {
-            success: '#16a34a', // green-600
-            warning: '#f59e0b', // amber-500
-            danger: '#dc2626',  // red-600
-            danger_hover: '#b91c1c' // red-700
+            success: '#16a34a',
+            warning: '#f59e0b',
+            danger: '#dc2626',
+            danger_hover: '#b91c1c'
         },
 
-        // Bordes y Divisores
-        border: '#e2e8f0',     // Equivalente a slate-200 (Borde sutil)
+        border: '#e2e8f0', // slate-200
       },
       
-      // La sección 'backgroundImage' se elimina. Ya no la usaremos.
-      
       boxShadow: {
-        // Sombra más sutil para el tema claro
-        'subtle': '0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)',
+        'subtle': '0 4px 12px 0 rgb(0 0 0 / 0.07)',
+        'medium': '0 8px 30px rgb(0 0 0 / 0.12)',
       },
       
       animation: {
