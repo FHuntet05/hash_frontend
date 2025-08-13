@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/layout/Layout.jsx (VERSIÓN FINAL CON PADDING SUPERIOR)
+// RUTA: frontend/src/components/layout/Layout.jsx (AJUSTE FINAL DE PADDING Y SCROLLBAR)
 
 import React, { useRef } from 'react';
 import { Outlet } from 'react-router-dom';
@@ -37,11 +37,10 @@ const Layout = () => {
       >
         {/* 
           --- CORRECCIÓN CRÍTICA ---
-          El 'main' ahora tiene un padding superior (pt-16) para dejar espacio al header
-          nativo de la Telegram Web App. El padding inferior (pb-28) deja espacio
-          para el BottomNavBar flotante.
+          1. Se elimina 'pt-16' y 'pb-28'. El padding ahora es responsabilidad de cada página.
+          2. Se añade la clase 'no-scrollbar' para ocultar la barra de desplazamiento.
         */}
-        <main className="h-full w-full overflow-y-auto pt-16 pb-28">
+        <main className="h-full w-full overflow-y-auto no-scrollbar">
           <Outlet />
         </main>
         

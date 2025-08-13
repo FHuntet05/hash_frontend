@@ -1,32 +1,25 @@
-/* RUTA: frontend/src/index.css (RECONSTRUIDO PARA TEMA CLARO) */
+/* RUTA: frontend/src/index.css (CON UTILIDAD PARA OCULTAR SCROLLBAR) */
 
-/* 1. Importaciones base de Tailwind CSS. Esto es lo que lee el tailwind.config.js
-      y genera todas nuestras clases de utilidad. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 
-   2. Estilos base para la etiqueta <body>.
-      Estos estilos se aplican a toda la aplicación.
-*/
 body {
-  /* Aplica el color de fondo 'background' definido en tailwind.config.js */
   @apply bg-background; 
-  
-  /* Aplica el color de texto 'primary' definido en tailwind.config.js */
   @apply text-text-primary;
-  
-  /* Establece una fuente sans-serif limpia y moderna para toda la app. */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-
-  /* Mejora el renderizado de las fuentes. */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 
-  NOTA DE ARQUITECTURA: La sección ':root' ha sido eliminada.
-  Nuestra única fuente de verdad para los colores es ahora 'tailwind.config.js'.
-  Esto evita conflictos y simplifica el mantenimiento.
-*/
+/* --- NUEVA UTILIDAD PARA OCULTAR LA BARRA DE DESPLAZAMIENTO --- */
+/* Podemos aplicar la clase 'no-scrollbar' a cualquier elemento con scroll. */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}

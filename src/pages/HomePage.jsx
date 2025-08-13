@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/HomePage.jsx (RECONSTRUCCIÓN FINAL - DISEÑO CRISTALINO)
+// RUTA: frontend/src/pages/HomePage.jsx (RECONSTRUCCIÓN FINAL CON PADDING CORRECTO)
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,6 @@ import toast from 'react-hot-toast';
 import PurchasedFactoryItem from '../components/factories/PurchasedFactoryItem';
 import Loader from '../components/common/Loader';
 
-// Componente de Balance con diseño cristalino
 const UserBalanceDisplay = ({ balance, productionBalance }) => {
     const { t } = useTranslation();
     const formattedBalance = typeof balance === 'number' ? balance.toFixed(4) : '0.0000';
@@ -33,7 +32,6 @@ const UserBalanceDisplay = ({ balance, productionBalance }) => {
     );
 };
 
-// Componente de Animación RESTAURADO con estado de carga
 const FactoryAnimation = () => {
     const { t } = useTranslation();
     const [isVideoLoading, setVideoLoading] = useState(true);
@@ -59,6 +57,7 @@ const FactoryAnimation = () => {
     );
 };
 
+
 const HomePage = () => {
     const { t } = useTranslation();
     const { user, setUser } = useUserStore();
@@ -79,13 +78,12 @@ const HomePage = () => {
     }
     
     return (
-        // Contenedor principal con padding y espaciado vertical
-        <div className="flex flex-col gap-6 p-4">
+        // --- CORRECCIÓN CRÍTICA ---
+        // Se añade un padding superior 'pt-6' para que el contenido no choque con el header de Telegram.
+        // El padding inferior 'pb-24' se mantiene para dejar espacio al BottomNav.
+        <div className="flex flex-col gap-6 p-4 pt-6 pb-24">
             <UserBalanceDisplay balance={user.balance?.usdt} productionBalance={user.productionBalance?.usdt} />
-            
-            {/* La animación se ha restaurado */}
             <FactoryAnimation />
-
             <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.myFactories', 'Mis Fábricas')}</h2>
                 {user.purchasedFactories && user.purchasedFactories.length > 0 ? (
@@ -105,7 +103,6 @@ const HomePage = () => {
                     </div>
                 )}
             </div>
-
              <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.tasks', 'Tareas')}</h2>
                 <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 flex items-center justify-center text-text-secondary border border-white/20 shadow-medium">

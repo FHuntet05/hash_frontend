@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/layout/BottomNavBar.jsx (DISEÑO CRISTALINO FINAL)
+// RUTA: frontend/src/components/layout/BottomNavBar.jsx (ANIMACIÓN Y ESTILO CORREGIDOS)
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
@@ -15,14 +15,24 @@ const NavItem = ({ to, label, IconOutline, IconSolid }) => {
     return (
         <NavLink
             to={to}
-            end={to === '/home'} // 'end' para que /home no coincida con otras rutas que no son exactas
-            className="flex-1 flex justify-center items-center h-full"
+            end={to === '/home'}
+            className="flex-1 flex justify-center items-center h-full group"
         >
             {({ isActive }) => (
-                <div className={`relative flex flex-col items-center justify-center gap-1 py-2 px-3 transition-colors duration-300 rounded-lg ${isActive ? 'text-accent-primary' : 'text-text-secondary hover:text-text-primary'}`}>
-                    {isActive ? <IconSolid className="w-6 h-6" /> : <IconOutline className="w-6 h-6" />}
-                    <span className={`text-xs font-semibold transition-all duration-300 ${isActive ? 'scale-100' : 'scale-90 opacity-0'}`}>{label}</span>
-                    <span className={`absolute top-1/2 -translate-y-1/2 text-xs font-semibold transition-all duration-300 ${isActive ? 'scale-0 opacity-0' : 'scale-100'}`}>{label}</span>
+                <div 
+                    className={`flex items-center justify-center gap-2 py-2 px-4 rounded-full transition-all duration-300
+                        ${isActive 
+                            ? 'bg-accent-primary/10 text-accent-primary' 
+                            : 'text-text-secondary group-hover:text-text-primary'
+                        }`
+                    }
+                >
+                    {isActive ? <IconSolid className="w-5 h-5" /> : <IconOutline className="w-5 h-5" />}
+                    <span className={`text-sm font-bold transition-all duration-300 
+                        ${isActive ? 'block' : 'hidden md:block'} `}
+                    >
+                        {label}
+                    </span>
                 </div>
             )}
         </NavLink>
@@ -47,7 +57,7 @@ const BottomNavBar = () => {
                 className="max-w-lg mx-auto h-16 bg-card/80 backdrop-blur-lg rounded-2xl border border-white/20 shadow-medium"
                 style={{ WebkitBackdropFilter: 'blur(16px)', backdropFilter: 'blur(16px)' }}
             >
-                <div className="flex justify-around items-center h-full">
+                <div className="flex justify-around items-center h-full px-2">
                     {navItems.map(item => <NavItem key={item.to} {...item} />)}
                 </div>
             </nav>
