@@ -1,128 +1,142 @@
-// frontend/src/pages/ProfilePage.jsx (v17.9.5 - i18n)
+// RUTA: frontend/src/pages/ProfilePage.jsx (REDISEÑO COMPLETO "MEGA FÁBRICA")
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useUserStore from '../store/userStore';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiOutlineArrowDownOnSquare, HiOutlineArrowUpOnSquare, HiOutlineRectangleStack, HiOutlineArrowsRightLeft, HiOutlineUserGroup, HiOutlineQuestionMarkCircle, HiOutlineInformationCircle, HiOutlineChatBubbleLeftRight, HiOutlineLanguage } from 'react-icons/hi2';
+import { 
+    HiOutlineArrowDownOnSquare, 
+    HiOutlineArrowUpOnSquare, 
+    HiOutlineRectangleStack, 
+    HiOutlineUserGroup, 
+    HiOutlineQuestionMarkCircle, 
+    HiOutlineInformationCircle, 
+    HiOutlineChatBubbleLeftRight, 
+    HiOutlineLanguage,
+    HiOutlineArrowRightOnRectangle,
+    HiOutlineClipboardDocument
+} from 'react-icons/hi2';
 
-import api from '../api/axiosConfig';
 import WithdrawalModal from '../components/modals/WithdrawalModal';
-import SwapModal from '../components/modals/SwapModal';
-import DepositAmountModal from '../components/modals/DepositAmountModal';
 import Loader from '../components/common/Loader';
 
-const pageVariants = { hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeInOut' } }, };
-
-const ProfileHeader = ({ user, t }) => (
-    <div className="flex justify-between items-center w-full">
-      <div className="flex items-center gap-3 bg-white/10 backdrop-blur-lg p-2 px-4 rounded-full border border-white/10">
-        <img src={user?.photoUrl || '/assets/images/user-avatar-placeholder.png'} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
-        <span className="font-bold text-white">{user?.username || 'Usuario'}</span>
-      </div>
-      <div className="text-right bg-white/10 backdrop-blur-lg p-2 px-4 rounded-full border border-white/10">
-        <span className="text-lg font-bold text-accent-end">{Number(user?.balance?.ntx || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} NTX</span>
-        <p className="text-xs text-text-secondary">{t('profilePage.balanceNtxLabel')}</p>
-      </div>
-    </div>
-);
-
-const ActionButton = ({ icon: Icon, label, onClick, color = 'text-accent-start' }) => (
-    <button onClick={onClick} className="flex flex-col items-center justify-center gap-2 group w-full">
-        <div className="w-14 h-14 flex items-center justify-center bg-black/20 rounded-2xl group-hover:bg-black/40 transition-colors">
-            <Icon className={`w-8 h-8 ${color}`} />
-        </div>
-        <span className="text-xs font-semibold text-text-secondary text-center w-full">{label}</span>
+// Componente para una fila de acción, clave en el nuevo diseño de lista.
+const ActionRow = ({ icon: Icon, label, onClick, hasChevron = true }) => (
+    <button
+        onClick={onClick}
+        className="w-full flex items-center p-4 bg-slate-800 rounded-lg text-left hover:bg-slate-700 transition-colors duration-200 active:bg-slate-600"
+    >
+        <Icon className="w-6 h-6 mr-4 text-slate-400" />
+        <span className="flex-grow text-base font-medium text-slate-50">{label}</span>
+        {hasChevron && <HiOutlineArrowRightOnRectangle className="w-5 h-5 text-slate-500 transform rotate-180" />}
     </button>
 );
 
 const ProfilePage = () => {
-  const { user, logout } = useUserStore();
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  
-  const [isWithdrawalModalOpen, setWithdrawalModalOpen] = useState(false);
-  const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
-  const [isDepositAmountModalOpen, setDepositAmountModalOpen] = useState(false);
+    const { user, logout } = useUserStore();
+    const navigate = useNavigate();
+    const { t } = useTranslation();
 
-  if (!user) { return <div className="h-full w-full flex items-center justify-center"><Loader text={t('common.loading')} /></div> }
+    const [isWithdrawalModalOpen, setWithdrawalModalOpen] = useState(false);
 
-  const handleWithdrawClick = () => {
-    if ((user?.balance?.usdt || 0) < 1.0) { toast.error(t('profilePage.toasts.insufficientBalance', {min: "1.00"})); } 
-    else { setWithdrawalModalOpen(true); }
-  };
-  const handleSwapClick = () => {
-    if ((user?.balance?.ntx || 0) < 10000) { toast.error(t('profilePage.toasts.insufficientNtx', {min: "10,000"})); } 
-    else { setIsSwapModalOpen(true); }
-  };
-  const handleRechargeClick = () => setDepositAmountModalOpen(true);
-  
-  const handleAmountProceed = (amount) => {
-    setDepositAmountModalOpen(false);
-    const pricesPromise = api.get('/payment/prices');
-    toast.promise(pricesPromise, {
-      loading: t('profilePage.toasts.loadingPrices'),
-      success: (response) => {
-        navigate('/crypto-selection', { state: { totalCost: amount, cryptoPrices: response.data } });
-        return t('profilePage.toasts.selectCoin');
-      },
-      error: (err) => err.response?.data?.message || t('common.error'),
-    });
-  };
+    const copyToClipboard = (text, message) => {
+        navigator.clipboard.writeText(text);
+        toast.success(message);
+    };
 
-  const mainActions = [
-    { label: t('profile.recharge'), icon: HiOutlineArrowDownOnSquare, onClick: handleRechargeClick },
-    { label: t('profile.withdraw'), icon: HiOutlineArrowUpOnSquare, onClick: handleWithdrawClick },
-    { label: t('profile.records'), icon: HiOutlineRectangleStack, onClick: () => navigate('/history') },
-    { label: t('profile.exchange'), icon: HiOutlineArrowsRightLeft, onClick: handleSwapClick },
-  ];
-  const secondaryActions = [
-    { label: t('profile.invite'), icon: HiOutlineUserGroup, onClick: () => navigate('/team') },
-    { label: t('profile.language'), icon: HiOutlineLanguage, onClick: () => navigate('/language') },
-    { label: t('profile.faq'), icon: HiOutlineQuestionMarkCircle, onClick: () => navigate('/faq') },
-    { label: t('profile.about'), icon: HiOutlineInformationCircle, onClick: () => navigate('/about') },
-    { label: t('profile.support'), icon: HiOutlineChatBubbleLeftRight, onClick: () => navigate('/support') },
-  ];
+    if (!user) {
+        return <div className="h-full w-full flex items-center justify-center"><Loader text={t('common.loading')} /></div>;
+    }
 
- return (
-    <>
-      <motion.div className="flex flex-col h-full space-y-6 p-4" variants={pageVariants} initial="hidden" animate="visible">
-        <ProfileHeader user={user} t={t} />
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/10 space-y-5">
-          <div className="flex justify-around items-center">
-              <div className="text-center">
-                  <p className="text-2xl font-bold text-white">{(user?.balance?.usdt || 0).toFixed(2)}</p>
-                  <p className="text-xs text-text-secondary">{t('profilePage.balanceUsdtLabel')}</p>
-              </div>
-              <div className="h-10 w-px bg-white/20" />
-              <div className="text-center">
-                  <p className="text-2xl font-bold text-white">{(user?.balance?.ntx || 0).toFixed(2)}</p>
-                  <p className="text-xs text-text-secondary">{t('profilePage.balanceNtxLabel')}</p>
-              </div>
-          </div>
-          <div className="grid grid-cols-4 gap-x-2 gap-y-4">
-              {mainActions.map(action => <ActionButton key={action.label} {...action} />)}
-          </div>
-        </div>
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/10">
-          <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(70px, 1fr))' }}>
-            {secondaryActions.map(action => <ActionButton key={action.label} {...action} color="text-text-secondary" />)}
-          </div>
-        </div>
-        <div className="flex-grow"></div>
-        <div className="pb-4">
-          <button onClick={logout} className="w-full py-3 font-bold text-red-400 bg-red-500/20 rounded-xl border border-red-500/30 hover:bg-red-500/40 transition-colors">
-            {t('profile.logout')}
-          </button>
-        </div>
-      </motion.div>
-      <AnimatePresence>
-        {isWithdrawalModalOpen && <WithdrawalModal onClose={() => setWithdrawalModalOpen(false)} />}
-        {isSwapModalOpen && <SwapModal onClose={() => setIsSwapModalOpen(false)} />}
-        {isDepositAmountModalOpen && <DepositAmountModal onClose={() => setDepositAmountModalOpen(false)} onProceed={handleAmountProceed} />}
-      </AnimatePresence>
-    </>
-  );
+    const handleWithdrawClick = () => {
+        if ((user?.balance?.usdt || 0) < 1.0) { // Lógica de negocio mantenida
+            toast.error(t('profilePage.toasts.insufficientBalance', { min: "1.00" }));
+        } else {
+            setWithdrawalModalOpen(true);
+        }
+    };
+    
+    // Simplificamos: el depósito ahora lleva directamente a la página de depósito
+    const handleRechargeClick = () => navigate('/deposit');
+
+    const mainActions = [
+        { label: t('profile.recharge'), icon: HiOutlineArrowDownOnSquare, onClick: handleRechargeClick },
+        { label: t('profile.withdraw'), icon: HiOutlineArrowUpOnSquare, onClick: handleWithdrawClick },
+        { label: t('profile.records'), icon: HiOutlineRectangleStack, onClick: () => navigate('/history') },
+    ];
+
+    const secondaryActions = [
+        { label: t('profile.invite'), icon: HiOutlineUserGroup, onClick: () => navigate('/team') },
+        { label: t('profile.language'), icon: HiOutlineLanguage, onClick: () => navigate('/language') },
+        { label: t('profile.support'), icon: HiOutlineChatBubbleLeftRight, onClick: () => navigate('/support') },
+        { label: t('profile.faq'), icon: HiOutlineQuestionMarkCircle, onClick: () => navigate('/faq') },
+        { label: t('profile.about'), icon: HiOutlineInformationCircle, onClick: () => navigate('/about') },
+    ];
+
+    return (
+        <>
+            <motion.div 
+                className="flex flex-col h-full overflow-y-auto p-4 gap-6 pb-24"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                {/* --- Bloque de Identidad --- */}
+                <div className="flex flex-col items-center text-center pt-4">
+                    <img 
+                        src={user?.photoUrl || '/assets/images/user-avatar-placeholder.png'} 
+                        alt="Avatar" 
+                        className="w-24 h-24 rounded-full object-cover border-4 border-slate-700 shadow-lg" 
+                    />
+                    <h1 className="text-2xl font-bold text-slate-50 mt-4">{user?.username || 'Usuario'}</h1>
+                    <div className="flex items-center gap-4 mt-2 text-slate-400 text-sm">
+                        <span>ID: {user?.telegramId}</span>
+                        {user?.referrerId && <span>{t('profile.inviter')}: {user.referrerId}</span>}
+                    </div>
+                </div>
+
+                {/* --- Bloque de Balances --- */}
+                <div className="grid grid-cols-2 gap-4 text-center">
+                    <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+                        <p className="text-sm text-slate-400 uppercase tracking-wider">{t('profilePage.balanceUsdtLabel')}</p>
+                        <p className="text-2xl font-bold text-sky-400 mt-1">{(user?.balance?.usdt || 0).toFixed(4)}</p>
+                    </div>
+                    <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+                        <p className="text-sm text-slate-400 uppercase tracking-wider">{t('profilePage.productionLabel', 'Producción')}</p>
+                        <p className="text-2xl font-bold text-lime-400 mt-1">{(user?.productionBalance?.usdt || 0).toFixed(4)}</p>
+                    </div>
+                </div>
+
+                {/* --- Bloque de Acciones Principales --- */}
+                <div className="space-y-3">
+                    <h2 className="text-sm font-semibold text-slate-500 px-2">{t('profile.mainActions', 'ACCIONES')}</h2>
+                    {mainActions.map(action => <ActionRow key={action.label} {...action} />)}
+                </div>
+
+                {/* --- Bloque de Acciones Secundarias --- */}
+                <div className="space-y-3">
+                     <h2 className="text-sm font-semibold text-slate-500 px-2">{t('profile.settings', 'AJUSTES Y SOPORTE')}</h2>
+                    {secondaryActions.map(action => <ActionRow key={action.label} {...action} />)}
+                </div>
+
+                {/* --- Botón de Cerrar Sesión --- */}
+                <div className="pt-4">
+                    <button 
+                        onClick={logout} 
+                        className="w-full flex items-center justify-center p-4 bg-red-900/50 rounded-lg text-red-400 hover:bg-red-900/80 hover:text-red-300 transition-colors duration-200 active:bg-red-800"
+                    >
+                        <HiOutlineArrowRightOnRectangle className="w-6 h-6 mr-3" />
+                        <span className="text-base font-bold">{t('profile.logout')}</span>
+                    </button>
+                </div>
+            </motion.div>
+
+            <AnimatePresence>
+                {isWithdrawalModalOpen && <WithdrawalModal onClose={() => setWithdrawalModalOpen(false)} />}
+            </AnimatePresence>
+        </>
+    );
 };
 export default ProfilePage;

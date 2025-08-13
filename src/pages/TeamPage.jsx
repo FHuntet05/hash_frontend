@@ -1,150 +1,109 @@
-// frontend/src/pages/TeamPage.jsx (v21.22 - CORRECCIÓN BUILD)
+// RUTA: frontend/src/pages/TeamPage.jsx (REDISEÑO COMPLETO "MEGA FÁBRICA")
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import useUserStore from '../store/userStore';
-import useTeamStore from '../store/teamStore';
 import api from '../api/axiosConfig';
 import toast from 'react-hot-toast';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
+import { HiOutlineUserGroup, HiOutlineBanknotes, HiOutlineArrowDownTray, HiOutlineArrowUpTray, HiOutlineClipboardDocument } from 'react-icons/hi2';
 
 import TeamStatCard from '../components/team/TeamStatCard';
 import TeamLevelCard from '../components/team/TeamLevelCard';
 import Loader from '../components/common/Loader';
-import TeamLevelDetailsModal from '../components/team/TeamLevelDetailsModal';
-import { triggerImpactHaptic, triggerNotificationHaptic } from '../utils/haptics';
-
-// [CORRECCIÓN BUILD] - INICIO DE LA MODIFICACIÓN
-// Se ha cambiado FaTelegramPlane por FaTelegram, que es el nombre correcto en react-icons/fa6.
-import { FaTelegram, FaXTwitter, FaFacebookF, FaLinkedinIn, FaWhatsapp, FaInstagram, FaTiktok } from "react-icons/fa6";
-// [CORRECCIÓN BUILD] - FIN DE LA MODIFICACIÓN
-
-import { HiUsers, HiBanknotes, HiArrowDownTray, HiArrowUpTray } from 'react-icons/hi2';
-
-const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
-const itemVariants = { hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } };
 
 const TeamPage = () => {
   const { t } = useTranslation();
   const { user } = useUserStore();
-  const { stats, loading, error, fetchTeamStats } = useTeamStore(state => ({
-    stats: state.stats || { totalTeamMembers: 0, totalCommission: 0, totalTeamRecharge: 0, totalWithdrawals: 0, levels: [] },
-    loading: state.loading, error: state.error, fetchTeamStats: state.fetchTeamStats,
-  }));
+  const [teamData, setTeamData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        const response = await api.get('/team/summary');
+        setTeamData(response.data);
+      } catch (error) {
+        toast.error(t('teamPage.toasts.fetchError'));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeamData();
+  }, [t]);
+
+  const referralLink = `${window.location.origin}/register?ref=${user.telegramId}`;
   
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedLevel, setSelectedLevel] = useState(null);
-  const [levelUsers, setLevelUsers] = useState([]);
-  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
-  
-  const referralLink = `https://t.me/nicentx_bot?start=${user?.telegramId}`;
-  const shareText = t('teamPage.referralLink.shareText');
-
-  useEffect(() => { fetchTeamStats(); }, [fetchTeamStats]);
-
-  const handleShowDetails = async (level) => {
-    triggerImpactHaptic('medium');
-    setSelectedLevel(level);
-    setIsModalOpen(true);
-    setIsLoadingDetails(true);
-    try {
-      const response = await api.get(`/team/level-details/${level}`);
-      setLevelUsers(response.data);
-    } catch (err) {
-      toast.error(t('teamPage.detailsModal.errorLoading'));
-      setLevelUsers([]);
-    } finally {
-      setIsLoadingDetails(false);
-    }
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(referralLink);
+    toast.success(t('teamPage.toasts.linkCopied'));
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setTimeout(() => { setSelectedLevel(null); setLevelUsers([]); }, 300);
-  };
+  if (loading) {
+    return <div className="h-full w-full flex items-center justify-center"><Loader text={t('common.loading')} /></div>;
+  }
 
-  const copyLink = () => {
-    triggerImpactHaptic('light');
-    navigator.clipboard.writeText(`${shareText} ${referralLink}`);
-    toast.success(t('common.copied'));
-    triggerNotificationHaptic('success');
-  };
-  
-  const handleShare = (platform) => {
-    triggerImpactHaptic('light');
-    const encodedLink = encodeURIComponent(referralLink);
-    const encodedText = encodeURIComponent(shareText);
-    let shareUrl = '';
-    switch (platform) {
-      case 'telegram': shareUrl = `https://t.me/share/url?url=${encodedLink}&text=${encodedText}`; break;
-      case 'whatsapp': shareUrl = `https://wa.me/?text=${encodedText}%20${encodedLink}`; break;
-      case 'twitter': shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedLink}`; break;
-      case 'facebook': shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}`; break;
-      default: copyLink(); return;
-    }
-    window.open(shareUrl, '_blank', 'noopener,noreferrer');
-  };
-
-  const socialIcons = [
-    { Icon: FaXTwitter, name: 'twitter' }, { Icon: FaFacebookF, name: 'facebook' },
-    // [CORRECCIÓN BUILD] - INICIO DE LA MODIFICACIÓN
-    { Icon: FaTelegram, name: 'telegram' }, // Se usa el componente corregido.
-    // [CORRECCIÓN BUILD] - FIN DE LA MODIFICACIÓN
-    { Icon: FaLinkedinIn, name: 'linkedin' },
-    { Icon: FaWhatsapp, name: 'whatsapp' }, { Icon: FaInstagram, name: 'instagram' },
-    { Icon: FaTiktok, name: 'tiktok' },
+  const stats = [
+    { title: t('teamPage.stats.members'), value: teamData?.totalMembers || 0, icon: HiOutlineUserGroup, color: "text-sky-400" },
+    { title: t('teamPage.stats.commission'), value: `${(teamData?.totalCommissions?.usdt || 0).toFixed(2)}`, icon: HiOutlineBanknotes, color: "text-lime-400" },
+    { title: t('teamPage.stats.recharge'), value: `${(teamData?.totalDeposits?.usdt || 0).toFixed(2)}`, icon: HiOutlineArrowDownTray, color: "text-slate-50" },
+    { title: t('teamPage.stats.withdraw'), value: `${(teamData?.totalWithdrawals?.usdt || 0).toFixed(2)}`, icon: HiOutlineArrowUpTray, color: "text-slate-50" },
   ];
 
   return (
-    <>
-      <div className="flex flex-col h-full overflow-y-auto pb-32 p-4">
-        <AnimatePresence mode="wait">
-          {loading && !stats.totalTeamMembers ? (
-            <motion.div key="loader" className="flex justify-center items-center h-full"><Loader /></motion.div>
-          ) : error ? (
-            <motion.div key="error" className="text-center text-red-400 p-8">{error}</motion.div>
-          ) : (
-            <motion.div key="content" initial="hidden" animate="visible" variants={containerVariants} className="flex flex-col space-y-6">
-              <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
-                <TeamStatCard label={t('teamPage.stats.members')} value={stats.totalTeamMembers} icon={<HiUsers size={20} />} />
-                <TeamStatCard label={t('teamPage.stats.totalCommission')} value={stats.totalCommission} icon={<HiBanknotes size={20} />} isCurrency={true} />
-                <TeamStatCard label={t('teamPage.stats.teamRecharge')} value={stats.totalTeamRecharge} icon={<HiArrowDownTray size={20} />} isCurrency={true} />
-                <TeamStatCard label={t('teamPage.stats.teamWithdrawals')} value={stats.totalWithdrawals} icon={<HiArrowUpTray size={20} />} isCurrency={true} />
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="bg-dark-secondary p-4 rounded-xl border border-white/10 space-y-4">
-                <div className="flex items-center space-x-2">
-                  <p className="flex-1 bg-black/30 text-text-secondary p-3 rounded-lg truncate">{referralLink}</p>
-                  <button onClick={copyLink} className="bg-gradient-to-r from-accent-start to-accent-end text-white font-bold py-3 px-6 rounded-lg active:scale-95 transition-transform">{t('teamPage.referralLink.copy')}</button>
-                </div>
-                <h3 className="text-base font-semibold text-white pt-2">{t('teamPage.referralLink.shareOn')}</h3>
-                <div className="grid grid-cols-7 gap-2">
-                  {socialIcons.map(({ Icon, name }) => (
-                    <button key={name} onClick={() => handleShare(name)} className="bg-black/30 aspect-square rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors active:scale-90">
-                      <Icon size={20} />
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="grid grid-cols-3 gap-3">
-                {(stats.levels || []).map(levelInfo => (
-                  <TeamLevelCard key={levelInfo.level} level={levelInfo.level} totalMembers={levelInfo.totalMembers} validMembers={levelInfo.validMembers} onShowDetails={handleShowDetails} />
-                ))}
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+    <motion.div 
+        className="flex flex-col h-full overflow-y-auto p-4 gap-8 pb-24"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+    >
+      {/* Bloque 1: Invitación (CTA) */}
+      <div className="bg-slate-800 rounded-lg p-5 border border-slate-700 text-center shadow-lg">
+        <h1 className="text-xl font-bold text-slate-50">{t('teamPage.title', 'Invita a tus Amigos')}</h1>
+        <p className="text-slate-400 text-sm mt-2 mb-4">{t('teamPage.description', 'Comparte tu enlace y gana comisiones por cada miembro.')}</p>
+        <div className="flex items-center bg-slate-900 rounded-md p-2 border border-slate-600">
+          <input 
+            type="text" 
+            value={referralLink} 
+            readOnly 
+            className="w-full bg-transparent text-slate-400 text-sm outline-none" 
+          />
+          <button onClick={copyToClipboard} className="ml-2 p-2 rounded-md bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white transition-colors">
+            <HiOutlineClipboardDocument className="w-5 h-5" />
+          </button>
+        </div>
       </div>
-      <div className="fixed bottom-[100px] left-0 right-0 w-full max-w-lg mx-auto px-4 z-40">
-        <button onClick={() => { triggerImpactHaptic('heavy'); handleShare('telegram'); }} className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-lg font-bold rounded-full shadow-lg shadow-purple-500/40 transform active:scale-95 transition-all">
-          {t('teamPage.shareWithFriends')}
-        </button>
+
+      {/* Bloque 2: Estadísticas Generales */}
+      <div className="grid grid-cols-2 gap-4">
+        {stats.map(stat => (
+          <TeamStatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} colorClass={stat.color} />
+        ))}
       </div>
-      <AnimatePresence>
-        {isModalOpen && (<TeamLevelDetailsModal level={selectedLevel} users={levelUsers} isLoading={isLoadingDetails} onClose={handleCloseModal} />)}
-      </AnimatePresence>
-    </>
+
+      {/* Bloque 3: Niveles de Equipo */}
+      <div>
+        <h2 className="text-lg font-semibold text-slate-50 mb-4">{t('teamPage.levelsTitle', 'Niveles del Equipo')}</h2>
+        {teamData?.levels && teamData.levels.length > 0 ? (
+          <div className="space-y-3">
+            {teamData.levels.map(levelData => (
+              <TeamLevelCard 
+                key={levelData.level} 
+                level={levelData.level} 
+                members={levelData.count} 
+                validMembers={levelData.validCount}
+                commissionRate={levelData.commissionRate}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-slate-800 rounded-lg p-8 text-center text-slate-500 border border-slate-700">
+            <p>{t('teamPage.noTeamMembers', 'Aún no tienes miembros en tu equipo.')}</p>
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 };
+
 export default TeamPage;

@@ -1,65 +1,70 @@
-// RUTA: frontend/src/components/layout/Layout.jsx (VERSIÓN ESTABLE CON GUARDIA DE DATOS)
-import React, { useRef } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import BottomNavBar from './BottomNavBar';
-import FloatingSupportButton from '../common/FloatingSupportButton';
-import './LayoutAnimations.css';
-import useUserStore from '../../store/userStore'; // Importación clave
-import Loader from '../common/Loader'; // Se asume que tiene un componente Loader
+// RUTA: frontend/src/Layout.jsx (VERSIÓN "MEGA FÁBRICA" - REVISIÓN CON SOPORTE)
+
+import React, { useRef } from 'react'; // Importamos useRef
+import { Outlet } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+
+import BottomNav from './components/nav/BottomNav';
+import useUserStore from './store/userStore';
+import Loader from './components/common/Loader';
+import FloatingSupportButton from './components/common/FloatingSupportButton'; // Importamos el botón
 
 const Layout = () => {
-  const location = useLocation();
-  const dragContainerRef = useRef(null);
+  const dragContainerRef = useRef(null); // Creamos la referencia para el contenedor de arrastre
 
-  // --- INICIO DE LA MODIFICACIÓN CRÍTICA ---
-  // Nos suscribimos al estado de autenticación del usuario.
+  // --- GUARDIA DE AUTENTICACIÓN (Sin cambios) ---
   const { isAuthenticated, isLoadingAuth } = useUserStore();
 
-  // GUARDIA DE CARGA: Mientras se verifica la autenticación, mostramos un loader.
-  // Esto previene que cualquier componente hijo intente renderizar con datos nulos.
   if (isLoadingAuth) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-internal-background bg-cover bg-center">
+      <div className="h-screen w-screen flex items-center justify-center bg-slate-900">
         <Loader text="Cargando sesión..." />
       </div>
     );
   }
 
-  // GUARDIA DE ERROR: Si la autenticación falla, mostramos un mensaje claro.
   if (!isAuthenticated) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-internal-background bg-cover bg-center p-4">
-        <div className="text-center text-white bg-red-900/50 p-6 rounded-lg border border-red-500">
-            <h2 className="text-xl font-bold">Error de Autenticación</h2>
-            <p className="mt-2 text-text-secondary">No se pudo verificar tu sesión. Por favor, reinicia la aplicación desde Telegram.</p>
+      <div className="h-screen w-screen flex items-center justify-center bg-slate-900 p-4">
+        <div className="text-center bg-slate-800 p-6 rounded-lg border border-red-500/50">
+            <h2 className="text-xl font-bold text-slate-50">Error de Autenticación</h2>
+            <p className="mt-2 text-slate-400">No se pudo verificar tu sesión. Por favor, reinicia la aplicación desde Telegram.</p>
         </div>
       </div>
     );
   }
-  // --- FIN DE LA MODIFICACIÓN CRÍTICA ---
-
-  // Si pasamos las guardias, significa que 'isAuthenticated' es true y el objeto 'user' está disponible.
-  // Ahora es seguro renderizar el resto de la aplicación.
-  const backgroundClass = location.pathname === '/home' // Ajustado para la ruta correcta
-    ? 'bg-space-background bg-cover bg-center' 
-    : 'bg-internal-background bg-cover bg-center';
+  // --- FIN DE LA GUARDIA ---
 
   return (
-    <div ref={dragContainerRef} className={`w-full min-h-screen text-text-primary font-sans ${backgroundClass} overflow-hidden`}>
-      <div className="container mx-auto max-w-lg min-h-screen flex flex-col bg-transparent">
-        <main className="flex-grow p-4 pb-28 flex flex-col overflow-y-auto">
-          <div key={location.pathname} className="flex flex-col flex-grow fade-in">
-            <Outlet />
-          </div>
+    <div className="h-screen w-screen flex justify-center bg-black">
+      {/* 
+        NOTA DE ARQUITECTURA: Asignamos la referencia al contenedor principal de la app.
+        Cualquier elemento arrastrable dentro de este div (como el botón de soporte)
+        estará confinado a sus límites.
+      */}
+      <div ref={dragContainerRef} className="h-full w-full max-w-lg relative bg-slate-900 text-slate-50 font-sans overflow-hidden">
+        
+        <main className="h-full w-full overflow-y-auto">
+          <Outlet />
         </main>
         
-        <footer className="fixed bottom-0 left-0 right-0 w-full max-w-lg mx-auto z-50 p-4">
-          <div className="bg-slate-900 rounded-xl border border-white/10">
-            <BottomNavBar />
-          </div>
-        </footer>
-
+        <BottomNav />
+        
+        {/* REINTEGRADO: El botón de soporte flotante se renderiza aquí */}
         <FloatingSupportButton dragRef={dragContainerRef} />
+
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          toastOptions={{
+            className: '',
+            style: {
+              background: '#1e293b', // bg-slate-800
+              color: '#f8fafc', // text-slate-50
+              border: '1px solid #334155' // border-slate-700
+            },
+          }}
+        />
       </div>
     </div>
   );

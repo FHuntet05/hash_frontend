@@ -1,11 +1,10 @@
-// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (NUEVO)
+// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (UI RENOVADA)
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { useFactoryCycle } from '../../hooks/useFactoryCycle';
 
-// Pequeño componente para la barra de progreso animada
+// Pequeño componente para la barra de progreso animada (sin cambios funcionales)
 const ProgressBar = ({ progress, bgColorClass, pulse = false }) => (
-  <div className="w-full bg-black/30 rounded-full h-2.5 overflow-hidden">
+  <div className="w-full bg-slate-900/70 rounded-full h-2.5 overflow-hidden">
     <div
       className={`${bgColorClass} h-2.5 rounded-full transition-all duration-500 relative`}
       style={{ width: `${progress}%` }}
@@ -43,6 +42,7 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
     };
   }, [purchaseDate, expiryDate]);
 
+  // Los colores semánticos para la vida útil se mantienen
   const lifetimeBarColor = useMemo(() => {
     if (lifetimeProgress < 50) return 'bg-green-500';
     if (lifetimeProgress < 85) return 'bg-yellow-500';
@@ -53,17 +53,17 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
   if (!factory) return null;
 
   return (
-    <div className="bg-dark-secondary rounded-2xl p-4 border border-white/10 flex flex-col gap-3">
+    <div className="bg-slate-800 rounded-2xl p-4 border border-slate-700 flex flex-col gap-3 shadow-lg">
       {/* --- Cabecera con Nombre y Botón de Estado --- */}
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold text-white">{factory.name}</h3>
+        <h3 className="text-lg font-bold text-slate-100">{factory.name}</h3>
         <button
           onClick={() => onClaim(purchasedFactoryId)}
           disabled={!isClaimable}
-          className={`px-4 py-1.5 text-xs font-bold rounded-full transition-all duration-300
+          className={`px-4 py-1.5 text-xs font-bold rounded-full transition-all duration-300 transform active:scale-95
             ${isClaimable 
-              ? 'bg-gradient-to-r from-accent-start to-accent-end text-white shadow-glow animate-pulse'
-              : 'bg-gray-700 text-text-secondary cursor-not-allowed'
+              ? 'bg-lime-500 text-slate-900 shadow-lg shadow-lime-500/30 animate-pulse'
+              : 'bg-slate-700 text-slate-400 cursor-not-allowed'
             }`}
         >
           {isClaimable ? 'RECLAMAR' : 'PRODUCIENDO'}
@@ -71,22 +71,22 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
       </div>
 
       <div className="flex gap-4">
-        {/* Columna Izquierda: Animación (Platzhalter) */}
-        <div className="w-16 h-16 bg-dark-primary rounded-lg flex items-center justify-center flex-shrink-0">
+        {/* Columna Izquierda: Imagen de la Fábrica */}
+        <div className="w-16 h-16 bg-slate-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-slate-700">
             <img src={factory.imageUrl} alt={factory.name} className="w-12 h-12 object-contain" />
         </div>
 
         {/* Columna Derecha: Detalles y Barras de Progreso */}
         <div className="flex-grow flex flex-col justify-between gap-2">
             <div>
-                <div className="flex justify-between text-xs text-text-secondary mb-1">
+                <div className="flex justify-between text-xs text-slate-400 mb-1">
                     <span>Próximo Reclamo</span>
                     <span className="font-mono">{countdown}</span>
                 </div>
-                <ProgressBar progress={cycleProgress} bgColorClass="bg-accent-start" pulse={true} />
+                <ProgressBar progress={cycleProgress} bgColorClass="bg-sky-500" pulse={true} />
             </div>
              <div>
-                <div className="flex justify-between text-xs text-text-secondary mb-1">
+                <div className="flex justify-between text-xs text-slate-400 mb-1">
                     <span>Vida Útil</span>
                     <span className="font-mono">{daysLeftText}</span>
                 </div>
@@ -96,9 +96,9 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
       </div>
       
       {/* Detalles Inferiores */}
-      <div className="flex justify-between items-center text-xs text-text-secondary border-t border-white/10 pt-2 mt-2">
+      <div className="flex justify-between items-center text-xs text-slate-400 border-t border-slate-700 pt-2 mt-2">
         <span>Producción Diaria:</span>
-        <span className="font-bold font-mono text-green-400">{factory.dailyProduction.toFixed(2)} USDT</span>
+        <span className="font-bold font-mono text-lime-400">{factory.dailyProduction.toFixed(2)} USDT</span>
       </div>
     </div>
   );
