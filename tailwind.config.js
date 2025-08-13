@@ -1,54 +1,50 @@
-// RUTA: frontend/tailwind.config.js (VERSIÓN MEGA FÁBRICA - PALETA SEMÁNTICA)
+// RUTA: frontend/tailwind.config.js (VERSIÓN FINAL - TEMA CLARO "FÁBRICA DIURNA")
 
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      // --- NUEVA PALETA SEMÁNTICA PARA TEMA CLARO ---
       colors: {
-        // --- PALETA DE COLORES SEMÁNTICA "MEGA FÁBRICA" ---
-        // Nombres basados en la función, no en el color.
-        
         // Fondos
-        background: '#0f172a', // Equivalente a slate-900
+        background: '#f1f5f9', // Equivalente a slate-100 (Gris muy claro)
         card: {
-          DEFAULT: '#1e293b', // Equivalente a slate-800
-          hover: '#334155',  // Equivalente a slate-700
+          DEFAULT: '#ffffff', // Blanco puro
+          hover: '#f8fafc',  // Equivalente a slate-50 (Blanco hueso para hover)
         },
 
         // Texto
         text: {
-          primary: '#f8fafc',   // Equivalente a slate-50 (Blanco Hueso)
-          secondary: '#94a3b8', // Equivalente a slate-400
-          tertiary: '#64748b',  // Equivalente a slate-500
+          primary: '#1e293b',   // Equivalente a slate-800 (Texto oscuro principal)
+          secondary: '#64748b', // Equivalente a slate-500
+          tertiary: '#94a3b8',  // Equivalente a slate-400
         },
 
-        // Acentos de color
+        // Acentos de color (Estos se mantienen, pero ahora sobre fondo claro)
         accent: {
-          primary: '#38bdf8',   // Equivalente a sky-400 (Azul Eléctrico)
-          primary_hover: '#0ea5e9', // Equivalente a sky-500
-          secondary: '#a3e635', // Equivalente a lime-400 (Verde Neón)
-          secondary_hover: '#84cc16', // Equivalente a lime-500
+          primary: '#0ea5e9',   // Equivalente a sky-500 (Un azul ligeramente más oscuro para mejor contraste)
+          primary_hover: '#0284c7', // Equivalente a sky-600
+          secondary: '#84cc16', // Equivalente a lime-500 (Verde ligeramente más oscuro)
+          secondary_hover: '#65a30d', // Equivalente a lime-600
         },
         
-        // Colores de Estado
+        // Colores de Estado (Se mantienen)
         status: {
-            success: '#22c55e', // green-500
-            warning: '#facc15', // yellow-400
-            danger: '#ef4444',  // red-500
-            danger_hover: '#dc2626' // red-600
+            success: '#16a34a', // green-600
+            warning: '#f59e0b', // amber-500
+            danger: '#dc2626',  // red-600
+            danger_hover: '#b91c1c' // red-700
         },
 
         // Bordes y Divisores
-        border: '#334155',     // Equivalente a slate-700
+        border: '#e2e8f0',     // Equivalente a slate-200 (Borde sutil)
       },
       
-      // Se eliminan las 'backgroundImage' obsoletas.
-      // Si se necesitan gradientes, se pueden definir aquí.
-      // Ejemplo: 'primary-gradient': 'linear-gradient(to right, #38bdf8, #a3e635)',
+      // La sección 'backgroundImage' se elimina. Ya no la usaremos.
       
       boxShadow: {
-        // Sombra para botones y elementos interactivos, usando los nuevos acentos.
-        'accent-glow': '0 0 15px 5px rgba(56, 189, 248, 0.3)', // Sombra azul (accent-primary)
+        // Sombra más sutil para el tema claro
+        'subtle': '0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)',
       },
       
       animation: {

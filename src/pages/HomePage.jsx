@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/HomePage.jsx (CON RECORTE DE PRECISIÓN Y AJUSTES FINALES)
+// RUTA: frontend/src/pages/HomePage.jsx (VERSIÓN FINAL - TEMA CLARO)
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,14 +15,15 @@ const UserBalanceDisplay = ({ balance, productionBalance }) => {
     const formattedProduction = typeof productionBalance === 'number' ? productionBalance.toFixed(4) : '0.0000';
     
     return (
+        // MODIFICADO: Tarjetas con fondo blanco sólido y sombra sutil
         <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-card/80 backdrop-blur-sm rounded-lg border border-border shadow-lg">
+            <div className="text-center p-4 bg-card rounded-lg border border-border shadow-subtle">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">{t('homePage.mainBalance', 'Saldo Principal')}</p>
                 <p className="text-3xl font-bold text-text-primary mt-1">
                     {formattedBalance} <span className="text-xl text-accent-primary">USDT</span>
                 </p>
             </div>
-             <div className="text-center p-4 bg-card/80 backdrop-blur-sm rounded-lg border border-border shadow-lg">
+             <div className="text-center p-4 bg-card rounded-lg border border-border shadow-subtle">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">{t('homePage.production', 'Producción')}</p>
                 <p className="text-3xl font-bold text-text-primary mt-1">
                     {formattedProduction} <span className="text-xl text-accent-secondary">USDT</span>
@@ -34,7 +35,7 @@ const UserBalanceDisplay = ({ balance, productionBalance }) => {
 
 const FactoryAnimation = () => {
     return (
-        // MODIFICADO: Contenedor ahora es panorámico (aspect-video)
+        // MODIFICADO: Se elimina la superposición de gradiente. El video ahora se integra naturalmente.
         <div className="relative w-full aspect-video mx-auto rounded-2xl overflow-hidden">
             <video
                 src="/animations/factory-animation.mp4"
@@ -42,14 +43,8 @@ const FactoryAnimation = () => {
                 loop
                 muted
                 playsInline
-                // MODIFICADO: Se añade 'style' para un control preciso del recorte con 'object-position'.
                 className="w-full h-full object-cover"
-                style={{ objectPosition: '50% 65%' }} // Centrado horizontal, 65% desde arriba.
-            />
-            {/* El gradiente se mantiene para una mejor integración visual */}
-            <div 
-                className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/40 rounded-2xl"
-                aria-hidden="true"
+                style={{ objectPosition: '50% 65%' }}
             />
         </div>
     );
@@ -92,7 +87,7 @@ const HomePage = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-card/80 backdrop-blur-sm rounded-lg p-8 text-center text-text-secondary border border-border shadow-lg">
+                    <div className="bg-card rounded-lg p-8 text-center text-text-secondary border border-border shadow-subtle">
                         <p>{t('homePage.noFactories', 'No tienes fábricas activas.')}</p>
                         <p className="text-sm mt-2">{t('homePage.goToStore', 'Visita la tienda para adquirir tu primera fábrica y empezar a producir.')}</p>
                     </div>
@@ -100,7 +95,7 @@ const HomePage = () => {
             </div>
              <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.tasks', 'Tareas')}</h2>
-                <div className="bg-card/80 backdrop-blur-sm rounded-lg p-8 flex items-center justify-center text-text-secondary border border-border shadow-lg">
+                <div className="bg-card rounded-lg p-8 flex items-center justify-center text-text-secondary border border-border shadow-subtle">
                     <p>{t('homePage.tasksComingSoon', 'El centro de tareas estará disponible próximamente.')}</p>
                 </div>
             </div>
