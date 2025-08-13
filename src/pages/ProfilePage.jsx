@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/ProfilePage.jsx (REDISEÑO COMPLETO "MEGA FÁBRICA")
+// RUTA: frontend/src/pages/ProfilePage.jsx (CON OPCIÓN DE CONTRASEÑA DE RETIRO)
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -16,21 +16,22 @@ import {
     HiOutlineChatBubbleLeftRight, 
     HiOutlineLanguage,
     HiOutlineArrowRightOnRectangle,
-    HiOutlineClipboardDocument
+    HiChevronRight,
+    HiOutlineKey // <-- NUEVO ICONO
 } from 'react-icons/hi2';
 
 import WithdrawalModal from '../components/modals/WithdrawalModal';
+import SetWithdrawalPasswordModal from '../components/modals/SetWithdrawalPasswordModal'; // <-- NUEVO MODAL
 import Loader from '../components/common/Loader';
 
-// Componente para una fila de acción, clave en el nuevo diseño de lista.
 const ActionRow = ({ icon: Icon, label, onClick, hasChevron = true }) => (
     <button
         onClick={onClick}
-        className="w-full flex items-center p-4 bg-slate-800 rounded-lg text-left hover:bg-slate-700 transition-colors duration-200 active:bg-slate-600"
+        className="w-full flex items-center p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-subtle text-left hover:border-accent-primary/50 transition-colors duration-200 active:bg-accent-primary/10"
     >
-        <Icon className="w-6 h-6 mr-4 text-slate-400" />
-        <span className="flex-grow text-base font-medium text-slate-50">{label}</span>
-        {hasChevron && <HiOutlineArrowRightOnRectangle className="w-5 h-5 text-slate-500 transform rotate-180" />}
+        <Icon className="w-6 h-6 mr-4 text-text-secondary" />
+        <span className="flex-grow text-base font-semibold text-text-primary">{label}</span>
+        {hasChevron && <HiChevronRight className="w-5 h-5 text-text-tertiary" />}
     </button>
 );
 
@@ -40,101 +41,106 @@ const ProfilePage = () => {
     const { t } = useTranslation();
 
     const [isWithdrawalModalOpen, setWithdrawalModalOpen] = useState(false);
-
-    const copyToClipboard = (text, message) => {
-        navigator.clipboard.writeText(text);
-        toast.success(message);
-    };
+    // --- NUEVO ESTADO PARA EL MODAL DE CONTRASEÑA ---
+    const [isSetPasswordModalOpen, setSetPasswordModalOpen] = useState(false);
 
     if (!user) {
-        return <div className="h-full w-full flex items-center justify-center"><Loader text={t('common.loading')} /></div>;
+        return <div className="h-full w-full flex items-center justify-center pt-16"><Loader /></div>;
     }
 
     const handleWithdrawClick = () => {
-        if ((user?.balance?.usdt || 0) < 1.0) { // Lógica de negocio mantenida
+        if ((user?.balance?.usdt || 0) < 1.0) {
             toast.error(t('profilePage.toasts.insufficientBalance', { min: "1.00" }));
         } else {
             setWithdrawalModalOpen(true);
         }
     };
     
-    // Simplificamos: el depósito ahora lleva directamente a la página de depósito
     const handleRechargeClick = () => navigate('/deposit');
 
     const mainActions = [
-        { label: t('profile.recharge'), icon: HiOutlineArrowDownOnSquare, onClick: handleRechargeClick },
-        { label: t('profile.withdraw'), icon: HiOutlineArrowUpOnSquare, onClick: handleWithdrawClick },
-        { label: t('profile.records'), icon: HiOutlineRectangleStack, onClick: () => navigate('/history') },
+        { label: t('profile.recharge', 'Depositar'), icon: HiOutlineArrowDownOnSquare, onClick: handleRechargeClick },
+        { label: t('profile.withdraw', 'Retirar'), icon: HiOutlineArrowUpOnSquare, onClick: handleWithdrawClick },
+        { label: t('profile.records', 'Historial'), icon: HiOutlineRectangleStack, onClick: () => navigate('/history') },
     ];
+    
+    // NOTA DE ARQUITECTURA: El backend deberá devolver el campo 'isWithdrawalPasswordSet' en el objeto de usuario.
+    const isPasswordSet = user?.isWithdrawalPasswordSet || false;
 
     const secondaryActions = [
-        { label: t('profile.invite'), icon: HiOutlineUserGroup, onClick: () => navigate('/team') },
-        { label: t('profile.language'), icon: HiOutlineLanguage, onClick: () => navigate('/language') },
-        { label: t('profile.support'), icon: HiOutlineChatBubbleLeftRight, onClick: () => navigate('/support') },
-        { label: t('profile.faq'), icon: HiOutlineQuestionMarkCircle, onClick: () => navigate('/faq') },
-        { label: t('profile.about'), icon: HiOutlineInformationCircle, onClick: () => navigate('/about') },
+        // --- NUEVA FILA DE ACCIÓN ---
+        { 
+            label: isPasswordSet 
+                ? t('profile.changeWithdrawalPassword', 'Cambiar Contraseña de Retiro') 
+                : t('profile.setWithdrawalPassword', 'Configurar Contraseña de Retiro'), 
+            icon: HiOutlineKey, 
+            onClick: () => setSetPasswordModalOpen(true) 
+        },
+        // -----------------------------
+        { label: t('profile.invite', 'Equipo'), icon: HiOutlineUserGroup, onClick: () => navigate('/team') },
+        { label: t('profile.language', 'Idioma'), icon: HiOutlineLanguage, onClick: () => navigate('/language') },
+        { label: t('profile.support', 'Soporte'), icon: HiOutlineChatBubbleLeftRight, onClick: () => navigate('/support') },
+        { label: t('profile.faq', 'FAQ'), icon: HiOutlineQuestionMarkCircle, onClick: () => navigate('/faq') },
+        { label: t('profile.about', 'Sobre Nosotros'), icon: HiOutlineInformationCircle, onClick: () => navigate('/about') },
     ];
 
     return (
         <>
             <motion.div 
-                className="flex flex-col h-full overflow-y-auto p-4 gap-6 pb-24"
+                className="flex flex-col h-full overflow-y-auto no-scrollbar p-4 pt-6 gap-6 pb-28"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                {/* --- Bloque de Identidad --- */}
-                <div className="flex flex-col items-center text-center pt-4">
+                <div className="flex flex-col items-center text-center">
                     <img 
                         src={user?.photoUrl || '/assets/images/user-avatar-placeholder.png'} 
                         alt="Avatar" 
-                        className="w-24 h-24 rounded-full object-cover border-4 border-slate-700 shadow-lg" 
+                        className="w-24 h-24 rounded-full object-cover border-4 border-card shadow-medium" 
                     />
-                    <h1 className="text-2xl font-bold text-slate-50 mt-4">{user?.username || 'Usuario'}</h1>
-                    <div className="flex items-center gap-4 mt-2 text-slate-400 text-sm">
+                    <h1 className="text-2xl font-bold text-text-primary mt-4">{user?.username || 'Usuario'}</h1>
+                    <div className="flex items-center gap-4 mt-2 text-text-secondary text-sm">
                         <span>ID: {user?.telegramId}</span>
-                        {user?.referrerId && <span>{t('profile.inviter')}: {user.referrerId}</span>}
+                        {user?.referrerId && <span>{t('profile.inviter', 'Invitado por')}: {user.referrerId}</span>}
                     </div>
                 </div>
 
-                {/* --- Bloque de Balances --- */}
                 <div className="grid grid-cols-2 gap-4 text-center">
-                    <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
-                        <p className="text-sm text-slate-400 uppercase tracking-wider">{t('profilePage.balanceUsdtLabel')}</p>
-                        <p className="text-2xl font-bold text-sky-400 mt-1">{(user?.balance?.usdt || 0).toFixed(4)}</p>
+                    <div className="p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-medium">
+                        <p className="text-sm text-text-secondary uppercase tracking-wider">{t('profilePage.balanceUsdtLabel', 'Saldo')}</p>
+                        <p className="text-2xl font-bold text-accent-primary mt-1">{(user?.balance?.usdt || 0).toFixed(4)}</p>
                     </div>
-                    <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
-                        <p className="text-sm text-slate-400 uppercase tracking-wider">{t('profilePage.productionLabel', 'Producción')}</p>
-                        <p className="text-2xl font-bold text-lime-400 mt-1">{(user?.productionBalance?.usdt || 0).toFixed(4)}</p>
+                    <div className="p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-medium">
+                        <p className="text-sm text-text-secondary uppercase tracking-wider">{t('profilePage.productionLabel', 'Producción')}</p>
+                        <p className="text-2xl font-bold text-accent-secondary mt-1">{(user?.productionBalance?.usdt || 0).toFixed(4)}</p>
                     </div>
                 </div>
 
-                {/* --- Bloque de Acciones Principales --- */}
                 <div className="space-y-3">
-                    <h2 className="text-sm font-semibold text-slate-500 px-2">{t('profile.mainActions', 'ACCIONES')}</h2>
+                    <h3 className="font-bold text-text-secondary px-2">{t('profile.mainActionsTitle', 'Acciones Principales')}</h3>
                     {mainActions.map(action => <ActionRow key={action.label} {...action} />)}
                 </div>
 
-                {/* --- Bloque de Acciones Secundarias --- */}
                 <div className="space-y-3">
-                     <h2 className="text-sm font-semibold text-slate-500 px-2">{t('profile.settings', 'AJUSTES Y SOPORTE')}</h2>
+                    <h3 className="font-bold text-text-secondary px-2">{t('profile.settingsTitle', 'Ajustes y Más')}</h3>
                     {secondaryActions.map(action => <ActionRow key={action.label} {...action} />)}
                 </div>
 
-                {/* --- Botón de Cerrar Sesión --- */}
                 <div className="pt-4">
                     <button 
                         onClick={logout} 
-                        className="w-full flex items-center justify-center p-4 bg-red-900/50 rounded-lg text-red-400 hover:bg-red-900/80 hover:text-red-300 transition-colors duration-200 active:bg-red-800"
+                        className="w-full flex items-center justify-center gap-3 p-4 bg-status-danger/10 backdrop-blur-md rounded-2xl border border-status-danger/30 shadow-subtle text-status-danger hover:bg-status-danger/20 hover:border-status-danger/50 transition-colors duration-200 active:scale-[0.98]"
                     >
-                        <HiOutlineArrowRightOnRectangle className="w-6 h-6 mr-3" />
-                        <span className="text-base font-bold">{t('profile.logout')}</span>
+                        <HiOutlineArrowRightOnRectangle className="w-6 h-6" />
+                        <span className="text-base font-bold">{t('profile.logout', 'Cerrar Sesión')}</span>
                     </button>
                 </div>
             </motion.div>
 
             <AnimatePresence>
                 {isWithdrawalModalOpen && <WithdrawalModal onClose={() => setWithdrawalModalOpen(false)} />}
+                {/* --- SE AÑADE EL NUEVO MODAL --- */}
+                {isSetPasswordModalOpen && <SetWithdrawalPasswordModal onClose={() => setSetPasswordModalOpen(false)} />}
             </AnimatePresence>
         </>
     );

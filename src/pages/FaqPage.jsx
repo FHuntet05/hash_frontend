@@ -1,26 +1,37 @@
-// src/pages/FaqPage.jsx (v1.1 - i18n)
+// RUTA: frontend/src/pages/FaqPage.jsx (DISEÑO CRISTALINO)
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import StaticPageLayout from '../components/layout/StaticPageLayout';
 
+// Componente FaqItem rediseñado con efecto de cristal
 const FaqItem = ({ question, answer }) => (
-  <div className="bg-dark-secondary/50 p-4 rounded-lg">
-    <h3 className="font-semibold text-text-primary mb-2">{question}</h3>
-    <p className="text-sm">{answer}</p>
+  <div className="bg-card/70 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-subtle">
+    <h3 className="font-bold text-text-primary mb-2">{question}</h3>
+    <p className="text-sm text-text-secondary">{answer}</p>
   </div>
 );
 
 const FaqPage = () => {
   const { t } = useTranslation();
+  
+  // Lista de FAQs para facilitar la gestión
+  const faqList = [
+    { key: 'q1', question: t('faqPage.q1'), answer: t('faqPage.a1') },
+    { key: 'q2', question: t('faqPage.q2'), answer: t('faqPage.a2') },
+    { key: 'q3', question: t('faqPage.q3'), answer: t('faqPage.a3') },
+    { key: 'q4', question: t('faqPage.q4'), answer: t('faqPage.a4') },
+  ];
+
   return (
-    <div className="flex flex-col h-full space-y-6 animate-fade-in">
-      <StaticPageLayout title={t('faqPage.title')}>
-        <FaqItem question={t('faqPage.q1')} answer={t('faqPage.a1')} />
-        <FaqItem question={t('faqPage.q2')} answer={t('faqPage.a2')} />
-        <FaqItem question={t('faqPage.q3')} answer={t('faqPage.a3')} />
-        <FaqItem question={t('faqPage.q4')} answer={t('faqPage.a4')} />
-      </StaticPageLayout>
-    </div>
+    // Se elimina el 'div' contenedor innecesario, StaticPageLayout ya lo provee.
+    <StaticPageLayout title={t('faqPage.title', 'Preguntas Frecuentes')}>
+      {/* El layout de StaticPageLayout ya incluye un space-y-4, por lo que no necesitamos un div extra */}
+      {faqList.map(faq => (
+        <FaqItem key={faq.key} question={faq.question} answer={faq.answer} />
+      ))}
+    </StaticPageLayout>
   );
 };
+
 export default FaqPage;

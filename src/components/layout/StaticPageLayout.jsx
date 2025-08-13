@@ -1,4 +1,4 @@
-// frontend/src/components/layout/StaticPageLayout.jsx (VERSIÓN CORREGIDA CON FONDO)
+// RUTA: frontend/src/components/layout/StaticPageLayout.jsx (RECONSTRUIDO PARA TEMA CRISTALINO)
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,30 +8,25 @@ const StaticPageLayout = ({ title, children }) => {
   const navigate = useNavigate();
 
   return (
-    // --- INICIO DE LA CORRECCIÓN ---
-    // 1. Hemos añadido un 'div' contenedor que ocupa toda la pantalla.
-    // 2. Le hemos aplicado la clase 'bg-internal-background', que es la misma que usan
-    //    las otras páginas internas de la app, asegurando la consistencia visual.
-    <div className="w-full min-h-screen bg-internal-background bg-cover bg-center text-text-primary font-sans">
-      <div className="container mx-auto max-w-lg min-h-screen flex flex-col p-4">
-        <header className="flex items-center mb-6 relative">
-          <button 
-            onClick={() => navigate(-1)} 
-            className="p-1"
-          >
-            <HiChevronLeft className="w-7 h-7" />
-          </button>
-          <h1 className="text-xl font-bold flex-grow text-center">{title}</h1>
-          <div className="w-8"></div> {/* Espaciador para centrar */}
-        </header>
+    // Contenedor principal con el padding superior para el header de Telegram
+    <div className="flex flex-col h-full p-4 pt-6">
+      <header className="flex items-center mb-6 relative">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="absolute left-0 p-2 bg-card/70 backdrop-blur-md rounded-full border border-white/20 shadow-subtle"
+        >
+          <HiChevronLeft className="w-6 h-6 text-text-primary" />
+        </button>
+        <h1 className="text-xl font-bold text-text-primary flex-grow text-center">{title}</h1>
+        {/* Espaciador para asegurar que el título quede perfectamente centrado */}
+        <div className="w-10"></div> 
+      </header>
 
-        {/* El resto del layout (la tarjeta glass) permanece igual. */}
-        <main className="flex-grow bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/10 space-y-4 text-text-secondary overflow-y-auto">
-          {children}
-        </main>
-      </div>
+      {/* El contenido principal ya no necesita fondo propio, hereda el de la página */}
+      <main className="flex-grow space-y-4 overflow-y-auto no-scrollbar">
+        {children}
+      </main>
     </div>
-    // --- FIN DE LA CORRECCIÓN ---
   );
 };
 

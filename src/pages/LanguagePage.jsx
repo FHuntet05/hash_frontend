@@ -1,8 +1,9 @@
-// frontend/src/pages/LanguagePage.jsx (VERSIÓN LIMPIA)
+// RUTA: frontend/src/pages/LanguagePage.jsx (DISEÑO CRISTALINO)
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import StaticPageLayout from '../components/layout/StaticPageLayout'; // <-- AÑADIMOS LA IMPORTACIÓN
-import { HiCheck } from 'react-icons/hi2';
+import StaticPageLayout from '../components/layout/StaticPageLayout';
+import { HiCheckCircle } from 'react-icons/hi2'; // Usamos un ícono más visible
 
 const languages = [
   { code: 'es', name: 'Español' },
@@ -19,22 +20,29 @@ const LanguagePage = () => {
   };
 
   return (
-    // Ahora usamos nuestro layout, pasándole el título.
-    <StaticPageLayout title={t('profile.language')}>
+    <StaticPageLayout title={t('languagePage.title', 'Idioma')}>
       <div className="flex flex-col gap-3">
-        {languages.map((lang) => (
-          <button
-            key={lang.code}
-            onClick={() => changeLanguage(lang.code)}
-            // Estilo consistente con el resto de la app
-            className="w-full flex justify-between items-center p-4 bg-white/5 hover:bg-white/10 rounded-lg text-left text-white transition-colors"
-          >
-            <span>{lang.name}</span>
-            {currentLanguage.startsWith(lang.code) && (
-              <HiCheck className="w-6 h-6 text-accent-start" />
-            )}
-          </button>
-        ))}
+        {languages.map((lang) => {
+          const isActive = currentLanguage.startsWith(lang.code);
+          return (
+            <button
+              key={lang.code}
+              onClick={() => changeLanguage(lang.code)}
+              // --- ESTILO DE TARJETA CRISTALINA ---
+              className={`w-full flex justify-between items-center p-4 rounded-2xl text-left transition-all duration-300
+                ${isActive
+                  ? 'bg-accent-primary/10 border-accent-primary shadow-medium' // Estilo activo más prominente
+                  : 'bg-card/70 backdrop-blur-md border border-white/20 shadow-subtle hover:border-accent-primary/50'
+                }`
+              }
+            >
+              <span className={`font-semibold ${isActive ? 'text-accent-primary' : 'text-text-primary'}`}>{lang.name}</span>
+              {isActive && (
+                <HiCheckCircle className="w-6 h-6 text-accent-primary" />
+              )}
+            </button>
+          )
+        })}
       </div>
     </StaticPageLayout>
   );

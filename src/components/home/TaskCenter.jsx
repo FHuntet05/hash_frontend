@@ -1,47 +1,55 @@
-// frontend/src/components/home/TaskCenter.jsx (CÓDIGO COMPLETO Y SIN CAMBIOS)
+// RUTA: frontend/src/components/home/TaskCenter.jsx (DISEÑO CRISTALINO)
+
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useTaskLogic } from '../../hooks/useTaskLogic';
 import TaskItem from '../tasks/TaskItem';
 
 const TaskCenter = () => {
+  const { t } = useTranslation();
   const { taskStatus, isLoading, handleClaimTask, handleGoToTask } = useTaskLogic();
 
+  // La lista de tareas se puede mover a un archivo de configuración en el futuro si crece.
   const allTasks = [
-    { id: 'boughtUpgrade', title: 'Primera Mejora', description: 'Compra cualquier herramienta VIP.', reward: 1500 },
-    { id: 'invitedTenFriends', title: 'Invitar 3 Amigos', description: 'Tu equipo debe tener 3 miembros.', reward: 1000 },
-    { id: 'joinedTelegram', title: 'Unirse al Grupo', description: 'Únete a nuestra comunidad oficial.', reward: 500, link: 'https://t.me/nicebotntx' },
+    { id: 'boughtUpgrade', title: t('tasks.upgrade.title', 'Primera Mejora'), description: t('tasks.upgrade.desc', 'Compra cualquier fábrica.'), reward: 1500 },
+    { id: 'invitedTenFriends', title: t('tasks.invite.title', 'Invitar 3 Amigos'), description: t('tasks.invite.desc', 'Tu equipo debe tener 3 miembros.'), reward: 1000 },
+    { id: 'joinedTelegram', title: t('tasks.telegram.title', 'Unirse al Grupo'), description: t('tasks.telegram.desc', 'Únete a nuestra comunidad oficial.'), reward: 500, link: 'https://t.me/nicebotntx' },
   ];
 
-  if (isLoading) {
-    return (
-        <div className="w-full space-y-4 bg-dark-secondary p-4 rounded-2xl border border-white/10">
-            <h2 className="text-xl font-bold text-white text-center mb-2">Centro de Tareas</h2>
-            <div className="h-16 bg-dark-primary rounded-xl animate-pulse"></div>
-            <div className="h-16 bg-dark-primary rounded-xl animate-pulse"></div>
-            <div className="h-16 bg-dark-primary rounded-xl animate-pulse"></div>
-        </div>
-    );
-  }
-
-  if (!taskStatus) {
+  if (!taskStatus && !isLoading) {
       return null;
   }
+  
+  const LoadingSkeleton = () => (
+    <div className="w-full space-y-3">
+      <div className="h-24 bg-card/50 rounded-2xl animate-pulse"></div>
+      <div className="h-24 bg-card/50 rounded-2xl animate-pulse"></div>
+    </div>
+  );
 
   return (
-    <div className="w-full space-y-4 bg-dark-secondary p-4 rounded-2xl border border-white/10">
-      <h2 className="text-xl font-bold text-white text-center mb-2">Centro de Tareas</h2>
-      <motion.div className="space-y-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        {allTasks.map(task => (
-          <TaskItem
-            key={task.id}
-            task={task}
-            status={taskStatus}
-            onGoToTask={handleGoToTask}
-            onClaim={handleClaimTask}
-          />
-        ))}
-      </motion.div>
+    // La sección 'Tareas' ya está definida en HomePage, por lo que este componente es solo la lista.
+    <div>
+        {isLoading ? (
+            <LoadingSkeleton />
+        ) : (
+            <motion.div 
+              className="space-y-3" 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }}
+            >
+                {allTasks.map(task => (
+                <TaskItem
+                    key={task.id}
+                    task={task}
+                    status={taskStatus}
+                    onGoToTask={handleGoToTask}
+                    onClaim={handleClaimTask}
+                />
+                ))}
+            </motion.div>
+        )}
     </div>
   );
 };

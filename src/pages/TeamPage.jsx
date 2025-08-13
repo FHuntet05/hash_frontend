@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/TeamPage.jsx (SINCRONIZADO CON NUEVO TeamLevelCard Y COLORES SEMÁNTICOS)
+// RUTA: frontend/src/pages/TeamPage.jsx (CON SocialShare INTEGRADO)
 
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { HiOutlineUserGroup, HiOutlineBanknotes, HiOutlineArrowDownTray, HiOutli
 import TeamStatCard from '../components/team/TeamStatCard';
 import TeamLevelCard from '../components/team/TeamLevelCard';
 import Loader from '../components/common/Loader';
+import SocialShare from '../components/team/SocialShare'; // <-- IMPORTACIÓN
 
 const TeamPage = () => {
   const { t } = useTranslation();
@@ -40,7 +41,7 @@ const TeamPage = () => {
   };
 
   if (loading) {
-    return <div className="h-full w-full flex items-center justify-center"><Loader text={t('common.loading', 'Cargando...')} /></div>;
+    return <div className="flex items-center justify-center h-full pt-16"><Loader /></div>;
   }
 
   const stats = [
@@ -52,16 +53,15 @@ const TeamPage = () => {
 
   return (
     <motion.div 
-        className="flex flex-col h-full overflow-y-auto p-4 gap-8 pb-24"
+        className="flex flex-col gap-8 p-4 pt-6 pb-28"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
     >
-      {/* Bloque 1: Invitación (CTA) */}
-      <div className="bg-card rounded-lg p-5 border border-border text-center shadow-lg">
+      <div className="bg-card/70 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-medium text-center">
         <h1 className="text-xl font-bold text-text-primary">{t('teamPage.title', 'Invita a tus Amigos')}</h1>
         <p className="text-text-secondary text-sm mt-2 mb-4">{t('teamPage.description', 'Comparte tu enlace y gana comisiones por cada miembro.')}</p>
-        <div className="flex items-center bg-background rounded-md p-2 border border-border">
+        <div className="flex items-center bg-background/50 rounded-lg p-2 border border-border">
           <input 
             type="text" 
             value={referralLink} 
@@ -72,16 +72,16 @@ const TeamPage = () => {
             <HiOutlineClipboardDocument className="w-5 h-5" />
           </button>
         </div>
+        {/* --- INTEGRACIÓN DE SocialShare --- */}
+        <SocialShare referralLink={referralLink} />
       </div>
 
-      {/* Bloque 2: Estadísticas Generales */}
       <div className="grid grid-cols-2 gap-4">
         {stats.map(stat => (
           <TeamStatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} colorClass={stat.color} />
         ))}
       </div>
 
-      {/* Bloque 3: Niveles de Equipo */}
       <div>
         <h2 className="text-lg font-semibold text-text-primary mb-4">{t('teamPage.levelsTitle', 'Niveles del Equipo')}</h2>
         {teamData?.levels && teamData.levels.length > 0 ? (
@@ -92,15 +92,13 @@ const TeamPage = () => {
                 level={levelData.level} 
                 members={levelData.count} 
                 validMembers={levelData.validCount}
-                // NOTA DE ARQUITECTURA: Pasando la nueva prop 'totalCommission'.
-                // El backend DEBE ser actualizado para proveer este campo en la respuesta de /team/summary.
                 totalCommission={levelData.totalCommission}
               />
             ))}
           </div>
         ) : (
-          <div className="bg-card rounded-lg p-8 text-center text-text-tertiary border border-border">
-            <p>{t('teamPage.noTeamMembers', 'Aún no tienes miembros en tu equipo.')}</p>
+          <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-white/20 shadow-subtle">
+            <p>{t('teamPage.noLevelsData', 'No hay datos de niveles de equipo disponibles.')}</p>
           </div>
         )}
       </div>

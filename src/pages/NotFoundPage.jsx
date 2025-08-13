@@ -1,20 +1,26 @@
-// frontend/src/pages/NotFoundPage.jsx
+// RUTA: frontend/src/pages/NotFoundPage.jsx (DISEÑO LIMPIO Y COHERENTE)
+
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const NotFoundPage = () => {
+  const { t } = useTranslation();
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white text-center p-4">
-      <h1 className="text-6xl font-bold text-pink-500 mb-4">404</h1>
-      <h2 className="text-2xl font-semibold mb-2">Página no encontrada</h2>
-      <p className="text-gray-400 mb-8">
-        Lo sentimos, la página que buscas no existe o ha sido movida.
+    <div className="flex flex-col items-center justify-center h-screen bg-background text-center p-4">
+      <h1 className="text-6xl font-bold text-accent-primary mb-4">404</h1>
+      <h2 className="text-2xl font-semibold text-text-primary mb-2">
+        {t('notFoundPage.title', 'Página no encontrada')}
+      </h2>
+      <p className="text-text-secondary mb-8 max-w-sm">
+        {t('notFoundPage.description', 'Lo sentimos, la página que buscas no existe o ha sido movida.')}
       </p>
       <Link
-        to="/"
-        className="px-6 py-3 font-bold text-white rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg shadow-purple-500/30"
+        to="/home" // La ruta correcta para volver es /home
+        className="px-6 py-3 font-bold text-white rounded-full bg-accent-primary shadow-medium transform transition-transform active:scale-95 hover:bg-accent-primary-hover"
       >
-        Volver al Inicio
+        {t('notFoundPage.button', 'Volver al Inicio')}
       </Link>
     </div>
   );
