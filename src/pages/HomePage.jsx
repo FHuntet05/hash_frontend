@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/HomePage.jsx (VIDEO CUADRADO Y COLORES SEMÁNTICOS)
+// RUTA: frontend/src/pages/HomePage.jsx (AJUSTE FINAL DE VIDEO Y FONDOS)
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,6 @@ import toast from 'react-hot-toast';
 import PurchasedFactoryItem from '../components/factories/PurchasedFactoryItem';
 import Loader from '../components/common/Loader';
 
-// Componente de Balance rediseñado con la nueva paleta semántica.
 const UserBalanceDisplay = ({ balance, productionBalance }) => {
     const { t } = useTranslation();
     const formattedBalance = typeof balance === 'number' ? balance.toFixed(4) : '0.0000';
@@ -17,13 +16,13 @@ const UserBalanceDisplay = ({ balance, productionBalance }) => {
     
     return (
         <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-card rounded-lg border border-border shadow-lg">
+            <div className="text-center p-4 bg-card/80 backdrop-blur-sm rounded-lg border border-border shadow-lg">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">{t('homePage.mainBalance', 'Saldo Principal')}</p>
                 <p className="text-3xl font-bold text-text-primary mt-1">
                     {formattedBalance} <span className="text-xl text-accent-primary">USDT</span>
                 </p>
             </div>
-             <div className="text-center p-4 bg-card rounded-lg border border-border shadow-lg">
+             <div className="text-center p-4 bg-card/80 backdrop-blur-sm rounded-lg border border-border shadow-lg">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">{t('homePage.production', 'Producción')}</p>
                 <p className="text-3xl font-bold text-text-primary mt-1">
                     {formattedProduction} <span className="text-xl text-accent-secondary">USDT</span>
@@ -33,22 +32,22 @@ const UserBalanceDisplay = ({ balance, productionBalance }) => {
     );
 };
 
-// Componente de la Animación de la Fábrica con formato cuadrado.
 const FactoryAnimation = () => {
     return (
-        // MODIFICADO: Contenedor ahora es un cuadrado (aspect-square) con ancho máximo y centrado.
-        <div className="relative w-full max-w-sm mx-auto aspect-square bg-card rounded-2xl flex items-center justify-center text-text-secondary border border-border overflow-hidden shadow-lg">
+        // MODIFICADO: Contenedor ahora es un cuadrado que ocupa el ancho disponible.
+        // Se elimina el color de fondo para que se fusione con el layout.
+        <div className="relative w-full aspect-square mx-auto">
             <video
                 src="/animations/factory-animation.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-2xl"
             />
-            {/* MODIFICADO: El gradiente ahora usa el color de fondo semántico 'from-card'. */}
+            {/* MODIFICADO: El gradiente ahora es más sutil y se funde con la transparencia. */}
             <div 
-                className="absolute inset-0 bg-gradient-to-b from-card to-transparent opacity-80"
+                className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/40 rounded-2xl"
                 aria-hidden="true"
             />
         </div>
@@ -72,16 +71,15 @@ const HomePage = () => {
     };
 
     if (!user) {
-        return <div className="flex items-center justify-center h-full"><Loader text={t('common.loadingUser', 'Cargando datos del usuario...')} /></div>;
+        // La pantalla de carga se mantiene simple, no necesita el fondo de la app.
+        return <div className="flex items-center justify-center h-full bg-background"><Loader text={t('common.loadingUser', 'Cargando datos del usuario...')} /></div>;
     }
     
     return (
-        <div className="flex flex-col h-full animate-fade-in gap-6 overflow-y-auto p-4 pb-24">
+        // Se añade un padding general a toda la página
+        <div className="flex flex-col h-full gap-6 p-4 pb-24">
             <UserBalanceDisplay balance={user.balance?.usdt} productionBalance={user.productionBalance?.usdt} />
-
             <FactoryAnimation />
-
-            {/* Sección Mis Fábricas */}
             <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.myFactories', 'Mis Fábricas')}</h2>
                 {user.purchasedFactories && user.purchasedFactories.length > 0 ? (
@@ -95,17 +93,16 @@ const HomePage = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-card rounded-lg p-8 text-center text-text-secondary border border-border shadow-lg">
+                    // MODIFICADO: Se añade efecto de desenfoque para mejorar contraste
+                    <div className="bg-card/80 backdrop-blur-sm rounded-lg p-8 text-center text-text-secondary border border-border shadow-lg">
                         <p>{t('homePage.noFactories', 'No tienes fábricas activas.')}</p>
                         <p className="text-sm mt-2">{t('homePage.goToStore', 'Visita la tienda para adquirir tu primera fábrica y empezar a producir.')}</p>
                     </div>
                 )}
             </div>
-
-            {/* Sección Tareas */}
              <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.tasks', 'Tareas')}</h2>
-                <div className="bg-card rounded-lg p-8 flex items-center justify-center text-text-secondary border border-border shadow-lg">
+                <div className="bg-card/80 backdrop-blur-sm rounded-lg p-8 flex items-center justify-center text-text-secondary border border-border shadow-lg">
                     <p>{t('homePage.tasksComingSoon', 'El centro de tareas estará disponible próximamente.')}</p>
                 </div>
             </div>
