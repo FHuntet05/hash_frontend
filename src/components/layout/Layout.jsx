@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/layout/Layout.jsx (RECONSTRUIDO PARA TEMA CRISTALINO)
+// RUTA: frontend/src/components/layout/Layout.jsx (CON CONTROL DE FONDO EXPLÍCITO)
 
 import React, { useRef } from 'react';
 import { Outlet } from 'react-router-dom';
@@ -30,16 +30,15 @@ const Layout = () => {
   }
 
   return (
-    // El contenedor exterior 'bg-black' se mantiene para un buen aspecto en desktop.
     <div className="h-screen w-screen flex justify-center bg-black">
       {/* 
-        Contenedor principal de la app.
-        - Ahora es un lienzo simple. El fondo blanco hueso viene del 'body'.
-        - 'overflow-hidden' es importante para contener los bordes redondeados de los componentes.
+        --- CORRECCIÓN CRÍTICA ---
+        Se vuelve a aplicar 'bg-background' directamente aquí para forzar el fondo blanco hueso
+        y evitar que el 'bg-black' del contenedor exterior se muestre.
       */}
       <div 
         ref={dragContainerRef} 
-        className="h-full w-full max-w-lg relative font-sans"
+        className="h-full w-full max-w-lg relative font-sans bg-background text-text-primary"
       >
         <main className="h-full w-full overflow-y-auto">
           <Outlet />
@@ -58,16 +57,10 @@ const Layout = () => {
               border: '1px solid var(--color-border)',
             },
             success: {
-              iconTheme: {
-                primary: 'var(--color-status-success)',
-                secondary: 'var(--color-card)',
-              },
+              iconTheme: { primary: 'var(--color-status-success)', secondary: 'var(--color-card)' }
             },
             error: {
-               iconTheme: {
-                primary: 'var(--color-status-danger)',
-                secondary: 'var(--color-card)',
-              },
+               iconTheme: { primary: 'var(--color-status-danger)', secondary: 'var(--color-card)' }
             }
           }}
         />

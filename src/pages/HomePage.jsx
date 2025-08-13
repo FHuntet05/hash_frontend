@@ -1,6 +1,6 @@
-// RUTA: frontend/src/pages/HomePage.jsx (VERSIÓN FINAL - TEMA CLARO)
+// RUTA: frontend/src/pages/HomePage.jsx (DISEÑO CRISTALINO FINAL CON CARGA DE VIDEO)
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useUserStore from '../store/userStore';
 import api from '../api/axiosConfig';
@@ -15,15 +15,15 @@ const UserBalanceDisplay = ({ balance, productionBalance }) => {
     const formattedProduction = typeof productionBalance === 'number' ? productionBalance.toFixed(4) : '0.0000';
     
     return (
-        // MODIFICADO: Tarjetas con fondo blanco sólido y sombra sutil
         <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-card rounded-lg border border-border shadow-subtle">
+            {/* Tarjeta con efecto cristalino */}
+            <div className="text-center p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-subtle">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">{t('homePage.mainBalance', 'Saldo Principal')}</p>
                 <p className="text-3xl font-bold text-text-primary mt-1">
                     {formattedBalance} <span className="text-xl text-accent-primary">USDT</span>
                 </p>
             </div>
-             <div className="text-center p-4 bg-card rounded-lg border border-border shadow-subtle">
+            <div className="text-center p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-subtle">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">{t('homePage.production', 'Producción')}</p>
                 <p className="text-3xl font-bold text-text-primary mt-1">
                     {formattedProduction} <span className="text-xl text-accent-secondary">USDT</span>
@@ -34,16 +34,27 @@ const UserBalanceDisplay = ({ balance, productionBalance }) => {
 };
 
 const FactoryAnimation = () => {
+    const { t } = useTranslation();
+    const [isVideoLoading, setVideoLoading] = useState(true);
+
     return (
-        // MODIFICADO: Se elimina la superposición de gradiente. El video ahora se integra naturalmente.
-        <div className="relative w-full aspect-video mx-auto rounded-2xl overflow-hidden">
+        <div className="relative w-full aspect-video mx-auto rounded-2xl overflow-hidden bg-card/30 border border-white/20 shadow-subtle">
+            {/* Estado de Carga */}
+            {isVideoLoading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <Loader text={t('homePage.loadingAnimation', 'Cargando animación...')} />
+                </div>
+            )}
+            
+            {/* Video con manejador de evento 'onLoadedData' */}
             <video
                 src="/animations/factory-animation.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
-                className="w-full h-full object-cover"
+                onLoadedData={() => setVideoLoading(false)}
+                className={`w-full h-full object-cover transition-opacity duration-500 ${isVideoLoading ? 'opacity-0' : 'opacity-100'}`}
                 style={{ objectPosition: '50% 65%' }}
             />
         </div>
@@ -71,7 +82,7 @@ const HomePage = () => {
     }
     
     return (
-        <div className="flex flex-col h-full gap-6 p-4 pb-24">
+        <div className="flex flex-col h-full gap-6 p-4 pb-28">
             <UserBalanceDisplay balance={user.balance?.usdt} productionBalance={user.productionBalance?.usdt} />
             <FactoryAnimation />
             <div>
@@ -87,7 +98,7 @@ const HomePage = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-card rounded-lg p-8 text-center text-text-secondary border border-border shadow-subtle">
+                    <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-white/20 shadow-subtle">
                         <p>{t('homePage.noFactories', 'No tienes fábricas activas.')}</p>
                         <p className="text-sm mt-2">{t('homePage.goToStore', 'Visita la tienda para adquirir tu primera fábrica y empezar a producir.')}</p>
                     </div>
@@ -95,7 +106,7 @@ const HomePage = () => {
             </div>
              <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.tasks', 'Tareas')}</h2>
-                <div className="bg-card rounded-lg p-8 flex items-center justify-center text-text-secondary border border-border shadow-subtle">
+                <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 flex items-center justify-center text-text-secondary border border-white/20 shadow-subtle">
                     <p>{t('homePage.tasksComingSoon', 'El centro de tareas estará disponible próximamente.')}</p>
                 </div>
             </div>

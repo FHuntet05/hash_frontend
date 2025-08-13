@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/layout/BottomNavBar.jsx (RECONSTRUIDO Y SINCRONIZADO)
+// RUTA: frontend/src/components/layout/BottomNavBar.jsx (DISEÑO CRISTALINO FINAL)
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
@@ -15,49 +15,43 @@ const NavItem = ({ to, label, IconOutline, IconSolid }) => {
     return (
         <NavLink
             to={to}
-            className={({ isActive }) =>
-                `flex flex-col items-center justify-center w-full h-full pt-2 pb-1 transition-colors duration-200 group ${
-                    isActive ? 'text-accent-primary' : 'text-text-secondary hover:text-text-primary'
-                }`
-            }
+            end={to === '/home'} // 'end' para que /home no coincida con otras rutas que no son exactas
+            className="flex-1 flex justify-center items-center h-full"
         >
             {({ isActive }) => (
-                <>
+                <div className={`relative flex flex-col items-center justify-center gap-1 py-2 px-3 transition-colors duration-300 rounded-lg ${isActive ? 'text-accent-primary' : 'text-text-secondary hover:text-text-primary'}`}>
                     {isActive ? <IconSolid className="w-6 h-6" /> : <IconOutline className="w-6 h-6" />}
-                    <span className="text-xs mt-1 font-medium">{label}</span>
-                </>
+                    <span className={`text-xs font-semibold transition-all duration-300 ${isActive ? 'scale-100' : 'scale-90 opacity-0'}`}>{label}</span>
+                    <span className={`absolute top-1/2 -translate-y-1/2 text-xs font-semibold transition-all duration-300 ${isActive ? 'scale-0 opacity-0' : 'scale-100'}`}>{label}</span>
+                </div>
             )}
         </NavLink>
     );
 };
 
+
 const BottomNavBar = () => {
     const { t } = useTranslation();
 
     const navItems = [
-        // RUTA CORREGIDA: Apunta a '/home'
-        { to: '/home', label: t('nav.home', 'Inicio'), IconOutline: HiOutlineHome, IconSolid: HiMiniHome },
-        // NUEVO: Ítem de Ranking añadido
-        { to: '/ranking', label: t('nav.ranking', 'Ranking'), IconOutline: HiOutlineChartBar, IconSolid: HiMiniChartBar },
+        { to: '/home', label: t('nav.home', 'Mío'), IconOutline: HiOutlineHome, IconSolid: HiMiniHome },
+        { to: '/ranking', label: t('nav.ranking', 'Clasificación'), IconOutline: HiOutlineChartBar, IconSolid: HiMiniChartBar },
         { to: '/factories', label: t('nav.factories', 'Tienda'), IconOutline: HiOutlineBuildingStorefront, IconSolid: HiMiniBuildingStorefront },
         { to: '/team', label: t('nav.team', 'Equipo'), IconOutline: HiOutlineUserGroup, IconSolid: HiMiniUserGroup },
-        { to: '/profile', label: t('nav.profile', 'Perfil'), IconOutline: HiOutlineUserCircle, IconSolid: HiMiniUserCircle },
+        { to: '/profile', label: t('nav.profile', 'A mí'), IconOutline: HiOutlineUserCircle, IconSolid: HiMiniUserCircle },
     ];
 
     return (
-        <nav 
-            className="fixed bottom-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-lg border-t border-border/80 shadow-t-lg z-50"
-            style={{
-                WebkitBackdropFilter: 'blur(16px)',
-                backdropFilter: 'blur(16px)',
-            }}
-        >
-            <div className="flex justify-around items-center h-full max-w-lg mx-auto">
-                {navItems.map(item => (
-                    <NavItem key={item.to} {...item} />
-                ))}
-            </div>
-        </nav>
+        <div className="fixed bottom-0 left-0 right-0 p-3 z-50">
+            <nav 
+                className="max-w-lg mx-auto h-16 bg-card/80 backdrop-blur-lg rounded-2xl border border-white/20 shadow-medium"
+                style={{ WebkitBackdropFilter: 'blur(16px)', backdropFilter: 'blur(16px)' }}
+            >
+                <div className="flex justify-around items-center h-full">
+                    {navItems.map(item => <NavItem key={item.to} {...item} />)}
+                </div>
+            </nav>
+        </div>
     );
 };
 
