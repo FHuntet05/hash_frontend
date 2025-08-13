@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/HomePage.jsx (AJUSTE FINAL DE VIDEO Y FONDOS)
+// RUTA: frontend/src/pages/HomePage.jsx (CON RECORTE DE PRECISIÓN Y AJUSTES FINALES)
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,18 +34,19 @@ const UserBalanceDisplay = ({ balance, productionBalance }) => {
 
 const FactoryAnimation = () => {
     return (
-        // MODIFICADO: Contenedor ahora es un cuadrado que ocupa el ancho disponible.
-        // Se elimina el color de fondo para que se fusione con el layout.
-        <div className="relative w-full aspect-square mx-auto">
+        // MODIFICADO: Contenedor ahora es panorámico (aspect-video)
+        <div className="relative w-full aspect-video mx-auto rounded-2xl overflow-hidden">
             <video
                 src="/animations/factory-animation.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
-                className="w-full h-full object-cover rounded-2xl"
+                // MODIFICADO: Se añade 'style' para un control preciso del recorte con 'object-position'.
+                className="w-full h-full object-cover"
+                style={{ objectPosition: '50% 65%' }} // Centrado horizontal, 65% desde arriba.
             />
-            {/* MODIFICADO: El gradiente ahora es más sutil y se funde con la transparencia. */}
+            {/* El gradiente se mantiene para una mejor integración visual */}
             <div 
                 className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/40 rounded-2xl"
                 aria-hidden="true"
@@ -71,12 +72,10 @@ const HomePage = () => {
     };
 
     if (!user) {
-        // La pantalla de carga se mantiene simple, no necesita el fondo de la app.
         return <div className="flex items-center justify-center h-full bg-background"><Loader text={t('common.loadingUser', 'Cargando datos del usuario...')} /></div>;
     }
     
     return (
-        // Se añade un padding general a toda la página
         <div className="flex flex-col h-full gap-6 p-4 pb-24">
             <UserBalanceDisplay balance={user.balance?.usdt} productionBalance={user.productionBalance?.usdt} />
             <FactoryAnimation />
@@ -93,7 +92,6 @@ const HomePage = () => {
                         ))}
                     </div>
                 ) : (
-                    // MODIFICADO: Se añade efecto de desenfoque para mejorar contraste
                     <div className="bg-card/80 backdrop-blur-sm rounded-lg p-8 text-center text-text-secondary border border-border shadow-lg">
                         <p>{t('homePage.noFactories', 'No tienes fábricas activas.')}</p>
                         <p className="text-sm mt-2">{t('homePage.goToStore', 'Visita la tienda para adquirir tu primera fábrica y empezar a producir.')}</p>
