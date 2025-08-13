@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/HomePage.jsx (DISEÑO CRISTALINO FINAL CON CARGA DE VIDEO)
+// RUTA: frontend/src/pages/HomePage.jsx (RECONSTRUCCIÓN FINAL - DISEÑO CRISTALINO)
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import PurchasedFactoryItem from '../components/factories/PurchasedFactoryItem';
 import Loader from '../components/common/Loader';
 
+// Componente de Balance con diseño cristalino
 const UserBalanceDisplay = ({ balance, productionBalance }) => {
     const { t } = useTranslation();
     const formattedBalance = typeof balance === 'number' ? balance.toFixed(4) : '0.0000';
@@ -16,14 +17,13 @@ const UserBalanceDisplay = ({ balance, productionBalance }) => {
     
     return (
         <div className="grid grid-cols-2 gap-4">
-            {/* Tarjeta con efecto cristalino */}
-            <div className="text-center p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-subtle">
+            <div className="text-center p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-medium">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">{t('homePage.mainBalance', 'Saldo Principal')}</p>
                 <p className="text-3xl font-bold text-text-primary mt-1">
                     {formattedBalance} <span className="text-xl text-accent-primary">USDT</span>
                 </p>
             </div>
-            <div className="text-center p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-subtle">
+            <div className="text-center p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-medium">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">{t('homePage.production', 'Producción')}</p>
                 <p className="text-3xl font-bold text-text-primary mt-1">
                     {formattedProduction} <span className="text-xl text-accent-secondary">USDT</span>
@@ -33,20 +33,18 @@ const UserBalanceDisplay = ({ balance, productionBalance }) => {
     );
 };
 
+// Componente de Animación RESTAURADO con estado de carga
 const FactoryAnimation = () => {
     const { t } = useTranslation();
     const [isVideoLoading, setVideoLoading] = useState(true);
 
     return (
-        <div className="relative w-full aspect-video mx-auto rounded-2xl overflow-hidden bg-card/30 border border-white/20 shadow-subtle">
-            {/* Estado de Carga */}
+        <div className="relative w-full aspect-video mx-auto rounded-2xl overflow-hidden bg-black/5 border border-white/10 shadow-medium">
             {isVideoLoading && (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <Loader text={t('homePage.loadingAnimation', 'Cargando animación...')} />
                 </div>
             )}
-            
-            {/* Video con manejador de evento 'onLoadedData' */}
             <video
                 src="/animations/factory-animation.mp4"
                 autoPlay
@@ -60,7 +58,6 @@ const FactoryAnimation = () => {
         </div>
     );
 };
-
 
 const HomePage = () => {
     const { t } = useTranslation();
@@ -78,13 +75,17 @@ const HomePage = () => {
     };
 
     if (!user) {
-        return <div className="flex items-center justify-center h-full bg-background"><Loader text={t('common.loadingUser', 'Cargando datos del usuario...')} /></div>;
+        return <div className="flex items-center justify-center h-full"><Loader text={t('common.loadingUser', 'Cargando datos del usuario...')} /></div>;
     }
     
     return (
-        <div className="flex flex-col h-full gap-6 p-4 pb-28">
+        // Contenedor principal con padding y espaciado vertical
+        <div className="flex flex-col gap-6 p-4">
             <UserBalanceDisplay balance={user.balance?.usdt} productionBalance={user.productionBalance?.usdt} />
+            
+            {/* La animación se ha restaurado */}
             <FactoryAnimation />
+
             <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.myFactories', 'Mis Fábricas')}</h2>
                 {user.purchasedFactories && user.purchasedFactories.length > 0 ? (
@@ -98,15 +99,16 @@ const HomePage = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-white/20 shadow-subtle">
+                    <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-white/20 shadow-medium">
                         <p>{t('homePage.noFactories', 'No tienes fábricas activas.')}</p>
                         <p className="text-sm mt-2">{t('homePage.goToStore', 'Visita la tienda para adquirir tu primera fábrica y empezar a producir.')}</p>
                     </div>
                 )}
             </div>
+
              <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.tasks', 'Tareas')}</h2>
-                <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 flex items-center justify-center text-text-secondary border border-white/20 shadow-subtle">
+                <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 flex items-center justify-center text-text-secondary border border-white/20 shadow-medium">
                     <p>{t('homePage.tasksComingSoon', 'El centro de tareas estará disponible próximamente.')}</p>
                 </div>
             </div>

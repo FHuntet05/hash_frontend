@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/layout/Layout.jsx (CON CONTROL DE FONDO EXPLÍCITO)
+// RUTA: frontend/src/components/layout/Layout.jsx (VERSIÓN FINAL CON PADDING SUPERIOR)
 
 import React, { useRef } from 'react';
 import { Outlet } from 'react-router-dom';
@@ -31,16 +31,17 @@ const Layout = () => {
 
   return (
     <div className="h-screen w-screen flex justify-center bg-black">
-      {/* 
-        --- CORRECCIÓN CRÍTICA ---
-        Se vuelve a aplicar 'bg-background' directamente aquí para forzar el fondo blanco hueso
-        y evitar que el 'bg-black' del contenedor exterior se muestre.
-      */}
       <div 
         ref={dragContainerRef} 
         className="h-full w-full max-w-lg relative font-sans bg-background text-text-primary"
       >
-        <main className="h-full w-full overflow-y-auto">
+        {/* 
+          --- CORRECCIÓN CRÍTICA ---
+          El 'main' ahora tiene un padding superior (pt-16) para dejar espacio al header
+          nativo de la Telegram Web App. El padding inferior (pb-28) deja espacio
+          para el BottomNavBar flotante.
+        */}
+        <main className="h-full w-full overflow-y-auto pt-16 pb-28">
           <Outlet />
         </main>
         
@@ -56,12 +57,8 @@ const Layout = () => {
               color: 'var(--color-text-primary)',
               border: '1px solid var(--color-border)',
             },
-            success: {
-              iconTheme: { primary: 'var(--color-status-success)', secondary: 'var(--color-card)' }
-            },
-            error: {
-               iconTheme: { primary: 'var(--color-status-danger)', secondary: 'var(--color-card)' }
-            }
+            success: { iconTheme: { primary: 'var(--color-status-success)', secondary: 'var(--color-card)' } },
+            error: { iconTheme: { primary: 'var(--color-status-danger)', secondary: 'var(--color-card)' } }
           }}
         />
       </div>
