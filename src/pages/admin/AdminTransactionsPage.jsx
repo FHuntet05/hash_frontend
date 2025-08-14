@@ -1,40 +1,30 @@
-// RUTA: frontend/src/pages/admin/AdminTreasuryPage.jsx (CON PERMISOS SUPER ADMIN Y LIMPIEZA DE TRON)
+// RUTA: frontend/src/pages/admin/AdminTransactionsPage.jsx (CÓDIGO COMPLETO Y CORREGIDO)
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/axiosConfig';
 import toast from 'react-hot-toast';
-import { HiOutlineBanknotes, HiOutlineCpuChip, HiOutlineArrowDownTray, HiOutlineTrash } from 'react-icons/hi2';
-import SweepConfirmationModal from './components/SweepConfirmationModal';
-import SweepReportModal from './components/SweepReportModal';
-import useAdminStore from '../../store/adminStore'; // Importación clave para permisos
+import { useDebounce } from 'use-debounce';
+import Loader from '../../components/common/Loader';
+import { HiOutlineReceiptRefund, HiOutlineSearch } from 'react-icons/hi2';
 
-const SUPER_ADMIN_TELEGRAM_ID = import.meta.env.VITE_SUPER_ADMIN_TELEGRAM_ID;
+// Mapeo de colores y textos para los tipos de transacción
+const transactionTypeInfo = {
+  deposit: { label: 'Depósito', color: 'bg-green-500/20 text-green-300' },
+  withdrawal: { label: 'Retiro', color: 'bg-red-500/20 text-red-300' },
+  purchase: { label: 'Compra', color: 'bg-blue-500/20 text-blue-300' },
+  production_claim: { label: 'Reclamo Prod.', color: 'bg-teal-500/20 text-teal-300' },
+  referral_commission: { label: 'Comisión Ref.', color: 'bg-purple-500/20 text-purple-300' },
+  task_reward: { label: 'Recompensa Tarea', color: 'bg-indigo-500/20 text-indigo-300' },
+  admin_credit: { label: 'Crédito Admin', color: 'bg-sky-500/20 text-sky-300' },
+  admin_debit: { label: 'Débito Admin', color: 'bg-orange-500/20 text-orange-300' },
+  default: { label: 'Desconocido', color: 'bg-gray-500/20 text-gray-300' }
+};
 
-const SummaryCard = ({ title, amount, currency, icon }) => (
-  <div className="bg-dark-tertiary p-4 rounded-lg border border-white/10 flex items-center gap-4">
-    <div className="p-3 bg-dark-secondary rounded-full">{icon}</div>
-    <div>
-      <p className="text-sm text-text-secondary">{title}</p>
-      <p className="text-xl font-bold font-mono text-white">{parseFloat(amount || 0).toFixed(6)} <span className="text-base font-sans text-accent-start">{currency}</span></p>
-    </div>
-  </div>
-);
-
-const TableSkeleton = ({ rows = 10 }) => (
-    <tbody>
-        {Array.from({ length: rows }).map((_, index) => (
-            <tr key={index} className="animate-pulse">
-                <td className="p-3"><div className="h-6 w-6 bg-gray-700 rounded-md"></div></td>
-                <td className="p-3"><div className="h-4 bg-gray-700 rounded w-3/4"></div></td>
-                <td className="p-3"><div className="h-4 bg-gray-700 rounded w-full"></div></td>
-                <td className="p-3"><div className="h-4 bg-gray-700 rounded w-1/2"></div></td>
-                <td className="p-3 text-right"><div className="h-4 bg-gray-700 rounded w-1/2 ml-auto"></div></td>
-                <td className="p-3 text-right"><div className="h-4 bg-gray-700 rounded w-1/2 ml-auto"></div></td>
-                <td className="p-3 text-right"><div className="h-4 bg-gray-700 rounded w-1/2 ml-auto"></div></td>
-            </tr>
-        ))}
-    </tbody>
-);
+const TransactionTypeBadge = ({ type }) => {
+  const { label, color } = transactionTypeInfo[type] || transactionTypeInfo.default;
+  return <span className={`px-2 py-1 text-xs font-semibold rounded-full ${color}`}>{label}</span>;
+};
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     if (totalPages <= 1) return null;
@@ -47,216 +37,115 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     );
 };
 
-const AdminTreasuryPage = () => {
-    // Inicialización de estados, ahora sin TRX
-    const [data, setData] = useState({ wallets: [], summary: { usdt: 0, bnb: 0 }, pagination: { currentPage: 1, totalPages: 0, totalWallets: 0 } });
-    const [isLoading, setIsLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [selectedWallets, setSelectedWallets] = useState(new Set());
-    
-    const [isSweepModalOpen, setIsSweepModalOpen] = useState(false);
-    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-    const [sweepContext, setSweepContext] = useState(null);
-    const [sweepReport, setSweepReport] = useState(null);
+const AdminTransactionsPage = () => {
+  const [data, setData] = useState({ transactions: [], page: 1, pages: 1 });
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+  const [filterType, setFilterType] = useState('');
 
-    // Lógica de permisos de Super Admin
-    const { admin } = useAdminStore();
-    const isSuperAdmin = admin?.telegramId?.toString() === SUPER_ADMIN_TELEGRAM_ID;
-
-    const fetchTreasuryData = useCallback(async (page) => {
-        setIsLoading(true);
-        try {
-            const { data: responseData } = await api.get(`/admin/treasury/wallets-list?page=${page}&limit=15`);
-            setData(responseData);
-        } catch (error) { 
-            toast.error(error.response?.data?.message || 'Error al obtener la lista de wallets.'); 
-        } finally { 
-            setIsLoading(false); 
+  const fetchTransactions = useCallback(async (page, search, type) => {
+    setIsLoading(true);
+    try {
+      const { data: responseData } = await api.get('/admin/transactions', {
+        params: {
+          page: page,
+          search: search || undefined,
+          type: type || undefined
         }
-    }, []);
+      });
+      setData(responseData);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Error al obtener las transacciones.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-    useEffect(() => {
-        fetchTreasuryData(currentPage);
-    }, [currentPage, fetchTreasuryData]);
+  useEffect(() => {
+    fetchTransactions(currentPage, debouncedSearchTerm, filterType);
+  }, [currentPage, debouncedSearchTerm, filterType, fetchTransactions]);
 
-    const handlePageChange = (newPage) => {
-        if (newPage > 0 && newPage <= (data.pagination.totalPages || 1)) {
-            setSelectedWallets(new Set());
-            setCurrentPage(newPage);
-        }
-    };
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= data.pages) {
+      setCurrentPage(newPage);
+    }
+  };
 
-    const handleWalletSelection = (address) => {
-        setSelectedWallets(prev => {
-            const newSelection = new Set(prev);
-            if (newSelection.has(address)) newSelection.delete(address);
-            else newSelection.add(address);
-            return newSelection;
-        });
-    };
+  const handleSearchChange = (e) => {
+    setCurrentPage(1); // Reset page to 1 on new search
+    setSearchTerm(e.target.value);
+  };
+  
+  const handleFilterChange = (e) => {
+    setCurrentPage(1); // Reset page to 1 on new filter
+    setFilterType(e.target.value);
+  };
 
-    const handleSelectAllOnPage = (e) => {
-        if (e.target.checked) {
-            const allAddressesOnPage = new Set(data.wallets.map(w => w.address));
-            setSelectedWallets(allAddressesOnPage);
-        } else {
-            setSelectedWallets(new Set());
-        }
-    };
+  return (
+    <div className="space-y-6">
+        <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
+            <h1 className="text-2xl font-semibold mb-1 flex items-center gap-3"><HiOutlineReceiptRefund /> Historial de Transacciones</h1>
+            <p className="text-text-secondary">Revisa todas las transacciones financieras que ocurren en la plataforma.</p>
+        </div>
 
-    // Lógica de barrido ahora solo para BSC
-    const handleOpenUsdtSweepModal = () => {
-        if (selectedWallets.size === 0) {
-            toast.error(`Por favor, seleccione las wallets que desea barrer.`);
-            return;
-        }
-
-        const walletsSeleccionadas = data.wallets.filter(w => selectedWallets.has(w.address));
-        const walletsCandidatas = walletsSeleccionadas.filter(w =>
-            w.chain === 'BSC' && w.usdtBalance > 0.000001 && w.gasBalance >= w.estimatedRequiredGas 
-        );
-
-        if (walletsCandidatas.length === 0) {
-            toast.error("Ninguna de las wallets seleccionadas tiene USDT y gas suficiente para el barrido.");
-            return;
-        }
-
-        const totalUsdtToSweep = walletsCandidatas.reduce((sum, w) => sum + w.usdtBalance, 0);
-        setSweepContext({ chain: 'BSC', token: 'USDT', walletsCandidatas, totalUsdtToSweep });
-        setIsSweepModalOpen(true);
-    };
-
-    const handleSweepConfirm = async (recipientAddress) => {
-        setIsSweepModalOpen(false);
-
-        const payload = {
-            chain: sweepContext.chain,
-            token: sweepContext.token,
-            recipientAddress: recipientAddress,
-            walletsToSweep: sweepContext.walletsCandidatas.map(w => w.address)
-        };
-
-        const sweepPromise = api.post('/admin/sweep-funds', payload);
-
-        toast.promise(sweepPromise, {
-          loading: `Ejecutando barrido de ${payload.walletsToSweep.length} wallets...`,
-          success: (res) => {
-            setSweepReport(res.data);
-            setIsReportModalOpen(true);
-            setSelectedWallets(new Set());
-            fetchTreasuryData(currentPage);
-            return 'Operación de barrido USDT completada. Revisa el reporte.';
-          },
-          error: (err) => err.response?.data?.message || 'Error crítico durante el barrido.',
-        });
-    };
-
-    const handleSweepGas = async () => {
-        if (selectedWallets.size === 0) {
-            toast.error("Por favor, selecciona al menos una wallet.");
-            return;
-        }
-        
-        const recipientAddress = "0xc5a3d612a5A07C3f4eFdB00A26335D657EE093bE"; // IMPORTANTE: Poner la dirección real aquí
-        
-        if (recipientAddress.includes("...")) {
-            toast.error(`La dirección de la billetera central de BNB no está configurada en el frontend.`);
-            return;
-        }
-        
-        const walletsToSweepAddresses = Array.from(selectedWallets);
-        const sweepGasPromise = api.post('/admin/sweep-gas', {
-            chain: 'BSC',
-            recipientAddress,
-            walletsToSweep: walletsToSweepAddresses
-        });
-
-        toast.promise(sweepGasPromise, {
-            loading: `Barriendo gas BNB de ${walletsToSweepAddresses.length} wallets...`,
-            success: (res) => {
-                setSweepReport(res.data);
-                setIsReportModalOpen(true);
-                setSelectedWallets(new Set());
-                fetchTreasuryData(currentPage);
-                return `Operación de barrido de gas BNB completada. Revisa el reporte.`;
-            },
-            error: (err) => err.response?.data?.message || `Error crítico durante el barrido de BNB.`
-        });
-    };
-    
-    const isAllOnPageSelected = selectedWallets.size > 0 && data.wallets.length > 0 && selectedWallets.size === data.wallets.length;
-    const bnbWalletsSelected = data.wallets.some(w => selectedWallets.has(w.address) && w.chain === 'BSC' && w.gasBalance > 0);
-    
-    return (
-        <>
-            <div className="space-y-6">
-                <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
-                    <h1 className="text-2xl font-semibold mb-1">Tesorería de Depósitos</h1>
-                    <p className="text-text-secondary">Seleccione wallets para barrer USDT o el gas restante.</p>
+        <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
+                <div className="relative w-full md:max-w-xs">
+                    <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
+                    <input type="text" placeholder="Buscar por nombre o ID..." value={searchTerm} onChange={handleSearchChange} className="w-full pl-10 pr-4 py-2 bg-dark-primary text-white rounded-lg border-2 border-transparent focus:border-accent-start focus:outline-none" />
                 </div>
-                
-                <div>
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-                        <h2 className="text-xl font-semibold">Resumen por Página</h2>
-                        <div className="flex flex-wrap gap-2">
-                             {isSuperAdmin && (
-                                <button onClick={handleSweepGas} disabled={!bnbWalletsSelected || isLoading} className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
-                                    <HiOutlineTrash /> Barrer Gas BNB
-                                </button>
-                             )}
-                            <button onClick={handleOpenUsdtSweepModal} disabled={selectedWallets.size === 0 || isLoading} className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
-                                <HiOutlineArrowDownTray /> Barrer USDT (BSC)
-                            </button>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <SummaryCard title="Total USDT en Página" amount={data.summary.usdt} currency="USDT" icon={<HiOutlineBanknotes className="w-6 h-6 text-green-400"/>} />
-                        <SummaryCard title="Total BNB en Página" amount={data.summary.bnb} currency="BNB" icon={<HiOutlineCpuChip className="w-6 h-6 text-yellow-400"/>} />
-                    </div>
-                </div>
+                <select onChange={handleFilterChange} value={filterType} className="w-full md:w-auto bg-dark-primary p-2 rounded-lg border border-white/20 focus:outline-none focus:ring-2 focus:ring-accent-start">
+                    <option value="">Todos los Tipos</option>
+                    {Object.entries(transactionTypeInfo).filter(([key]) => key !== 'default').map(([key, { label }]) => (
+                        <option key={key} value={key}>{label}</option>
+                    ))}
+                </select>
+            </div>
 
-                <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
-                    <h2 className="text-xl font-semibold mb-4">Wallets con Saldo ({data.pagination.totalWallets || 0} en total)</h2>
+            {isLoading ? <div className="h-96 flex items-center justify-center"><Loader text="Cargando transacciones..." /></div> : (
+                <>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="text-xs text-text-secondary uppercase bg-dark-tertiary">
                                 <tr>
-                                    <th className="p-3"><input type="checkbox" className="form-checkbox bg-dark-tertiary rounded" onChange={handleSelectAllOnPage} checked={isAllOnPageSelected} /></th>
                                     <th className="p-3">Usuario</th>
-                                    <th className="p-3">Wallet Address</th>
-                                    <th className="p-3">Chain</th>
-                                    <th className="p-3 text-right">Saldo USDT</th>
-                                    <th className="p-3 text-right">Saldo Gas</th>
-                                    <th className="p-3 text-right">Gas Requerido (Est.)</th>
+                                    <th className="p-3">Tipo</th>
+                                    <th className="p-3 text-right">Monto</th>
+                                    <th className="p-3">Descripción</th>
+                                    <th className="p-3">Fecha</th>
                                 </tr>
                             </thead>
-                            {isLoading ? <TableSkeleton /> : (
-                                <tbody className="divide-y divide-white/10">
-                                    {data.wallets.length > 0 ? data.wallets.map((wallet) => (
-                                        <tr key={wallet.address} className={`hover:bg-dark-tertiary ${selectedWallets.has(wallet.address) ? 'bg-blue-900/50' : ''}`}>
-                                            <td className="p-3"><input type="checkbox" className="form-checkbox bg-dark-tertiary rounded" checked={selectedWallets.has(wallet.address)} onChange={() => handleWalletSelection(wallet.address)} /></td>
-                                            <td className="p-3 font-medium">{wallet.user?.username || 'N/A'}</td>
-                                            <td className="p-3 font-mono text-sm">{wallet.address}</td>
-                                            <td className="p-3"><span className={`px-2 py-1 text-xs font-bold rounded-full bg-yellow-400/20 text-yellow-300`}>BSC</span></td>
-                                            <td className="p-3 text-right font-mono text-green-400">{parseFloat(wallet.usdtBalance).toFixed(6)}</td>
-                                            <td className="p-3 text-right font-mono text-text-secondary">{parseFloat(wallet.gasBalance).toFixed(6)} BNB</td>
-                                            <td className="p-3 text-right font-mono text-yellow-400">{parseFloat(wallet.estimatedRequiredGas).toFixed(6)} BNB</td>
-                                        </tr>
-                                    )) : (
-                                        <tr><td colSpan="7" className="text-center p-6 text-text-secondary">No se encontraron wallets en esta página.</td></tr>
-                                    )}
-                                </tbody>
-                            )}
+                            <tbody className="divide-y divide-white/10">
+                                {data.transactions.length > 0 ? data.transactions.map((tx) => (
+                                    <tr key={tx._id} className="hover:bg-dark-tertiary">
+                                        <td className="p-3 font-medium">
+                                          {tx.user ? (
+                                            <Link to={`/admin/users/${tx.user._id}/details`} className="hover:text-accent-start">{tx.user.username}</Link>
+                                          ) : (
+                                            'Sistema'
+                                          )}
+                                        </td>
+                                        <td className="p-3"><TransactionTypeBadge type={tx.type} /></td>
+                                        <td className={`p-3 text-right font-mono ${tx.amount > 0 || tx.type === 'deposit' ? 'text-green-400' : 'text-red-400'}`}>
+                                            {tx.amount > 0 ? '+' : ''}{tx.amount.toFixed(2)} {tx.currency}
+                                        </td>
+                                        <td className="p-3 text-sm text-text-secondary">{tx.description}</td>
+                                        <td className="p-3 text-sm text-text-secondary whitespace-nowrap">{new Date(tx.createdAt).toLocaleString()}</td>
+                                    </tr>
+                                )) : (
+                                    <tr><td colSpan="5" className="text-center p-8 text-text-secondary">No se encontraron transacciones con los filtros actuales.</td></tr>
+                                )}
+                            </tbody>
                         </table>
                     </div>
-                    {!isLoading && <Pagination currentPage={currentPage} totalPages={data.pagination.totalPages} onPageChange={handlePageChange} />}
-                </div>
-            </div>
-            
-            <SweepConfirmationModal isOpen={isSweepModalOpen} onClose={() => setIsSweepModalOpen(false)} onConfirm={handleSweepConfirm} context={sweepContext} />
-            <SweepReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} report={sweepReport} />
-        </>
-    );
+                    <Pagination currentPage={data.page} totalPages={data.pages} onPageChange={handlePageChange} />
+                </>
+            )}
+        </div>
+    </div>
+  );
 };
 
-export default AdminTreasuryPage;
+export default AdminTransactionsPage;

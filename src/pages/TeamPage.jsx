@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/TeamPage.jsx (v3.0 - ENLACE DE REFERIDO CORREGIDO)
+// RUTA: frontend/src/pages/TeamPage.jsx (v3.1 - LÓGICA DE ENLACE ROBUSTA Y CORREGIDA)
 
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,7 @@ import useUserStore from '../store/userStore';
 import api from '../api/axiosConfig';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
-import { HiOutlineUserGroup, HiOutlineBanknotes, HiOutlineClipboardDocument } from 'react-icons/hi2';
+import { HiOutlineUserGroup, HiOutlineBanknotes, HiOutlineClipboardDocument, HiOutlineExclamationTriangle } from 'react-icons/hi2';
 
 import TeamStatCard from '../components/team/TeamStatCard';
 import TeamLevelCard from '../components/team/TeamLevelCard';
@@ -36,20 +36,22 @@ const TeamPage = () => {
     }
   }, [t, user]);
 
-  // --- INICIO DE CORRECCIÓN: Enlace de Referido ---
+  // --- INICIO DE CORRECCIÓN: Enlace de Referido Robusto ---
   const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
-  const referralLink = botUsername && user?.telegramId 
+  const isEnvVarMissing = !botUsername;
+
+  const referralLink = !isEnvVarMissing && user?.telegramId 
     ? `https://t.me/${botUsername}?start=${user.telegramId}`
     : '';
   // --- FIN DE CORRECCIÓN ---
   
   const copyToClipboard = () => {
-    if (!referralLink) {
-        toast.error(t('teamPage.toasts.linkError', 'No se pudo generar el enlace de invitación.'));
+    if (isEnvVarMissing || !referralLink) {
+        toast.error(t('teamPage.toasts.linkError', 'Error de configuración: no se pudo generar el enlace.'));
         return;
     }
     navigator.clipboard.writeText(referralLink);
-    toast.success(t('teamPage.toasts.linkCopied', 'Enlace de invitación copiado!'));
+    toast.success(t('teamPage.toasts.linkCopied', '¡Enlace de invitación copiado!'));
   };
 
   if (loading || !user) {
@@ -81,23 +83,32 @@ const TeamPage = () => {
       <div className="bg-card/70 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-medium text-center">
         <h1 className="text-xl font-bold text-text-primary">{t('teamPage.title', 'Invita a tus Amigos')}</h1>
         <p className="text-text-secondary text-sm mt-2 mb-4">{t('teamPage.description', 'Comparte tu enlace y gana comisiones por cada miembro de tu equipo.')}</p>
-        <div className="flex items-center bg-background/50 rounded-lg p-2 border border-border">
-          <input 
-            type="text" 
-            value={referralLink || t('teamPage.generatingLink', 'Generando enlace...')} 
-            readOnly 
-            className="w-full bg-transparent text-text-secondary text-sm outline-none" 
-          />
-          <button onClick={copyToClipboard} className="ml-2 p-2 rounded-md bg-accent-primary hover:bg-accent-primary-hover active:scale-95 text-white transition-colors">
-            <HiOutlineClipboardDocument className="w-5 h-5" />
-          </button>
-        </div>
+        
+        {isEnvVarMissing ? (
+            <div className="flex items-center gap-2 bg-status-danger/10 p-3 rounded-lg text-status-danger text-sm">
+                <HiOutlineExclamationTriangle className="w-6 h-6 flex-shrink-0" />
+                <span>Error de configuración del administrador: El nombre de usuario del bot no está definido.</span>
+            </div>
+        ) : (
+            <div className="flex items-center bg-background/50 rounded-lg p-2 border border-border">
+              <input 
+                type="text" 
+                value={referralLink} 
+                readOnly 
+                className="w-full bg-transparent text-text-secondary text-sm outline-none" 
+              />
+              <button onClick={copyToClipboard} className="ml-2 p-2 rounded-md bg-accent-primary hover:bg-accent-primary-hover active:scale-95 text-white transition-colors">
+                <HiOutlineClipboardDocument className="w-5 h-5" />
+              </button>
+            </div>
+        )}
+        
         <SocialShare referralLink={referralLink} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         {stats.map(stat => (
-          <TeamStatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} colorClass={stat.colorClass} />
+          <TeamStatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} colorClass={stat.color} />
         ))}
       </div>
 

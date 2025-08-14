@@ -1,13 +1,15 @@
-// RUTA: frontend/src/App.jsx (VALIDADO Y CON ESTILOS SEMÁNTICOS)
+// RUTA: frontend/src/App.jsx (v2.0 - CON LÓGICA DE MANTENIMIENTO)
+
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import useUserStore from './store/userStore';
 
-// --- IMPORTS (Sin cambios) ---
+// --- IMPORTS ---
 import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminProtectedRoute from './components/layout/AdminProtectedRoute';
 import Loader from './components/common/Loader';
+import MaintenanceScreen from './components/MaintenanceScreen'; // <-- NUEVA IMPORTACIÓN
 import HomePage from './pages/HomePage';
 import FactoriesPage from './pages/FactoriesPage'; 
 import RankingPage from './pages/RankingPage';
@@ -19,7 +21,6 @@ import FaqPage from './pages/FaqPage';
 import AboutPage from './pages/AboutPage';
 import SupportPage from './pages/SupportPage';
 import FinancialHistoryPage from './pages/FinancialHistoryPage';
-// Se eliminan páginas no usadas como CryptoSelectionPage para simplificar
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
@@ -49,14 +50,21 @@ const AppInitializer = () => {
 
 // Componente para proteger las rutas de usuario
 const UserGatekeeper = ({ children }) => { 
-  const { isAuthenticated, isLoadingAuth } = useUserStore(); 
+  // --- INICIO DE LÓGICA DE MANTENIMIENTO ---
+  const { isAuthenticated, isLoadingAuth, isMaintenanceMode, maintenanceMessage } = useUserStore();
+  
+  // 1. La comprobación de mantenimiento es la de más alta prioridad.
+  if (isMaintenanceMode) {
+      return <MaintenanceScreen message={maintenanceMessage} />;
+  }
+  // --- FIN DE LÓGICA DE MANTENIMIENTO ---
+  
   if (isLoadingAuth) { 
-    // MODIFICADO: Se usa la clase semántica 'bg-background'
     return ( <div className="w-full h-screen flex items-center justify-center bg-background"><Loader text="Autenticando..." /></div> ); 
   } 
   if (!isAuthenticated) { 
-    // MODIFICADO: Se usa la clase semántica 'bg-background'
-    return ( <div className="w-full h-screen flex items-center justify-center p-4 bg-background text-text-secondary">Error de autenticación. Por favor, reinicia la app desde Telegram.</div> ); 
+    // Esta pantalla ahora se mostrará para errores de autenticación reales (baneo, token inválido, etc.)
+    return ( <div className="w-full h-screen flex items-center justify-center p-4 bg-background text-text-secondary text-center">Error de autenticación.<br/>Por favor, reinicia la app desde Telegram.</div> ); 
   } 
   return children; 
 };
@@ -86,16 +94,13 @@ function App() {
           </Route>
         </Route>
 
-        {/* --- Rutas de Usuario --- */}
+        {/* --- Rutas de Usuario (Sin cambios en su estructura) --- */}
         <Route path="/*" element={
           <>
             <AppInitializer />
             <UserGatekeeper>
               <Routes>
-                {/* VALIDADO: La ruta raíz redirige a /home */}
                 <Route path="/" element={<Navigate to="/home" replace />} />
-                
-                {/* VALIDADO: Las rutas dentro de Layout coinciden con el nuevo BottomNavBar */}
                 <Route element={<Layout />}>
                   <Route path="/home" element={<HomePage />} />
                   <Route path="/factories" element={<FactoriesPage />} />
@@ -104,8 +109,6 @@ function App() {
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/history" element={<FinancialHistoryPage />} />
                 </Route>
-                
-                {/* Rutas fuera del layout principal */}
                 <Route path="/language" element={<LanguagePage />} />
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/about" element={<AboutPage />} />

@@ -1,4 +1,4 @@
-// frontend/src/store/userStore.js (v2.1 - CON LOGS DE DEPURACIÓN)
+// RUTA: frontend/src/store/userStore.js (v3.0 - CON GESTIÓN DE MANTENIMIENTO)
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -12,6 +12,12 @@ const useUserStore = create(
       settings: null,
       isAuthenticated: false, 
       isLoadingAuth: true,
+      
+      // --- NUEVOS ESTADOS ---
+      isMaintenanceMode: false,
+      maintenanceMessage: '',
+      // --- FIN DE NUEVOS ESTADOS ---
+
       isHydrated: false,
 
       syncUserWithBackend: async (telegramUser) => {
@@ -19,32 +25,44 @@ const useUserStore = create(
             set({ isLoadingAuth: true });
         }
         try {
-          console.log('[Store] Sincronizando usuario con el backend...');
           const response = await api.post('/auth/sync', { telegramUser });
           const { token, user, settings } = response.data;
-
-          // --- INICIO DE LOG DE DEPURACIÓN ---
-          console.log('[Store - DEBUG] Usuario recibido del backend. Verificando fábricas:', user.purchasedFactories);
-          // --- FIN DE LOG DE DEPURACIÓN ---
           
           set({ 
               user, 
               token, 
               isAuthenticated: true, 
               settings, 
-              isLoadingAuth: false 
+              isLoadingAuth: false,
+              isMaintenanceMode: false, // Aseguramos que se desactive si la sincronización es exitosa
+              maintenanceMessage: ''
           });
-          console.log('[Store] Sincronización exitosa.');
 
         } catch (error) {
-          console.error('[Store] Error fatal durante la sincronización:', error.response?.data?.message || error.message);
-          set({ 
+          console.error('[Store] Error durante la sincronización:', error.response?.data?.message || error.message);
+          
+          // --- INICIO DE LÓGICA DE MANTENIMIENTO ---
+          if (error.response && error.response.status === 503) {
+            // Si el servidor está en mantenimiento, lo guardamos en el estado.
+            set({
+              isLoadingAuth: false,
+              isAuthenticated: false, // El usuario no está autenticado
+              isMaintenanceMode: true,
+              maintenanceMessage: error.response.data.maintenanceMessage || 'El sistema está en mantenimiento.'
+            });
+          } else {
+            // Para cualquier otro error (baneo, token inválido, etc.), deslogueamos.
+            set({ 
               user: null, 
               token: null, 
               isAuthenticated: false, 
               isLoadingAuth: false,
               settings: null,
-          });
+              isMaintenanceMode: false,
+              maintenanceMessage: ''
+            });
+          }
+          // --- FIN DE LÓGICA DE MANTENIMIENTO ---
         }
       },
 
@@ -59,6 +77,8 @@ const useUserStore = create(
           isAuthenticated: false,
           isLoadingAuth: false,
           settings: null,
+          isMaintenanceMode: false, // Limpiar al desloguear
+          maintenanceMessage: ''
         });
         console.log('[Store] Sesión cerrada.');
       },
@@ -80,6 +100,7 @@ const useUserStore = create(
   )
 );
 
+// Este código no necesita cambios
 useUserStore.subscribe(
   (state) => state.token,
   (token) => {

@@ -1,28 +1,28 @@
-// RUTA: frontend/src/components/modals/WithdrawalModal.jsx (DISEÑO CRISTALINO Y CONTRASEÑA)
+// RUTA: frontend/src/components/modals/WithdrawalModal.jsx (v2.0 - FLUJO DE MODAL CORREGIDO)
 
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+// ELIMINADO: import { useNavigate } from 'react-router-dom';
 import { HiXMark, HiShieldCheck, HiLockClosed } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 import useUserStore from '../../store/userStore';
 import api from '../../api/axiosConfig';
 
-const WithdrawalModal = ({ onClose }) => {
+// AÑADIDO: Se añade la prop 'onGoToSetPassword'
+const WithdrawalModal = ({ onClose, onGoToSetPassword }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  // ELIMINADO: const navigate = useNavigate();
   const { user, settings, setUser } = useUserStore();
   
   const userBalance = user?.balance?.usdt || 0;
   const minWithdrawal = settings?.minimumWithdrawal || 1.0;
   const withdrawalFee = settings?.withdrawalFeePercent || 0;
-  // NUEVO: Verificamos si el usuario ha configurado la contraseña de retiro
   const isWithdrawalPasswordSet = user?.isWithdrawalPasswordSet || false;
 
   const [amount, setAmount] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
-  const [withdrawalPassword, setWithdrawalPassword] = useState(''); // <-- NUEVO ESTADO
+  const [withdrawalPassword, setWithdrawalPassword] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { feeAmount, netAmount } = useMemo(() => {
@@ -46,13 +46,13 @@ const WithdrawalModal = ({ onClose }) => {
       amount: numericAmount,
       walletAddress,
       network: 'USDT-BEP20',
-      withdrawalPassword, // <-- SE ENVÍA LA CONTRASEÑA
+      withdrawalPassword,
     });
 
     toast.promise(withdrawalPromise, {
       loading: t('withdrawalModal.toasts.processing', 'Enviando solicitud...'),
       success: (res) => {
-        setUser(res.data.user); // El backend devuelve el usuario actualizado
+        setUser(res.data.user);
         onClose();
         return res.data.message;
       },
@@ -85,6 +85,7 @@ const WithdrawalModal = ({ onClose }) => {
         <main className="flex-grow p-6 pt-2 overflow-y-auto no-scrollbar">
           {isWithdrawalPasswordSet ? (
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Formulario de retiro (sin cambios) */}
               <div>
                 <label className="text-sm text-text-secondary mb-1 block">{t('withdrawalModal.amountLabel', 'Cantidad a Retirar (USDT)')}</label>
                 <div className="flex items-center bg-background/50 rounded-lg border border-border">
@@ -96,27 +97,26 @@ const WithdrawalModal = ({ onClose }) => {
                 <label className="text-sm text-text-secondary mb-1 block">{t('withdrawalModal.addressLabel', 'Dirección de Billetera (BEP20)')}</label>
                 <input type="text" placeholder={t('withdrawalModal.addressPlaceholder', 'Pega tu dirección 0x...')} value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} className="w-full bg-background/50 p-3 rounded-lg border border-border" />
               </div>
-              {/* --- NUEVO CAMPO DE CONTRASEÑA --- */}
               <div>
                 <label className="text-sm text-text-secondary mb-1 block">{t('withdrawalModal.passwordLabel', 'Contraseña de Retiro')}</label>
                 <input type="password" placeholder="••••••••" value={withdrawalPassword} onChange={(e) => setWithdrawalPassword(e.target.value)} className="w-full bg-background/50 p-3 rounded-lg border border-border" />
               </div>
-
               <div className="text-sm space-y-1 bg-background/50 p-3 rounded-lg border border-border">
                 <div className="flex justify-between text-text-secondary"><span>{t('withdrawalModal.fee', `Comisión (${withdrawalFee}%):`)}</span><span>- {feeAmount.toFixed(4)} USDT</span></div>
                 <div className="flex justify-between font-bold"><span>{t('withdrawalModal.youReceive', 'Recibirás:')}</span><span>{netAmount > 0 ? netAmount.toFixed(4) : '0.0000'} USDT</span></div>
               </div>
-
               <button type="submit" disabled={isProcessing} className="w-full mt-2 py-3 bg-accent-primary text-white font-bold rounded-full disabled:opacity-50 hover:bg-accent-primary-hover active:scale-95 transition-all">
                 {isProcessing ? t('common.processing', 'Procesando...') : t('withdrawalModal.confirmButton', 'Confirmar Solicitud')}
               </button>
             </form>
           ) : (
+            // Mensaje para configurar la contraseña
             <div className="text-center bg-accent-tertiary/10 p-4 rounded-lg border border-accent-tertiary/20">
               <HiLockClosed className="w-10 h-10 mx-auto text-accent-tertiary mb-2" />
               <h3 className="font-bold text-text-primary">{t('withdrawalModal.passwordNotSetTitle', 'Acción Requerida')}</h3>
               <p className="text-sm text-text-secondary mt-2 mb-4">{t('withdrawalModal.passwordNotSetBody', 'Por tu seguridad, debes configurar una contraseña de retiro antes de poder solicitar un pago.')}</p>
-              <button onClick={() => { onClose(); navigate('/profile/set-withdrawal-password'); }} className="w-full py-2 bg-accent-tertiary text-white font-bold rounded-full">
+              {/* --- BOTÓN CORREGIDO --- */}
+              <button onClick={onGoToSetPassword} className="w-full py-2 bg-accent-tertiary text-white font-bold rounded-full">
                 {t('withdrawalModal.goToSettingsButton', 'Configurar Contraseña')}
               </button>
             </div>
