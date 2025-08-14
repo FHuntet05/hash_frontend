@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/factories/FactoryCard.jsx (DISEÑO CRISTALINO)
+// RUTA: frontend/src/components/factories/FactoryCard.jsx (v2.0 - TRADUCCIÓN CORREGIDA)
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +31,11 @@ const FactoryCard = ({ factory, onBuyClick, isOwned }) => {
         </div>
         <div className="flex justify-between">
           <span className="text-text-secondary">{t('factoryCard.lifespan', 'Vida Útil')}</span>
-          <span className="font-semibold">{factory.durationDays || 0} {t('factoryCard.days', 'Días')}</span>
+          {/* --- INICIO DE CORRECCIÓN --- */}
+          <span className="font-semibold">
+            {t('factoryCard.days', '{{count}} días', { count: factory.durationDays || 0 })}
+          </span>
+          {/* --- FIN DE CORRECCIÓN --- */}
         </div>
         <div className="flex justify-between items-center pt-2">
           <span className="text-text-secondary">{t('factoryCard.price', 'Precio')}</span>
