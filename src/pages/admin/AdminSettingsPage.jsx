@@ -1,9 +1,22 @@
-// frontend/src/pages/admin/AdminSettingsPage.jsx (COMPLETO)
+// RUTA: frontend/src/pages/admin/AdminSettingsPage.jsx (CON CONTROL DE RETIROS)
 
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../api/axiosConfig';
 import toast from 'react-hot-toast';
 import Loader from '../../components/common/Loader';
+
+const SettingToggle = ({ id, name, checked, onChange, label, description }) => (
+    <div className="flex items-center justify-between py-2">
+        <div>
+            <label htmlFor={id} className="font-medium text-white">{label}</label>
+            {description && <p className="text-sm text-text-secondary">{description}</p>}
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id={id} name={name} checked={checked} onChange={onChange} className="sr-only peer" />
+            <div className="w-11 h-6 bg-gray-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-accent-start peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-start"></div>
+        </label>
+    </div>
+);
 
 const AdminSettingsPage = () => {
   const [settings, setSettings] = useState(null);
@@ -39,7 +52,6 @@ const AdminSettingsPage = () => {
       ...settings,
       minimumWithdrawal: Number(settings.minimumWithdrawal),
       withdrawalFeePercent: Number(settings.withdrawalFeePercent),
-      swapFeePercent: Number(settings.swapFeePercent),
     };
 
     try {
@@ -61,26 +73,39 @@ const AdminSettingsPage = () => {
   }
 
   if (!settings) {
-    return <div className="text-center">No se pudo cargar la configuración.</div>;
+    return <div className="text-center text-red-400">No se pudo cargar la configuración.</div>;
   }
 
   return (
     <form onSubmit={handleSave} className="space-y-8">
-      {/* Sección de Mantenimiento */}
+      {/* Sección de Controles Generales */}
       <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
-        <h2 className="text-xl font-semibold mb-4">Modo Mantenimiento</h2>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <label htmlFor="maintenanceMode" className="font-medium">Habilitar Modo Mantenimiento</label>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="maintenanceMode" name="maintenanceMode" checked={settings.maintenanceMode} onChange={handleChange} className="sr-only peer" />
-              <div className="w-11 h-6 bg-gray-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-accent-start peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-start"></div>
-            </label>
-          </div>
-          <div>
-            <label htmlFor="maintenanceMessage" className="block text-sm font-medium text-text-secondary mb-1">Mensaje de Mantenimiento</label>
-            <input type="text" id="maintenanceMessage" name="maintenanceMessage" value={settings.maintenanceMessage} onChange={handleChange} className="w-full p-2 bg-black/20 rounded-md" />
-          </div>
+        <h2 className="text-xl font-semibold mb-4">Controles Generales</h2>
+        <div className="space-y-4 divide-y divide-white/10">
+          <SettingToggle 
+            id="maintenanceMode"
+            name="maintenanceMode"
+            checked={settings.maintenanceMode}
+            onChange={handleChange}
+            label="Modo Mantenimiento"
+            description="Desactiva el acceso a la aplicación para los usuarios."
+          />
+          {settings.maintenanceMode && (
+            <div className="pt-4">
+              <label htmlFor="maintenanceMessage" className="block text-sm font-medium text-text-secondary mb-1">Mensaje de Mantenimiento</label>
+              <input type="text" id="maintenanceMessage" name="maintenanceMessage" value={settings.maintenanceMessage} onChange={handleChange} className="w-full p-2 bg-black/20 rounded-md" />
+            </div>
+          )}
+           {/* --- NUEVO INTERRUPTOR --- */}
+          <SettingToggle 
+            id="withdrawalsEnabled"
+            name="withdrawalsEnabled"
+            checked={settings.withdrawalsEnabled}
+            onChange={handleChange}
+            label="Habilitar Retiros"
+            description="Permite o bloquea todas las solicitudes de retiro en la plataforma."
+          />
+           {/* --- FIN DE NUEVO INTERRUPTOR --- */}
         </div>
       </div>
 
@@ -96,16 +121,11 @@ const AdminSettingsPage = () => {
             <label htmlFor="withdrawalFeePercent" className="block text-sm font-medium text-text-secondary mb-1">Comisión de Retiro (%)</label>
             <input type="number" id="withdrawalFeePercent" name="withdrawalFeePercent" value={settings.withdrawalFeePercent} onChange={handleChange} className="w-full p-2 bg-black/20 rounded-md" step="0.1" />
           </div>
-          <div>
-            <label htmlFor="swapFeePercent" className="block text-sm font-medium text-text-secondary mb-1">Comisión de Swap (%)</label>
-            <input type="number" id="swapFeePercent" name="swapFeePercent" value={settings.swapFeePercent} onChange={handleChange} className="w-full p-2 bg-black/20 rounded-md" step="0.1" />
-          </div>
         </div>
       </div>
 
-      {/* Botón de Guardar */}
       <div className="flex justify-end">
-        <button type="submit" className="px-8 py-3 font-bold text-white bg-gradient-to-r from-accent-start to-accent-end rounded-lg">
+        <button type="submit" className="px-8 py-3 font-bold text-white bg-gradient-to-r from-accent-start to-accent-end rounded-lg hover:opacity-90 transition-opacity">
           Guardar Configuración
         </button>
       </div>

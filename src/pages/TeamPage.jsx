@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/TeamPage.jsx (v2.1 - RENDERIZADO SEGURO DE NIVELES)
+// RUTA: frontend/src/pages/TeamPage.jsx (v3.0 - ENLACE DE REFERIDO CORREGIDO)
 
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,9 +36,18 @@ const TeamPage = () => {
     }
   }, [t, user]);
 
-  const referralLink = `${window.location.origin}/register?ref=${user?.telegramId}`;
+  // --- INICIO DE CORRECCIÓN: Enlace de Referido ---
+  const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
+  const referralLink = botUsername && user?.telegramId 
+    ? `https://t.me/${botUsername}?start=${user.telegramId}`
+    : '';
+  // --- FIN DE CORRECCIÓN ---
   
   const copyToClipboard = () => {
+    if (!referralLink) {
+        toast.error(t('teamPage.toasts.linkError', 'No se pudo generar el enlace de invitación.'));
+        return;
+    }
     navigator.clipboard.writeText(referralLink);
     toast.success(t('teamPage.toasts.linkCopied', 'Enlace de invitación copiado!'));
   };
@@ -75,7 +84,7 @@ const TeamPage = () => {
         <div className="flex items-center bg-background/50 rounded-lg p-2 border border-border">
           <input 
             type="text" 
-            value={referralLink} 
+            value={referralLink || t('teamPage.generatingLink', 'Generando enlace...')} 
             readOnly 
             className="w-full bg-transparent text-text-secondary text-sm outline-none" 
           />
@@ -88,14 +97,12 @@ const TeamPage = () => {
 
       <div className="grid grid-cols-2 gap-4">
         {stats.map(stat => (
-          <TeamStatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} colorClass={stat.color} />
+          <TeamStatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} colorClass={stat.colorClass} />
         ))}
       </div>
 
       <div>
         <h2 className="text-lg font-semibold text-text-primary mb-4">{t('teamPage.levelsTitle', 'Niveles del Equipo')}</h2>
-        {/* --- INICIO DE CORRECCIÓN --- */}
-        {/* Se usa optional chaining (?.) para evitar errores si teamData o teamData.levels no existen */}
         {teamData?.levels && teamData.levels.length > 0 ? (
           <div className="space-y-3">
             {teamData.levels.map(levelData => (
@@ -108,7 +115,6 @@ const TeamPage = () => {
             ))}
           </div>
         ) : (
-        // --- FIN DE CORRECCIÓN ---
           <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-white/20 shadow-subtle">
             <p>{t('teamPage.noLevelsData', 'Aún no tienes miembros en tu equipo. ¡Empieza a invitar!')}</p>
           </div>

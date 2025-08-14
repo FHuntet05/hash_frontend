@@ -1,14 +1,13 @@
-// RUTA: frontend/src/components/factories/FactoryPurchaseModal.jsx (v2.0 - NUEVO FLUJO DE RECARGA)
+// RUTA: frontend/src/components/factories/FactoryPurchaseModal.jsx (v3.0 - FLUJO DE COMPRA INTELIGENTE)
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { HiXMark, HiMinus, HiPlus, HiOutlineCurrencyDollar, HiOutlineCreditCard } from 'react-icons/hi2';
+import { HiXMark, HiMinus, HiPlus, HiOutlineCurrencyDollar } from 'react-icons/hi2';
 import useUserStore from '../../store/userStore';
 import toast from 'react-hot-toast';
 import api from '../../api/axiosConfig';
 
-// --- INICIO DE MODIFICACIÓN: Se añade la prop 'onGoToDeposit' ---
 const FactoryPurchaseModal = ({ factory, onClose, onGoToDeposit }) => {
   const { user, setUser } = useUserStore();
   const { t } = useTranslation();
@@ -25,24 +24,38 @@ const FactoryPurchaseModal = ({ factory, onClose, onGoToDeposit }) => {
   const userBalance = user?.balance?.usdt || 0;
   const canPayWithBalance = userBalance >= totalCost;
 
+  // --- INICIO DE MODIFICACIÓN: Lógica de compra revisada ---
   const handlePurchase = async () => {
     setIsProcessing(true);
-    toast.loading(t('factoryPurchaseModal.toasts.purchasing', 'Procesando compra...'), { id: 'purchase_request' });
+    const purchaseToastId = 'purchase_request';
+    toast.loading(t('factoryPurchaseModal.toasts.purchasing', 'Procesando compra...'), { id: purchaseToastId });
+    
     try {
       const response = await api.post('/wallet/purchase-factory', {
         factoryId: factory._id,
         quantity: quantity,
       });
       setUser(response.data.user);
-      toast.success(response.data.message, { id: 'purchase_request' });
+      toast.success(t('factoryPurchaseModal.toasts.purchaseSuccess', '¡Compra exitosa!'), { id: purchaseToastId });
       onClose();
     } catch (error) {
-      const errorMessage = error.response?.data?.message || t('factoryPurchaseModal.toasts.purchaseError', 'Error al procesar la compra.');
-      toast.error(errorMessage, { id: 'purchase_request' });
+      const errorMessage = error.response?.data?.message || t('common.error');
+      
+      // Lógica clave: si el error es de saldo insuficiente, iniciamos el flujo de depósito
+      if (errorMessage.includes('insuficiente')) {
+          toast.error(t('factoryPurchaseModal.toasts.insufficientFunds', 'Saldo insuficiente. Redirigiendo a depósito...'), { id: purchaseToastId });
+          // Esperamos un momento para que el usuario lea el toast y luego cambiamos de modal
+          setTimeout(() => {
+            onGoToDeposit();
+          }, 1500);
+      } else {
+          toast.error(errorMessage, { id: purchaseToastId });
+      }
     } finally {
-      setIsProcessing(false);
+      // No ponemos setIsProcessing(false) aquí para que el modal se cierre o cambie sin que el botón se reactive.
     }
   };
+  // --- FIN DE MODIFICACIÓN ---
   
   const backdropVariants = { visible: { opacity: 1 }, hidden: { opacity: 0 } };
   const modalVariants = {
@@ -73,9 +86,9 @@ const FactoryPurchaseModal = ({ factory, onClose, onGoToDeposit }) => {
             <div className="flex items-center justify-center">
                 <span className="text-text-secondary mr-4">{t('factoryPurchaseModal.quantity', 'Cantidad:')}</span>
                 <div className="flex items-center bg-background/50 rounded-lg border border-border">
-                    <button onClick={handleDecrease} disabled={quantity <= 1} className="p-2 disabled:opacity-40 hover:bg-black/10 transition rounded-l-lg"><HiMinus className="w-5 h-5" /></button>
+                    <button onClick={handleDecrease} disabled={quantity <= 1 || isProcessing} className="p-2 disabled:opacity-40 hover:bg-black/10 transition rounded-l-lg"><HiMinus className="w-5 h-5" /></button>
                     <span className="px-5 py-1 text-text-primary font-bold text-lg">{quantity}</span>
-                    <button onClick={handleIncrease} disabled={quantity >= MAX_QUANTITY} className="p-2 disabled:opacity-40 hover:bg-black/10 transition rounded-r-lg"><HiPlus className="w-5 h-5" /></button>
+                    <button onClick={handleIncrease} disabled={quantity >= MAX_QUANTITY || isProcessing} className="p-2 disabled:opacity-40 hover:bg-black/10 transition rounded-r-lg"><HiPlus className="w-5 h-5" /></button>
                 </div>
             </div>
 
@@ -92,19 +105,13 @@ const FactoryPurchaseModal = ({ factory, onClose, onGoToDeposit }) => {
         </main>
         
         <footer className="flex-shrink-0 p-6 pt-4 border-t border-border">
-            {/* --- INICIO DE MODIFICACIÓN: Lógica condicional del botón principal --- */}
-             {canPayWithBalance ? (
-                <button onClick={handlePurchase} disabled={isProcessing} className="w-full flex items-center justify-center gap-3 p-3 rounded-full bg-accent-primary text-white font-bold disabled:opacity-50 transition-all hover:bg-accent-primary-hover active:scale-95">
-                    <HiOutlineCurrencyDollar className="w-6 h-6" />
-                    <span>{t('factoryPurchaseModal.buyNow', 'Comprar Ya')} ({totalCost.toFixed(2)} USDT)</span>
-                </button>
-            ) : (
-                <button onClick={onGoToDeposit} className="w-full flex items-center justify-center gap-3 p-3 rounded-full bg-accent-tertiary text-white font-bold transition-all hover:bg-accent-tertiary-hover active:scale-95">
-                    <HiOutlineCreditCard className="w-6 h-6" />
-                    <span>{t('factoryPurchaseModal.rechargeNow', 'Recargar para Comprar')}</span>
-                </button>
-            )}
-            {/* --- FIN DE MODIFICACIÓN --- */}
+             <button 
+                onClick={handlePurchase} 
+                disabled={isProcessing} 
+                className="w-full flex items-center justify-center gap-3 p-3 rounded-full bg-accent-primary text-white font-bold disabled:opacity-50 transition-all hover:bg-accent-primary-hover active:scale-95">
+                <HiOutlineCurrencyDollar className="w-6 h-6" />
+                <span>{t('factoryPurchaseModal.buyNow', 'Comprar Ya')} ({totalCost.toFixed(2)} USDT)</span>
+            </button>
         </footer>
       </motion.div>
     </motion.div>
