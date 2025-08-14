@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/modals/SetWithdrawalPasswordModal.jsx (NUEVO COMPONENTE)
+// RUTA: frontend/src/components/modals/SetWithdrawalPasswordModal.jsx (ENDPOINT CORREGIDO)
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -29,29 +29,32 @@ const SetWithdrawalPasswordModal = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones
-    if (isPasswordSet && !currentPassword) return toast.error(t('setPasswordModal.toasts.currentRequired', 'La contraseña actual es obligatoria.'));
-    if (newPassword.length < 6) return toast.error(t('setPasswordModal.toasts.minLength', 'La nueva contraseña debe tener al menos 6 caracteres.'));
-    if (newPassword !== confirmPassword) return toast.error(t('setPasswordModal.toasts.noMatch', 'Las nuevas contraseñas no coinciden.'));
+    // Validaciones (sin cambios)
+    if (isPasswordSet && !currentPassword) return toast.error(t('setWithdrawalPasswordModal.toasts.currentRequired', 'La contraseña actual es obligatoria.'));
+    if (newPassword.length < 6) return toast.error(t('setWithdrawalPasswordModal.toasts.minLength', 'La nueva contraseña debe tener al menos 6 caracteres.'));
+    if (newPassword !== confirmPassword) return toast.error(t('setWithdrawalPasswordModal.toasts.noMatch', 'Las nuevas contraseñas no coinciden.'));
 
     setIsProcessing(true);
     
-    // El payload se construye dinámicamente
     const payload = { newPassword };
     if (isPasswordSet) {
       payload.currentPassword = currentPassword;
     }
 
-    const setPasswordPromise = api.post('/users/set-withdrawal-password', payload);
+    // --- INICIO DE CORRECCIÓN CRÍTICA ---
+    // Se ha corregido la ruta del endpoint para que coincida con la API del backend.
+    // Antes: '/users/set-withdrawal-password'
+    const setPasswordPromise = api.post('/users/withdrawal-password', payload);
+    // --- FIN DE CORRECCIÓN CRÍTICA ---
 
     toast.promise(setPasswordPromise, {
-      loading: t('setPasswordModal.toasts.processing', 'Guardando contraseña...'),
+      loading: t('setWithdrawalPasswordModal.toasts.saving', 'Guardando contraseña...'),
       success: (res) => {
-        setUser(res.data.user); // El backend devuelve el usuario con isWithdrawalPasswordSet: true
+        setUser(res.data.user);
         onClose();
-        return res.data.message || t('setPasswordModal.toasts.success', 'Contraseña guardada con éxito.');
+        return res.data.message || t('setWithdrawalPasswordModal.toasts.saveSuccess', 'Contraseña guardada con éxito.');
       },
-      error: (err) => err.response?.data?.message || t('setPasswordModal.toasts.error', 'Error al guardar la contraseña.'),
+      error: (err) => err.response?.data?.message || t('setWithdrawalPasswordModal.toasts.saveError', 'Error al guardar la contraseña.'),
     }).finally(() => setIsProcessing(false));
   };
 
@@ -68,38 +71,41 @@ const SetWithdrawalPasswordModal = ({ onClose }) => {
           <button className="absolute top-4 right-4 text-text-tertiary hover:text-text-primary" onClick={onClose}><HiXMark className="w-6 h-6" /></button>
           <h2 className="text-xl font-bold text-center">
             {isPasswordSet 
-              ? t('setPasswordModal.titleChange', 'Cambiar Contraseña de Retiro') 
-              : t('setPasswordModal.titleSet', 'Configurar Contraseña de Retiro')}
+              ? t('setWithdrawalPasswordModal.title_change', 'Cambiar Contraseña de Retiro') 
+              : t('setWithdrawalPasswordModal.title_set', 'Configurar Contraseña de Retiro')}
           </h2>
         </header>
 
         <form onSubmit={handleSubmit}>
           <main className="flex-grow p-6 pt-2 overflow-y-auto no-scrollbar space-y-4">
             <p className="text-sm text-center text-text-secondary">
-              {t('setPasswordModal.description', 'Esta contraseña se usará para autorizar todas tus solicitudes de retiro.')}
+              {isPasswordSet
+                ? t('setWithdrawalPasswordModal.intro_change', 'Introduce tu contraseña actual para establecer una nueva.')
+                : t('setWithdrawalPasswordModal.intro_set', 'Esta contraseña se usará para autorizar todos tus retiros. Guárdala en un lugar seguro.')
+              }
             </p>
 
             {isPasswordSet && (
               <div>
-                <label className="text-sm text-text-secondary mb-1 block">{t('setPasswordModal.currentPassword', 'Contraseña Actual')}</label>
+                <label className="text-sm text-text-secondary mb-1 block">{t('setWithdrawalPasswordModal.currentPassword_label', 'Contraseña Actual')}</label>
                 <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="w-full bg-background/50 p-3 rounded-lg border border-border" />
               </div>
             )}
             
             <div>
-              <label className="text-sm text-text-secondary mb-1 block">{t('setPasswordModal.newPassword', 'Nueva Contraseña')}</label>
+              <label className="text-sm text-text-secondary mb-1 block">{t('setWithdrawalPasswordModal.newPassword_label', 'Nueva Contraseña (mín. 6 caracteres)')}</label>
               <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full bg-background/50 p-3 rounded-lg border border-border" />
             </div>
 
             <div>
-              <label className="text-sm text-text-secondary mb-1 block">{t('setPasswordModal.confirmPassword', 'Confirmar Nueva Contraseña')}</label>
+              <label className="text-sm text-text-secondary mb-1 block">{t('setWithdrawalPasswordModal.confirmPassword_label', 'Confirmar Nueva Contraseña')}</label>
               <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full bg-background/50 p-3 rounded-lg border border-border" />
             </div>
           </main>
 
           <footer className="flex-shrink-0 p-6 pt-4 border-t border-border">
             <button type="submit" disabled={isProcessing} className="w-full py-3 bg-accent-primary text-white text-lg font-bold rounded-full disabled:opacity-50 hover:bg-accent-primary-hover active:scale-95 transition-all">
-              {isProcessing ? t('common.saving', 'Guardando...') : t('common.save', 'Guardar')}
+              {isProcessing ? t('common.saving', 'Guardando...') : t('setWithdrawalPasswordModal.saveButton', 'Guardar Contraseña')}
             </button>
           </footer>
         </form>
