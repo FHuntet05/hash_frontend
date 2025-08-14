@@ -1,9 +1,9 @@
-// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v3.0 - CON ANIMACIÓN Y DETALLES)
+// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v3.2 - PRUEBA DE BORDE ROJO)
 
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFactoryCycle } from '../../hooks/useFactoryCycle';
-import { FaFan } from 'react-icons/fa'; // 1. Importar el icono del ventilador
+import { FaFan } from 'react-icons/fa';
 
 const ProgressBar = ({ progress, bgColorClass }) => (
   <div className="w-full bg-black/10 rounded-full h-2 overflow-hidden">
@@ -24,8 +24,6 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
   const { factory, purchaseDate, expiryDate, _id: purchasedFactoryId, lastClaim } = purchasedFactory;
   const { countdown, progress: cycleProgress, isClaimable } = useFactoryCycle(lastClaim);
 
-  // 2. Lógica para la velocidad de la animación del ventilador
-  // A mayor producción, menor duración (giro más rápido). Se limita para evitar velocidades extremas.
   const animationDuration = useMemo(() => {
     return Math.max(0.2, 3 / (factory.dailyProduction || 1));
   }, [factory.dailyProduction]);
@@ -45,16 +43,16 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
     };
   }, [purchaseDate, expiryDate, t, factory.durationDays]);
 
-  // 3. Lógica para el color de la barra de vida útil (verde -> amarillo -> rojo)
   const lifetimeBarColor = useMemo(() => {
-    if (lifetimeProgress < 50) return 'bg-status-success'; // Verde
-    if (lifetimeProgress < 85) return 'bg-status-warning'; // Naranja/Amarillo
-    return 'bg-status-danger'; // Rojo
+    if (lifetimeProgress < 50) return 'bg-status-success';
+    if (lifetimeProgress < 85) return 'bg-status-warning';
+    return 'bg-status-danger';
   }, [lifetimeProgress]);
 
   return (
-    <div className="bg-card/70 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col gap-3 shadow-medium">
-      {/* --- SECCIÓN SUPERIOR CON NOMBRE Y VENTILADOR --- */}
+    // --- INICIO DE LA PRUEBA: SE AÑADE UN BORDE ROJO GRUESO ---
+    <div className="bg-card/70 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col gap-3 shadow-medium border-4 border-red-500">
+    {/* --- FIN DE LA PRUEBA --- */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-bold text-text-primary">{factory.name}</h3>
         <FaFan 
@@ -63,7 +61,6 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
         />
       </div>
 
-      {/* --- SECCIÓN MEDIA CON IMAGEN Y BARRAS DE PROGRESO --- */}
       <div className="flex gap-4 items-center">
         <div className="w-16 h-16 bg-background/50 rounded-lg flex items-center justify-center flex-shrink-0 border border-border">
             <img src={factory.imageUrl} alt={factory.name} className="w-12 h-12 object-contain" />
@@ -74,7 +71,6 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
                     <span>{t('purchasedFactory.nextClaim', 'Próximo Reclamo')}</span>
                     <span className="font-mono">{countdown}</span>
                 </div>
-                {/* La barra de ciclo de 24h siempre será del color de acento primario (verde o similar) */}
                 <ProgressBar progress={cycleProgress} bgColorClass="bg-accent-primary" />
             </div>
              <div>
@@ -87,7 +83,6 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
         </div>
       </div>
       
-      {/* --- BOTÓN DE ACCIÓN DINÁMICO --- */}
       <button
           onClick={() => onClaim(purchasedFactoryId)}
           disabled={!isClaimable}
@@ -97,7 +92,6 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
               : 'bg-text-tertiary/50 text-text-secondary cursor-not-allowed'
             }`}
         >
-          {/* 4. El botón ahora muestra la cantidad a reclamar */}
           {isClaimable 
             ? `${t('purchasedFactory.claim', 'RECLAMAR')} ${factory.dailyProduction.toFixed(2)} USDT` 
             : t('purchasedFactory.producing', 'PRODUCIENDO')}
