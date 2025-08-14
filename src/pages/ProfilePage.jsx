@@ -1,9 +1,10 @@
-// RUTA: frontend/src/pages/ProfilePage.jsx (CON OPCIÓN DE CONTRASEÑA DE RETIRO)
+// RUTA: frontend/src/pages/ProfilePage.jsx (v2.0 - LÓGICA DE DEPÓSITO Y MODALES)
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useUserStore from '../store/userStore';
+import api from '../api/axiosConfig'; // Importamos api para las llamadas
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -17,11 +18,13 @@ import {
     HiOutlineLanguage,
     HiOutlineArrowRightOnRectangle,
     HiChevronRight,
-    HiOutlineKey // <-- NUEVO ICONO
+    HiOutlineKey
 } from 'react-icons/hi2';
 
+// --- IMPORTACIÓN DE TODOS LOS MODALES NECESARIOS ---
 import WithdrawalModal from '../components/modals/WithdrawalModal';
-import SetWithdrawalPasswordModal from '../components/modals/SetWithdrawalPasswordModal'; // <-- NUEVO MODAL
+import SetWithdrawalPasswordModal from '../components/modals/SetWithdrawalPasswordModal';
+import DirectDepositModal from '../components/modals/DirectDepositModal'; // Para mostrar la dirección
 import Loader from '../components/common/Loader';
 
 const ActionRow = ({ icon: Icon, label, onClick, hasChevron = true }) => (
@@ -40,13 +43,31 @@ const ProfilePage = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
+    // --- ESTADOS PARA LOS 3 MODALES ---
     const [isWithdrawalModalOpen, setWithdrawalModalOpen] = useState(false);
-    // --- NUEVO ESTADO PARA EL MODAL DE CONTRASEÑA ---
     const [isSetPasswordModalOpen, setSetPasswordModalOpen] = useState(false);
+    const [isDepositModalOpen, setDepositModalOpen] = useState(false);
+    const [paymentInfo, setPaymentInfo] = useState(null);
 
-    if (!user) {
-        return <div className="h-full w-full flex items-center justify-center pt-16"><Loader /></div>;
-    }
+    // --- ESTADO DE CARGA PARA EL BOTÓN DE DEPÓSITO ---
+    const [isDepositing, setIsDepositing] = useState(false);
+
+    // --- INICIO DE LÓGICA DEL BOTÓN DE DEPÓSITO ---
+    const handleRechargeClick = async () => {
+        setIsDepositing(true);
+        toast.loading(t('profilePage.toasts.generatingAddress', 'Generando tu dirección...'), { id: 'deposit_address' });
+        try {
+            const response = await api.post('/wallet/create-deposit-address'); // No necesita body
+            setPaymentInfo(response.data);
+            setDepositModalOpen(true);
+            toast.success(t('profilePage.toasts.addressGenerated', 'Dirección generada.'), { id: 'deposit_address' });
+        } catch (error) {
+            toast.error(error.response?.data?.message || t('common.error', 'Ocurrió un error'), { id: 'deposit_address' });
+        } finally {
+            setIsDepositing(false);
+        }
+    };
+    // --- FIN DE LÓGICA DEL BOTÓN DE DEPÓSITO ---
 
     const handleWithdrawClick = () => {
         if ((user?.balance?.usdt || 0) < 1.0) {
@@ -55,20 +76,21 @@ const ProfilePage = () => {
             setWithdrawalModalOpen(true);
         }
     };
-    
-    const handleRechargeClick = () => navigate('/deposit');
+
+    // --- MEJORA DE UX: ESTADO DE CARGA ---
+    if (!user) {
+        return <div className="h-full w-full flex items-center justify-center pt-16"><Loader /></div>;
+    }
 
     const mainActions = [
-        { label: t('profile.recharge', 'Depositar'), icon: HiOutlineArrowDownOnSquare, onClick: handleRechargeClick },
+        { label: t('profile.recharge', 'Depositar'), icon: HiOutlineArrowDownOnSquare, onClick: handleRechargeClick, disabled: isDepositing },
         { label: t('profile.withdraw', 'Retirar'), icon: HiOutlineArrowUpOnSquare, onClick: handleWithdrawClick },
         { label: t('profile.records', 'Historial'), icon: HiOutlineRectangleStack, onClick: () => navigate('/history') },
     ];
     
-    // NOTA DE ARQUITECTURA: El backend deberá devolver el campo 'isWithdrawalPasswordSet' en el objeto de usuario.
     const isPasswordSet = user?.isWithdrawalPasswordSet || false;
 
     const secondaryActions = [
-        // --- NUEVA FILA DE ACCIÓN ---
         { 
             label: isPasswordSet 
                 ? t('profile.changeWithdrawalPassword', 'Cambiar Contraseña de Retiro') 
@@ -76,7 +98,6 @@ const ProfilePage = () => {
             icon: HiOutlineKey, 
             onClick: () => setSetPasswordModalOpen(true) 
         },
-        // -----------------------------
         { label: t('profile.invite', 'Equipo'), icon: HiOutlineUserGroup, onClick: () => navigate('/team') },
         { label: t('profile.language', 'Idioma'), icon: HiOutlineLanguage, onClick: () => navigate('/language') },
         { label: t('profile.support', 'Soporte'), icon: HiOutlineChatBubbleLeftRight, onClick: () => navigate('/support') },
@@ -93,6 +114,7 @@ const ProfilePage = () => {
                 transition={{ duration: 0.5 }}
             >
                 <div className="flex flex-col items-center text-center">
+                    {/* La foto ahora debería mostrarse correctamente */}
                     <img 
                         src={user?.photoUrl || '/assets/images/user-avatar-placeholder.png'} 
                         alt="Avatar" 
@@ -101,18 +123,13 @@ const ProfilePage = () => {
                     <h1 className="text-2xl font-bold text-text-primary mt-4">{user?.username || 'Usuario'}</h1>
                     <div className="flex items-center gap-4 mt-2 text-text-secondary text-sm">
                         <span>ID: {user?.telegramId}</span>
-                        {user?.referrerId && <span>{t('profile.inviter', 'Invitado por')}: {user.referrerId}</span>}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 text-center">
+                <div className="grid grid-cols-1 gap-4 text-center">
                     <div className="p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-medium">
-                        <p className="text-sm text-text-secondary uppercase tracking-wider">{t('profilePage.balanceUsdtLabel', 'Saldo')}</p>
+                        <p className="text-sm text-text-secondary uppercase tracking-wider">{t('profilePage.balanceUsdtLabel', 'Saldo Principal')}</p>
                         <p className="text-2xl font-bold text-accent-primary mt-1">{(user?.balance?.usdt || 0).toFixed(4)}</p>
-                    </div>
-                    <div className="p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-medium">
-                        <p className="text-sm text-text-secondary uppercase tracking-wider">{t('profilePage.productionLabel', 'Producción')}</p>
-                        <p className="text-2xl font-bold text-accent-secondary mt-1">{(user?.productionBalance?.usdt || 0).toFixed(4)}</p>
                     </div>
                 </div>
 
@@ -137,9 +154,10 @@ const ProfilePage = () => {
                 </div>
             </motion.div>
 
+            {/* AnimatePresence para gestionar las transiciones de todos los modales */}
             <AnimatePresence>
+                {isDepositModalOpen && <DirectDepositModal paymentInfo={paymentInfo} onClose={() => setDepositModalOpen(false)} />}
                 {isWithdrawalModalOpen && <WithdrawalModal onClose={() => setWithdrawalModalOpen(false)} />}
-                {/* --- SE AÑADE EL NUEVO MODAL --- */}
                 {isSetPasswordModalOpen && <SetWithdrawalPasswordModal onClose={() => setSetPasswordModalOpen(false)} />}
             </AnimatePresence>
         </>

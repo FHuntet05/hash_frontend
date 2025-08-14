@@ -1,147 +1,156 @@
 {
   "nav": {
-    "home": "Mío",
-    "ranking": "Clasificación",
-    "upgrade": "Mejora",
+    "home": "Principal",
+    "ranking": "Ranking",
+    "factories": "Tienda",
     "team": "Equipo",
-    "profile": "A mí"
+    "profile": "Perfil"
+  },
+  "common": {
+    "error": "Ocurrió un error",
+    "copied": "¡Copiado!",
+    "copyError": "No se pudo copiar",
+    "continue": "Continuar",
+    "loading": "Cargando...",
+    "close": "Cerrar",
+    "loadingUser": "Cargando datos del usuario..."
+  },
+  "homePage": {
+    "mainBalance": "Saldo Principal",
+    "production": "Producción",
+    "loadingAnimation": "Cargando animación...",
+    "myFactories": "Mis Fábricas",
+    "noFactories": "No tienes fábricas activas.",
+    "goToStore": "Visita la tienda para adquirir tu primera fábrica y empezar a producir.",
+    "tasks": "Tareas",
+    "tasksComingSoon": "El centro de tareas estará disponible próximamente.",
+    "toasts": {
+      "claiming": "Reclamando producción...",
+      "claimSuccess": "¡Producción reclamada!"
+    }
+  },
+  "profilePage": {
+    "balanceUsdtLabel": "Saldo Principal",
+    "productionLabel": "Producción Acumulada",
+    "toasts": {
+      "insufficientBalance": "Saldo insuficiente. El mínimo para retirar es {{min}} USDT.",
+      "generatingAddress": "Generando tu dirección...",
+      "addressGenerated": "Dirección generada."
+    }
   },
   "profile": {
-    "recharge": "Recargar",
+    "recharge": "Depositar",
     "withdraw": "Retirar",
-    "records": "Registros",
-    "exchange": "NTX/USDT",
-    "invite": "Invitar",
-    "password": "Contraseña",
+    "records": "Historial",
+    "invite": "Equipo",
+    "setWithdrawalPassword": "Configurar Contraseña de Retiro",
+    "changeWithdrawalPassword": "Cambiar Contraseña de Retiro",
     "language": "Idioma",
     "faq": "FAQ",
-    "about": "Sobre nosotros",
-    "support": "Atención al Cliente",
+    "about": "Sobre Nosotros",
+    "support": "Soporte",
     "logout": "Cerrar Sesión",
-    "comingSoon": {
-      "withdraw": "Función de retiro próximamente.",
-      "records": "Historial financiero próximamente.",
-      "exchange": "Intercambio NTX/USDT próximamente.",
-      "password": "Gestión de contraseña próximamente.",
-      "faq": "Preguntas frecuentes próximamente.",
-      "about": "Página 'Sobre nosotros' próximamente.",
-      "support": "Contacto con soporte próximamente."
+    "mainActionsTitle": "Acciones Principales",
+    "settingsTitle": "Ajustes y Más"
+  },
+  "teamPage": {
+    "title": "Invita a tus Amigos",
+    "description": "Comparte tu enlace y gana comisiones por cada miembro de tu equipo.",
+    "toasts": {
+      "fetchError": "Error al cargar datos del equipo",
+      "linkCopied": "Enlace de invitación copiado!"
+    },
+    "stats": {
+      "members": "Miembros Totales",
+      "commission": "Comisión Total"
+    },
+    "levelsTitle": "Niveles del Equipo",
+    "levelLabel": "Nivel {{level}}",
+    "levels": {
+      "totalMembers": "Miembros",
+      "commission": "Comisión"
+    },
+    "noLevelsData": "Aún no tienes miembros en tu equipo. ¡Empieza a invitar!"
+  },
+  "factoriesPage": {
+    "title": "Tienda de Fábricas",
+    "subtitle": "Adquiere nuevas fábricas para aumentar tu producción.",
+    "error": "No se pudieron cargar las fábricas.",
+    "noFactoriesAvailable": "No hay fábricas disponibles en la tienda en este momento."
+  },
+  "rankingPage": {
+    "title": "Ranking de Ganancias",
+    "subtitle": "Compite y demuestra quién es el mejor.",
+    "yourPosition": "Tu Posición",
+    "rank": "Rango",
+    "earnings": "Ganancias",
+    "notRanked": "No estás clasificado en este ranking.",
+    "tabs": {
+      "global": "Global",
+      "team": "Equipo"
+    },
+    "error": "No se pudo cargar el ranking.",
+    "noData": "No hay datos disponibles en este ranking."
+  },
+  "historyPage": {
+    "title": "Historial de Transacciones",
+    "loading": "Cargando historial...",
+    "error": "No se pudo cargar el historial.",
+    "empty": "No tienes transacciones todavía."
+  },
+  "directDepositModal": {
+    "titleV2": "Tu Dirección de Depósito",
+    "instructionV2": "Deposita cualquier cantidad de USDT en tu dirección personal. Los fondos se acreditarán automáticamente.",
+    "addressLabel": "Tu Dirección Única {{currency}}",
+    "warningV2": "Asegúrate de enviar fondos a través de la red correcta: {{network}} (BEP20)."
+  },
+  "socialShare": {
+    "shareOn": "Compartir en",
+    "text": "¡Únete a mi equipo en Mega Fábrica y empecemos a producir juntos! Mi enlace:",
+    "title": "Únete a Mega Fábrica"
+  },
+  "factoryCard": {
+    "price": "Precio",
+    "dailyProduction": "Producción Diaria",
+    "duration": "Duración",
+    "days": "{{count}} días",
+    "buyButton": "Comprar",
+    "owned": "Adquirida"
+  },
+  "factoryPurchaseModal": {
+    "title": "Confirmar Compra",
+    "description": "¿Estás seguro de que quieres comprar {{quantity}}x \"{{factoryName}}\" por un total de {{totalCost}} USDT?",
+    "yourBalance": "Tu saldo actual es {{balance}} USDT.",
+    "insufficientFunds": "Fondos insuficientes",
+    "confirmButton": "Confirmar",
+    "cancelButton": "Cancelar",
+    "toasts": {
+      "purchasing": "Procesando compra...",
+      "purchaseSuccess": "¡Compra exitosa!",
+      "purchaseError": "Error al realizar la compra."
     }
   },
-  "tools": {
-    "title": "Herramientas de Minería",
-    "subtitle": "Mejora tu equipamiento para aumentar tus ganancias.",
-    "loading": "Cargando...",
-    "error": "No se pudieron cargar las herramientas."
+  "purchasedFactoryItem": {
+    "productionCycle": "Ciclo de producción",
+    "readyToClaim": "Listo para reclamar",
+    "claimButton": "Reclamar",
+    "productionStatus": "Producción",
+    "expiresIn": "Expira en"
   },
-    "common": {
-        "error": "Error",
-        "copied": "¡Copiado!",
-        "continue": "Continuar",
-        "loading": "Cargando...",
-        "close": "Cerrar"
-    },
-    "homePage": {
-        "buttons": {
-            "start": "INICIAR",
-            "claim": "RECLAMAR"
-        },
-        "toasts": {
-            "startingCycle": "Iniciando ciclo...",
-            "cycleStarted": "¡Ciclo de minado iniciado!",
-            "claiming": "Reclamando..."
-        },
-        "errors": {
-            "noUser": "Error: No se pudo obtener la información del usuario. Intente reiniciar la aplicación."
-        },
-        "taskCenter": "Centro de Tareas"
-    },
-    "profilePage": {
-        "balanceNtxLabel": "Cartera de Valor (NTX)",
-        "balanceUsdtLabel": "Cartera de Corretaje (USDT)",
-        "toasts": {
-            "insufficientBalance": "Saldo insuficiente. El mínimo para retirar es {{min}} USDT.",
-            "insufficientNtx": "Saldo NTX insuficiente. El mínimo para intercambiar es {{min}} NTX.",
-            "loadingPrices": "Obteniendo precios de mercado...",
-            "selectCoin": "Selecciona una moneda para pagar."
-        }
-    },
-    "teamPage": {
-        "stats": {
-            "members": "Miembros del Equipo",
-            "totalCommission": "Comisión Total",
-            "teamRecharge": "Recargas del Equipo",
-            "teamWithdrawals": "Retiros del Equipo"
-        },
-        "referralLink": {
-            "copy": "Copiar",
-            "shareOn": "Compartir en",
-            "shareText": "¡Ven y forma tu equipo y ganemos dinero juntos!"
-        },
-        "levels": {
-            "level": "NIVEL",
-            "totalMembers": "Miembros Totales",
-            "validMembers": "Miembros Válidos",
-            "showDetails": "MOSTRAR DETALLES"
-        },
-        "shareWithFriends": "COMPARTIR CON AMIGOS",
-        "detailsModal": {
-            "errorLoading": "No se pudieron cargar los detalles del equipo."
-        }
-    },
-    "factoryPage": {
-        "hoursOfWork": "Horas de trabajo",
-        "miningSpeed": "Velocidad de minería",
-        "perDay": "NTX/Día",
-        "tabs": {
-            "allTools": "Herramientas de minería",
-            "myTools": "Mejora"
-        },
-        "purchaseHistory": "Historial de compras",
-        "noActiveTools": "No tienes herramientas activas."
-    },
-    "rankingPage": {
-        "tabs": {
-            "global": "Mantener la clasificación",
-            "team": "Clasificación de equipos"
-        },
-        "loading": "Cargando clasificación...",
-        "error": "No se pudo cargar la clasificación."
-    },
-    "historyPage": {
-        "title": "Historial de Registros",
-        "loading": "Cargando historial...",
-        "error": "No se pudo cargar el historial.",
-        "empty": "No tienes transacciones todavía."
-    },
-    "faqPage": {
-        "title": "Preguntas Frecuentes (FAQ)",
-        "q1": "¿Qué es NEURO LINK?",
-        "a1": "NEURO LINK es una plataforma de simulación de minería gamificada que te permite ganar tokens NTX a través de la compra y gestión de herramientas virtuales.",
-        "q2": "¿Cómo puedo aumentar mis ganancias?",
-        "a2": "Puedes aumentar tu tasa de minería comprando herramientas más potentes en la sección 'Mejora'. También puedes ganar bonificaciones invitando a amigos a unirse a tu equipo.",
-        "q3": "¿Qué es el token NTX?",
-        "a3": "NTX es el token nativo de la plataforma NEURO LINK. Lo acumulas a través de la minería y puedes usarlo dentro del ecosistema de la aplicación.",
-        "q4": "¿Cómo funciona el sistema de referidos?",
-        "a4": "Cuando alguien se registra usando tu código de invitación, se une a tu equipo. Ganas un porcentaje de la actividad de minería de los miembros de tu equipo, repartido en varios niveles."
-    },
-    "aboutPage": {
-        "title": "Sobre nosotros",
-        "p1": "Somos un equipo apasionado por la tecnología blockchain y las finanzas descentralizadas. Nuestra misión con NEURO LINK es crear una puerta de entrada accesible y divertida al mundo de las criptomonedas.",
-        "p2": "Creemos que el aprendizaje debe ser una experiencia atractiva, y hemos diseñado esta plataforma para simular los conceptos de minería y recompensas de una manera sencilla y visual."
-    },
-    "supportPage": {
-        "title": "Atención al Cliente",
-        "p1": "Si tienes algún problema, duda o sugerencia, no dudes en contactarnos. Nuestro equipo de soporte está aquí para ayudarte.",
-        "supportLink": "Soporte"
-    },
-    "taskLogic": {
-        "markingVisited": "Marcando como visitado...",
-        "visitSuccess": "¡Vuelve para reclamar tu recompensa!",
-        "visitError": "Algo salió mal.",
-        "claimingReward": "Reclamando recompensa...",
-        "claimSuccess": "¡Recompensa reclamada!",
-        "claimError": "No se pudo reclamar la tarea.",
-        "statusError": "No se pudo actualizar el estado de las tareas."
+  "setWithdrawalPasswordModal": {
+    "title_set": "Configurar Contraseña de Retiro",
+    "title_change": "Cambiar Contraseña de Retiro",
+    "intro_set": "Esta contraseña se usará para autorizar todos tus retiros. Guárdala en un lugar seguro.",
+    "intro_change": "Introduce tu contraseña actual para establecer una nueva.",
+    "currentPassword_label": "Contraseña Actual",
+    "newPassword_label": "Nueva Contraseña (mín. 6 caracteres)",
+    "confirmPassword_label": "Confirmar Nueva Contraseña",
+    "saveButton": "Guardar Contraseña",
+    "toasts": {
+      "passwordsDontMatch": "Las nuevas contraseñas no coinciden.",
+      "saving": "Guardando...",
+      "saveSuccess": "Contraseña guardada con éxito.",
+      "saveError": "Error al guardar la contraseña."
     }
+  }
 }

@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/HomePage.jsx (RECONSTRUCCIÓN FINAL CON PADDING CORRECTO)
+// RUTA: frontend/src/pages/HomePage.jsx (v2.0 - UI REDISEÑADA Y SIMPLIFICADA)
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,36 +8,33 @@ import toast from 'react-hot-toast';
 
 import PurchasedFactoryItem from '../components/factories/PurchasedFactoryItem';
 import Loader from '../components/common/Loader';
+import { motion } from 'framer-motion';
 
-const UserBalanceDisplay = ({ balance, productionBalance }) => {
+// --- COMPONENTE DE BALANCE SIMPLIFICADO ---
+const UserBalanceDisplay = ({ balance }) => {
     const { t } = useTranslation();
     const formattedBalance = typeof balance === 'number' ? balance.toFixed(4) : '0.0000';
-    const formattedProduction = typeof productionBalance === 'number' ? productionBalance.toFixed(4) : '0.0000';
     
     return (
-        <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-medium">
-                <p className="text-sm text-text-secondary uppercase tracking-widest">{t('homePage.mainBalance', 'Saldo Principal')}</p>
-                <p className="text-3xl font-bold text-text-primary mt-1">
-                    {formattedBalance} <span className="text-xl text-accent-primary">USDT</span>
-                </p>
-            </div>
-            <div className="text-center p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-medium">
-                <p className="text-sm text-text-secondary uppercase tracking-widest">{t('homePage.production', 'Producción')}</p>
-                <p className="text-3xl font-bold text-text-primary mt-1">
-                    {formattedProduction} <span className="text-xl text-accent-secondary">USDT</span>
-                </p>
-            </div>
+        <div className="text-center p-4 bg-card/70 backdrop-blur-md rounded-2xl border border-white/20 shadow-medium">
+            <p className="text-sm text-text-secondary uppercase tracking-widest">{t('homePage.mainBalance', 'Saldo Principal')}</p>
+            <p className="text-3xl font-bold text-text-primary mt-1">
+                {formattedBalance} <span className="text-xl text-accent-primary">USDT</span>
+            </p>
         </div>
     );
 };
 
+// --- COMPONENTE DE ANIMACIÓN CON ESTILOS AJUSTADOS ---
 const FactoryAnimation = () => {
     const { t } = useTranslation();
     const [isVideoLoading, setVideoLoading] = useState(true);
 
     return (
-        <div className="relative w-full aspect-video mx-auto rounded-2xl overflow-hidden bg-black/5 border border-white/10 shadow-medium">
+        // --- INICIO DE MODIFICACIÓN DE ESTILOS ---
+        // Se usa aspect-square para una relación 1:1, max-w-xs para controlar el tamaño y rounded-3xl para los bordes.
+        <div className="relative w-full max-w-xs mx-auto aspect-square rounded-3xl overflow-hidden bg-black/5 border border-white/10 shadow-medium">
+        {/* --- FIN DE MODIFICACIÓN DE ESTILOS --- */}
             {isVideoLoading && (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <Loader text={t('homePage.loadingAnimation', 'Cargando animación...')} />
@@ -51,12 +48,10 @@ const FactoryAnimation = () => {
                 playsInline
                 onLoadedData={() => setVideoLoading(false)}
                 className={`w-full h-full object-cover transition-opacity duration-500 ${isVideoLoading ? 'opacity-0' : 'opacity-100'}`}
-                style={{ objectPosition: '50% 65%' }}
             />
         </div>
     );
 };
-
 
 const HomePage = () => {
     const { t } = useTranslation();
@@ -67,7 +62,7 @@ const HomePage = () => {
         try {
             const response = await api.post('/wallet/claim-production', { purchasedFactoryId });
             setUser(response.data.user);
-            toast.success(t('homePage.toasts.claimSuccess', 'Producción reclamada!'), { id: 'claim_request' });
+            toast.success(response.data.message, { id: 'claim_request' });
         } catch (error) {
             toast.error(error.response?.data?.message || t('common.error', 'Ocurrió un error'), { id: 'claim_request' });
         }
@@ -78,14 +73,18 @@ const HomePage = () => {
     }
     
     return (
-        // --- CORRECCIÓN CRÍTICA ---
-        // Se añade un padding superior 'pt-6' para que el contenido no choque con el header de Telegram.
-        // El padding inferior 'pb-24' se mantiene para dejar espacio al BottomNav.
-        <div className="flex flex-col gap-6 p-4 pt-6 pb-24">
-            <UserBalanceDisplay balance={user.balance?.usdt} productionBalance={user.productionBalance?.usdt} />
+        <motion.div 
+            className="flex flex-col gap-6 p-4 pt-6 pb-28" // Se ajusta el padding inferior para el BottomNav
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
+            <UserBalanceDisplay balance={user.balance?.usdt} />
             <FactoryAnimation />
             <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.myFactories', 'Mis Fábricas')}</h2>
+                
+                {/* Esta lógica ahora debería funcionar correctamente al recibir los datos populados */}
                 {user.purchasedFactories && user.purchasedFactories.length > 0 ? (
                     <div className="space-y-4">
                         {user.purchasedFactories.map(pf => (
@@ -103,13 +102,14 @@ const HomePage = () => {
                     </div>
                 )}
             </div>
+             {/* El centro de tareas se mantiene como "próximamente" */}
              <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.tasks', 'Tareas')}</h2>
                 <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 flex items-center justify-center text-text-secondary border border-white/20 shadow-medium">
                     <p>{t('homePage.tasksComingSoon', 'El centro de tareas estará disponible próximamente.')}</p>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

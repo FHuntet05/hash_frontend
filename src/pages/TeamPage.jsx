@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/TeamPage.jsx (CON SocialShare INTEGRADO)
+// RUTA: frontend/src/pages/TeamPage.jsx (v2.0 - SINCRONIZADO CON NUEVA API)
 
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,12 +6,12 @@ import useUserStore from '../store/userStore';
 import api from '../api/axiosConfig';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
-import { HiOutlineUserGroup, HiOutlineBanknotes, HiOutlineArrowDownTray, HiOutlineArrowUpTray, HiOutlineClipboardDocument } from 'react-icons/hi2';
+import { HiOutlineUserGroup, HiOutlineBanknotes, HiOutlineClipboardDocument } from 'react-icons/hi2';
 
 import TeamStatCard from '../components/team/TeamStatCard';
 import TeamLevelCard from '../components/team/TeamLevelCard';
 import Loader from '../components/common/Loader';
-import SocialShare from '../components/team/SocialShare'; // <-- IMPORTACIÓN
+import SocialShare from '../components/team/SocialShare';
 
 const TeamPage = () => {
   const { t } = useTranslation();
@@ -21,6 +21,7 @@ const TeamPage = () => {
 
   useEffect(() => {
     const fetchTeamData = async () => {
+      setLoading(true); // Se activa el loader al empezar
       try {
         const response = await api.get('/team/summary');
         setTeamData(response.data);
@@ -30,26 +31,39 @@ const TeamPage = () => {
         setLoading(false);
       }
     };
-    fetchTeamData();
-  }, [t]);
+    if (user) { // Solo se ejecuta si el usuario está disponible
+        fetchTeamData();
+    }
+  }, [t, user]);
 
-  const referralLink = `${window.location.origin}/register?ref=${user.telegramId}`;
+  const referralLink = `${window.location.origin}/register?ref=${user?.telegramId}`;
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
-    toast.success(t('teamPage.toasts.linkCopied', 'Enlace copiado!'));
+    toast.success(t('teamPage.toasts.linkCopied', 'Enlace de invitación copiado!'));
   };
 
-  if (loading) {
+  if (loading || !user) {
     return <div className="flex items-center justify-center h-full pt-16"><Loader /></div>;
   }
 
+  // --- INICIO DE MODIFICACIÓN: Adaptar a la nueva estructura de datos de la API ---
   const stats = [
-    { title: t('teamPage.stats.members'), value: teamData?.totalMembers || 0, icon: HiOutlineUserGroup, color: "text-accent-primary" },
-    { title: t('teamPage.stats.commission'), value: `${(teamData?.totalCommissions?.usdt || 0).toFixed(2)}`, icon: HiOutlineBanknotes, color: "text-accent-secondary" },
-    { title: t('teamPage.stats.recharge'), value: `${(teamData?.totalDeposits?.usdt || 0).toFixed(2)}`, icon: HiOutlineArrowDownTray, color: "text-text-primary" },
-    { title: t('teamPage.stats.withdraw'), value: `${(teamData?.totalWithdrawals?.usdt || 0).toFixed(2)}`, icon: HiOutlineArrowUpTray, color: "text-text-primary" },
+    { 
+      title: t('teamPage.stats.members', 'Miembros Totales'), 
+      value: teamData?.totalTeamMembers || 0, 
+      icon: HiOutlineUserGroup, 
+      color: "text-accent-primary" 
+    },
+    { 
+      title: t('teamPage.stats.commission', 'Comisión Total'), 
+      value: `${(teamData?.totalCommission || 0).toFixed(2)}`, 
+      icon: HiOutlineBanknotes, 
+      color: "text-accent-secondary" 
+    },
+    // Los stats de recarga y retiro se eliminan para coincidir con la API simplificada
   ];
+  // --- FIN DE MODIFICACIÓN ---
 
   return (
     <motion.div 
@@ -60,7 +74,7 @@ const TeamPage = () => {
     >
       <div className="bg-card/70 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-medium text-center">
         <h1 className="text-xl font-bold text-text-primary">{t('teamPage.title', 'Invita a tus Amigos')}</h1>
-        <p className="text-text-secondary text-sm mt-2 mb-4">{t('teamPage.description', 'Comparte tu enlace y gana comisiones por cada miembro.')}</p>
+        <p className="text-text-secondary text-sm mt-2 mb-4">{t('teamPage.description', 'Comparte tu enlace y gana comisiones por cada miembro de tu equipo.')}</p>
         <div className="flex items-center bg-background/50 rounded-lg p-2 border border-border">
           <input 
             type="text" 
@@ -72,7 +86,6 @@ const TeamPage = () => {
             <HiOutlineClipboardDocument className="w-5 h-5" />
           </button>
         </div>
-        {/* --- INTEGRACIÓN DE SocialShare --- */}
         <SocialShare referralLink={referralLink} />
       </div>
 
@@ -86,19 +99,21 @@ const TeamPage = () => {
         <h2 className="text-lg font-semibold text-text-primary mb-4">{t('teamPage.levelsTitle', 'Niveles del Equipo')}</h2>
         {teamData?.levels && teamData.levels.length > 0 ? (
           <div className="space-y-3">
+            {/* --- INICIO DE MODIFICACIÓN: Pasar props correctas a TeamLevelCard --- */}
             {teamData.levels.map(levelData => (
               <TeamLevelCard 
                 key={levelData.level} 
                 level={levelData.level} 
-                members={levelData.count} 
-                validMembers={levelData.validCount}
-                totalCommission={levelData.totalCommission}
+                members={levelData.totalMembers} // Se usa 'totalMembers'
+                totalCommission={levelData.totalCommission} // Se pasa la nueva propiedad
+                // Se elimina 'validMembers'
               />
             ))}
+            {/* --- FIN DE MODIFICACIÓN --- */}
           </div>
         ) : (
           <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-white/20 shadow-subtle">
-            <p>{t('teamPage.noLevelsData', 'No hay datos de niveles de equipo disponibles.')}</p>
+            <p>{t('teamPage.noLevelsData', 'Aún no tienes miembros en tu equipo. ¡Empieza a invitar!')}</p>
           </div>
         )}
       </div>

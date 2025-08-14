@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/FactoriesPage.jsx (DISEÑO CRISTALINO)
+// RUTA: frontend/src/pages/FactoriesPage.jsx (v2.0 - VALIDADO CONTRA NUEVA API)
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,8 @@ import FactoryCard from '../components/factories/FactoryCard';
 import Loader from '../components/common/Loader';
 import FactoryPurchaseModal from '../components/factories/FactoryPurchaseModal';
 
-const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+// Animaciones para la lista
+const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.07 } } };
 const itemVariants = { hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } };
 
 const FactoriesPage = () => {
@@ -27,6 +28,7 @@ const FactoriesPage = () => {
     const fetchFactories = async () => {
         try {
             setLoading(true);
+            // Esta llamada ahora funcionará gracias a las correcciones del Lote 1
             const response = await api.get('/factories');
             setFactories(response.data);
             setError(null);
@@ -41,10 +43,11 @@ const FactoriesPage = () => {
     fetchFactories();
   }, [t]);
 
-  // Se mantiene la lógica para saber qué fábricas ya se poseen
+  // Esta lógica para identificar las fábricas que ya posee el usuario es correcta
+  // y debería funcionar ahora que el user object está bien populado.
   const ownedFactoryIds = useMemo(() => {
     if (!user || !user.purchasedFactories) return new Set();
-    return new Set(user.purchasedFactories.map(pf => pf.factory?._id).filter(id => id));
+    return new Set(user.purchasedFactories.map(pf => pf.factory?._id).filter(Boolean));
   }, [user]);
 
   const handleBuyClick = (factory) => setSelectedFactory(factory);
@@ -75,7 +78,7 @@ const FactoriesPage = () => {
             <motion.div key="loader" className="flex justify-center pt-8"><Loader /></motion.div> 
           ) : error ? ( 
             <StatusCard message={error} className="text-status-danger" />
-          ) : (
+          ) : factories.length > 0 ? (
             <motion.div 
               className="space-y-4"
               variants={containerVariants}
@@ -89,13 +92,16 @@ const FactoriesPage = () => {
                   >
                     <FactoryCard 
                       factory={factory} 
-                      onBuyClick={handleBuyClick} // Cambiado onPurchase a onBuyClick para coincidir
+                      onBuyClick={handleBuyClick}
+                      // La propiedad 'isOwned' funcionará correctamente
                       isOwned={ownedFactoryIds.has(factory._id)}
                     />
                   </motion.div>
                 )
               )}
             </motion.div>
+          ) : (
+             <StatusCard message={t('factoriesPage.noFactoriesAvailable', 'No hay fábricas disponibles en la tienda en este momento.')} />
           )}
         </AnimatePresence>
       </div>
