@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/modals/DirectDepositModal.jsx (VERSIÓN FINAL CON HOOK)
+// RUTA: frontend/src/components/modals/DirectDepositModal.jsx (v2.0 - TRADUCCIÓN CORREGIDA)
 
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -6,7 +6,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useTranslation } from 'react-i18next';
 import { HiXMark, HiOutlineClipboardDocument, HiOutlineClipboardDocumentCheck } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
-import useCopy from '../../hooks/useCopy'; // Ahora sí, importamos el hook que acabamos de crear.
+import useCopy from '../../hooks/useCopy';
 
 const backdropVariants = { hidden: { opacity: 0 }, visible: { opacity: 1 } };
 const modalVariants = {
@@ -51,7 +51,11 @@ const DirectDepositModal = ({ paymentInfo, onClose }) => {
             </div>
             
             <div className="w-full bg-background/50 p-3 rounded-lg border border-border">
-              <label className="text-xs text-text-secondary">{t('directDepositModal.addressLabel', `Tu Dirección Única ${currency}`)}</label>
+              {/* --- INICIO DE CORRECCIÓN --- */}
+              <label className="text-xs text-text-secondary">
+                {t('directDepositModal.addressLabel', 'Tu Dirección Única {{currency}}', { currency })}
+              </label>
+              {/* --- FIN DE CORRECCIÓN --- */}
               <div className="flex justify-between items-center">
                 <p className="text-sm font-mono break-all pr-2">{paymentAddress}</p>
                 <button onClick={() => copyAddress(paymentAddress)} className="p-2 text-text-secondary hover:text-accent-primary">
@@ -61,7 +65,11 @@ const DirectDepositModal = ({ paymentInfo, onClose }) => {
             </div>
 
             <div className="w-full text-xs text-center text-accent-tertiary bg-accent-tertiary/10 p-3 rounded-lg border border-accent-tertiary/20">
-              <strong>{t('directDepositModal.warningV2', `Asegúrate de enviar fondos a través de la red correcta: ${network} (BEP20).`)}</strong>
+              {/* --- INICIO DE CORRECCIÓN --- */}
+              <strong>
+                {t('directDepositModal.warningV2', 'Asegúrate de enviar fondos a través de la red correcta: {{network}} (BEP20).', { network })}
+              </strong>
+              {/* --- FIN DE CORRECCIÓN --- */}
             </div>
           </div>
         </main>

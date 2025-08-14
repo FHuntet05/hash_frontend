@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/HomePage.jsx (v2.0 - UI REDISEÑADA Y SIMPLIFICADA)
+// RUTA: frontend/src/pages/HomePage.jsx (v2.1 - AJUSTES DE DISEÑO DE ANIMACIÓN)
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,6 @@ import PurchasedFactoryItem from '../components/factories/PurchasedFactoryItem';
 import Loader from '../components/common/Loader';
 import { motion } from 'framer-motion';
 
-// --- COMPONENTE DE BALANCE SIMPLIFICADO ---
 const UserBalanceDisplay = ({ balance }) => {
     const { t } = useTranslation();
     const formattedBalance = typeof balance === 'number' ? balance.toFixed(4) : '0.0000';
@@ -25,15 +24,15 @@ const UserBalanceDisplay = ({ balance }) => {
     );
 };
 
-// --- COMPONENTE DE ANIMACIÓN CON ESTILOS AJUSTADOS ---
 const FactoryAnimation = () => {
     const { t } = useTranslation();
     const [isVideoLoading, setVideoLoading] = useState(true);
 
     return (
         // --- INICIO DE MODIFICACIÓN DE ESTILOS ---
-        // Se usa aspect-square para una relación 1:1, max-w-xs para controlar el tamaño y rounded-3xl para los bordes.
-        <div className="relative w-full max-w-xs mx-auto aspect-square rounded-3xl overflow-hidden bg-black/5 border border-white/10 shadow-medium">
+        // Se usa max-w-sm para un tamaño más grande, se mantiene aspect-square y mx-auto.
+        // Se puede cambiar max-w-sm a max-w-md o full según se necesite.
+        <div className="relative w-full max-w-sm mx-auto aspect-square rounded-3xl overflow-hidden bg-black/5 border border-white/10 shadow-medium">
         {/* --- FIN DE MODIFICACIÓN DE ESTILOS --- */}
             {isVideoLoading && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -73,18 +72,19 @@ const HomePage = () => {
     }
     
     return (
+        // --- INICIO DE MODIFICACIÓN DE ESTILOS ---
+        // Se reduce el gap de 6 a 4 para juntar los elementos y subir la animación.
         <motion.div 
-            className="flex flex-col gap-6 p-4 pt-6 pb-28" // Se ajusta el padding inferior para el BottomNav
+            className="flex flex-col gap-4 p-4 pt-6 pb-28" 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
         >
+        {/* --- FIN DE MODIFICACIÓN DE ESTILOS --- */}
             <UserBalanceDisplay balance={user.balance?.usdt} />
             <FactoryAnimation />
             <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.myFactories', 'Mis Fábricas')}</h2>
-                
-                {/* Esta lógica ahora debería funcionar correctamente al recibir los datos populados */}
                 {user.purchasedFactories && user.purchasedFactories.length > 0 ? (
                     <div className="space-y-4">
                         {user.purchasedFactories.map(pf => (
@@ -102,7 +102,6 @@ const HomePage = () => {
                     </div>
                 )}
             </div>
-             {/* El centro de tareas se mantiene como "próximamente" */}
              <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.tasks', 'Tareas')}</h2>
                 <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 flex items-center justify-center text-text-secondary border border-white/20 shadow-medium">

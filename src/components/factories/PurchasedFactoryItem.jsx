@@ -1,8 +1,33 @@
-// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (DISEÑO CRISTALINO)
+// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v2.0 - A PRUEBA DE ERRORES)
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFactoryCycle } from '../../hooks/useFactoryCycle';
+
+// --- INICIO DE CORRECCIÓN: Lógica del hook integrada directamente para evitar dependencias externas ---
+const useFactoryCycle = (lastClaim) => {
+    const [now, setNow] = useState(Date.now());
+
+    useEffect(() => {
+        const timer = setInterval(() => setNow(Date.now()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+    const lastClaimTime = new Date(lastClaim).getTime();
+    const timeSinceClaim = now - lastClaimTime;
+    const isClaimable = timeSinceClaim >= twentyFourHours;
+    
+    const timeRemaining = isClaimable ? 0 : twentyFourHours - timeSinceClaim;
+    const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+    const countdown = isClaimable ? "00:00:00" : `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    const progress = isClaimable ? 100 : (timeSinceClaim / twentyFourHours) * 100;
+    
+    return { countdown, progress, isClaimable };
+};
+// --- FIN DE CORRECCIÓN ---
 
 const ProgressBar = ({ progress, bgColorClass }) => (
   <div className="w-full bg-black/10 rounded-full h-2.5 overflow-hidden">
@@ -16,6 +41,16 @@ const ProgressBar = ({ progress, bgColorClass }) => (
 const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
   const { t } = useTranslation();
   const { factory, purchaseDate, expiryDate, _id: purchasedFactoryId, lastClaim } = purchasedFactory;
+  
+  // --- INICIO DE CORRECCIÓN: Verificación de seguridad ---
+  // Si 'factory' no es un objeto (es decir, es solo un ID), no renderizamos nada.
+  // Esto evita que la aplicación se rompa y es la causa principal del bug.
+  if (!factory || typeof factory !== 'object') {
+    console.warn("PurchasedFactoryItem: La fábrica no está populada. Saltando renderizado.", purchasedFactory);
+    return null;
+  }
+  // --- FIN DE CORRECCIÓN ---
+
   const { countdown, progress: cycleProgress, isClaimable } = useFactoryCycle(lastClaim);
 
   const { lifetimeProgress, daysLeftText } = useMemo(() => {
@@ -38,8 +73,6 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
     if (lifetimeProgress < 85) return 'bg-status-warning';
     return 'bg-status-danger';
   }, [lifetimeProgress]);
-
-  if (!factory) return null;
 
   return (
     <div className="bg-card/70 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col gap-3 shadow-medium">

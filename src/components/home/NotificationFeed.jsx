@@ -1,14 +1,17 @@
-// frontend/src/components/home/NotificationFeed.jsx (VERSIÓN MEJORADA)
+// frontend/src/components/home/NotificationFeed.jsx (v2.0 - ICONOS CORREGIDOS)
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiArrowDownTray, HiBanknotes, HiArrowPath } from 'react-icons/hi2';
 
 const firstNames = ["Alex", "Maria", "John", "Sofia", "David", "Liam", "Neuro", "Cris", "Eva", "Luis"];
+
+// --- INICIO DE CORRECCIÓN: Se guarda el componente del icono, no el elemento JSX ---
 const actions = [
-  { text: "retirado", icon: <HiArrowDownTray className="inline mr-1 text-red-400" />, currency: "USDT" },
-  { text: "reclamado", icon: <HiBanknotes className="inline mr-1 text-green-400" />, currency: "NTX" },
-  { text: "intercambiado", icon: <HiArrowPath className="inline mr-1 text-blue-400" />, currency: "NTX por USDT" }
+  { text: "retirado", Icon: HiArrowDownTray, color: "text-red-400", currency: "USDT" },
+  { text: "reclamado", Icon: HiBanknotes, color: "text-green-400", currency: "USDT" },
+  { text: "intercambiado", Icon: HiArrowPath, color: "text-blue-400", currency: "USDT" }
 ];
+// --- FIN DE CORRECCIÓN ---
 
 const generateRandomNotification = () => {
   const name = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -20,7 +23,11 @@ const generateRandomNotification = () => {
     id: Date.now() + Math.random(),
     content: (
       <>
-        {censoredName} ha {action.text} {action.icon} {amount} {action.currency}
+        {censoredName} ha {action.text}{' '}
+        {/* --- INICIO DE CORRECCIÓN: Se renderiza el icono como un componente --- */}
+        <action.Icon className={`inline mr-1 ${action.color}`} />
+        {/* --- FIN DE CORRECCIÓN --- */}
+        {amount} {action.currency}
       </>
     )
   };
@@ -32,13 +39,12 @@ const NotificationFeed = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             setNotification(generateRandomNotification());
-        }, 4500); // Cambia cada 4.5 segundos
+        }, 4500);
 
         return () => clearInterval(interval);
     }, []);
 
     return (
-        // El contenedor ahora ocupa más ancho y centra el contenido
         <div className="w-full max-w-md mx-auto h-10 flex items-center justify-center overflow-hidden px-4">
             <AnimatePresence mode="wait">
                 <motion.div
@@ -47,7 +53,6 @@ const NotificationFeed = () => {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -20, opacity: 0 }}
                     transition={{ duration: 0.5 }}
-                    // Estilo mejorado: más ancho, "glassmorphism" blanco
                     className="bg-white/10 text-text-secondary text-sm px-4 py-2 rounded-full backdrop-blur-lg w-full text-center border border-white/10"
                 >
                     {notification.content}
