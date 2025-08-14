@@ -1,9 +1,9 @@
-// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v3.3 - USANDO CLASES DE TAILWIND)
+// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v4.0 - Pulido Final)
 
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFactoryCycle } from '../../hooks/useFactoryCycle';
-import { FaFan } from 'react-icons/fa';
+import { FaFan, FaCoins } from 'react-icons/fa'; // Se añade FaCoins para el detalle de producción
 
 const ProgressBar = ({ progress, bgColorClass }) => (
   <div className="w-full bg-black/10 rounded-full h-2 overflow-hidden">
@@ -24,6 +24,7 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
   const { factory, purchaseDate, expiryDate, _id: purchasedFactoryId, lastClaim } = purchasedFactory;
   const { countdown, progress: cycleProgress, isClaimable } = useFactoryCycle(lastClaim);
 
+  // Su lógica de animación es perfecta, la mantenemos intacta.
   const animationDuration = useMemo(() => {
     return Math.max(0.2, 3 / (factory.dailyProduction || 1));
   }, [factory.dailyProduction]);
@@ -51,19 +52,28 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
 
   return (
     <div className="bg-card/70 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col gap-3 shadow-medium">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold text-text-primary">{factory.name}</h3>
-        {/* --- INICIO DE CORRECCIÓN --- */}
-        {/* Se usa la clase 'animate-spin' de Tailwind y se aplica la duración con un style en línea */}
+      {/* --- SECCIÓN SUPERIOR: NOMBRE Y VENTILADOR --- */}
+      <div className="flex justify-between items-start"> {/* items-start para alinear */}
+        <div className="flex flex-col">
+          <h3 className="text-lg font-bold text-text-primary leading-tight">{factory.name}</h3>
+          {/* --- NUEVO: Detalle de producción diaria --- */}
+          <div className="flex items-center gap-1.5 text-status-success text-xs font-semibold mt-1">
+            <FaCoins />
+            <span>+{factory.dailyProduction.toFixed(2)} USDT / {t('common.day', 'Día')}</span>
+          </div>
+          {/* --- FIN DE NUEVO --- */}
+        </div>
         <FaFan 
             className="text-white/50 animate-spin" 
             style={{ animationDuration: `${animationDuration}s` }} 
+            size={24} // Aumentamos ligeramente el tamaño para más impacto visual
         />
-        {/* --- FIN DE CORRECCIÓN --- */}
       </div>
 
+      {/* --- SECCIÓN MEDIA: IMAGEN Y BARRAS DE PROGRESO --- */}
       <div className="flex gap-4 items-center">
         <div className="w-16 h-16 bg-background/50 rounded-lg flex items-center justify-center flex-shrink-0 border border-border">
+            {/* Este es el lugar correcto para la imagen de la fábrica */}
             <img src={factory.imageUrl} alt={factory.name} className="w-12 h-12 object-contain" />
         </div>
         <div className="flex-grow flex flex-col justify-between gap-2">
@@ -84,17 +94,18 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
         </div>
       </div>
       
+      {/* --- SECCIÓN INFERIOR: BOTÓN DE ACCIÓN --- */}
       <button
           onClick={() => onClaim(purchasedFactoryId)}
           disabled={!isClaimable}
           className={`w-full mt-2 py-2.5 text-sm font-bold rounded-full transition-all duration-300 transform active:scale-95
             ${isClaimable 
-              ? 'bg-accent-secondary text-white shadow-subtle animate-pulse'
+              ? 'bg-accent-secondary text-white shadow-subtle hover:bg-accent-secondary_hover animate-pulse'
               : 'bg-text-tertiary/50 text-text-secondary cursor-not-allowed'
             }`}
         >
           {isClaimable 
-            ? `${t('purchasedFactory.claim', 'RECLAMAR')} ${factory.dailyProduction.toFixed(2)} USDT` 
+            ? `${t('purchasedFactory.claim', 'RECLAMAR')} +${factory.dailyProduction.toFixed(2)} USDT` 
             : t('purchasedFactory.producing', 'PRODUCIENDO')}
         </button>
     </div>
