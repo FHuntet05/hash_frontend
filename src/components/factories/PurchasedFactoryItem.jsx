@@ -1,9 +1,9 @@
-// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v4.0 - Pulido Final)
+// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v4.1 - Corrección de Visibilidad)
 
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFactoryCycle } from '../../hooks/useFactoryCycle';
-import { FaFan, FaCoins } from 'react-icons/fa'; // Se añade FaCoins para el detalle de producción
+import { FaFan, FaCoins } from 'react-icons/fa';
 
 const ProgressBar = ({ progress, bgColorClass }) => (
   <div className="w-full bg-black/10 rounded-full h-2 overflow-hidden">
@@ -24,7 +24,6 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
   const { factory, purchaseDate, expiryDate, _id: purchasedFactoryId, lastClaim } = purchasedFactory;
   const { countdown, progress: cycleProgress, isClaimable } = useFactoryCycle(lastClaim);
 
-  // Su lógica de animación es perfecta, la mantenemos intacta.
   const animationDuration = useMemo(() => {
     return Math.max(0.2, 3 / (factory.dailyProduction || 1));
   }, [factory.dailyProduction]);
@@ -52,28 +51,26 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
 
   return (
     <div className="bg-card/70 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col gap-3 shadow-medium">
-      {/* --- SECCIÓN SUPERIOR: NOMBRE Y VENTILADOR --- */}
-      <div className="flex justify-between items-start"> {/* items-start para alinear */}
+      <div className="flex justify-between items-start">
         <div className="flex flex-col">
           <h3 className="text-lg font-bold text-text-primary leading-tight">{factory.name}</h3>
-          {/* --- NUEVO: Detalle de producción diaria --- */}
           <div className="flex items-center gap-1.5 text-status-success text-xs font-semibold mt-1">
             <FaCoins />
             <span>+{factory.dailyProduction.toFixed(2)} USDT / {t('common.day', 'Día')}</span>
           </div>
-          {/* --- FIN DE NUEVO --- */}
         </div>
+        
+        {/* --- CAMBIO CLAVE: Ajuste de color para visibilidad --- */}
         <FaFan 
-            className="text-white/50 animate-spin" 
+            className="text-text-tertiary animate-spin" // Cambiado de 'text-white/50' a un gris visible
             style={{ animationDuration: `${animationDuration}s` }} 
-            size={24} // Aumentamos ligeramente el tamaño para más impacto visual
+            size={24}
         />
+        {/* --- FIN DEL CAMBIO --- */}
       </div>
 
-      {/* --- SECCIÓN MEDIA: IMAGEN Y BARRAS DE PROGRESO --- */}
       <div className="flex gap-4 items-center">
         <div className="w-16 h-16 bg-background/50 rounded-lg flex items-center justify-center flex-shrink-0 border border-border">
-            {/* Este es el lugar correcto para la imagen de la fábrica */}
             <img src={factory.imageUrl} alt={factory.name} className="w-12 h-12 object-contain" />
         </div>
         <div className="flex-grow flex flex-col justify-between gap-2">
@@ -94,7 +91,6 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
         </div>
       </div>
       
-      {/* --- SECCIÓN INFERIOR: BOTÓN DE ACCIÓN --- */}
       <button
           onClick={() => onClaim(purchasedFactoryId)}
           disabled={!isClaimable}
