@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTasks } from '../../hooks/useTasks'; // Usamos nuestro nuevo hook
+import { useTaskLogic as useTasks } from '../../hooks/useTaskLogic'; 
 import TaskItem from '../tasks/TaskItem';
 import { motion } from 'framer-motion';
 
