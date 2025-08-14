@@ -1,4 +1,4 @@
-// frontend/src/store/userStore.js (v2.0 - PERSISTENCIA LIMPIA Y ESTADO DE HIDRATACIÓN)
+// frontend/src/store/userStore.js (v2.1 - CON LOGS DE DEPURACIÓN)
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -7,30 +7,25 @@ import api from '../api/axiosConfig';
 const useUserStore = create(
   persist(
     (set, get) => ({
-      // --- ESTADOS DEL STORE ---
       user: null, 
       token: null, 
       settings: null,
       isAuthenticated: false, 
-      isLoadingAuth: true, // Inicia como true hasta que la sincronización termine
-      isHydrated: false, // Nuevo estado para controlar la carga desde localStorage
+      isLoadingAuth: true,
+      isHydrated: false,
 
-      /**
-       * Sincroniza los datos del usuario de Telegram con el backend.
-       * Esta es la función principal que se llama al iniciar la app.
-       * @param {object} telegramUser - El objeto `user` de `window.Telegram.WebApp.initDataUnsafe`.
-       */
       syncUserWithBackend: async (telegramUser) => {
-        // Aseguramos que el estado de carga esté activo durante la sincronización
         if (!get().isLoadingAuth) {
             set({ isLoadingAuth: true });
         }
-
         try {
           console.log('[Store] Sincronizando usuario con el backend...');
           const response = await api.post('/auth/sync', { telegramUser });
-          
           const { token, user, settings } = response.data;
+
+          // --- INICIO DE LOG DE DEPURACIÓN ---
+          console.log('[Store - DEBUG] Usuario recibido del backend. Verificando fábricas:', user.purchasedFactories);
+          // --- FIN DE LOG DE DEPURACIÓN ---
           
           set({ 
               user, 
@@ -39,11 +34,10 @@ const useUserStore = create(
               settings, 
               isLoadingAuth: false 
           });
-          console.log('[Store] Sincronización exitosa. Usuario autenticado.');
+          console.log('[Store] Sincronización exitosa.');
 
         } catch (error) {
           console.error('[Store] Error fatal durante la sincronización:', error.response?.data?.message || error.message);
-          // Si falla, reseteamos todo y marcamos que ya no está cargando.
           set({ 
               user: null, 
               token: null, 
@@ -54,18 +48,10 @@ const useUserStore = create(
         }
       },
 
-      /**
-       * Actualiza completamente el objeto de usuario en el store.
-       * Útil después de operaciones como comprar o reclamar una fábrica.
-       * @param {object} newUserObject - El nuevo objeto de usuario completo.
-       */
       setUser: (newUserObject) => {
         set({ user: newUserObject });
       },
       
-      /**
-       * Cierra la sesión del usuario, limpiando todos los datos relevantes.
-       */
       logout: () => {
         set({
           user: null,
@@ -77,26 +63,14 @@ const useUserStore = create(
         console.log('[Store] Sesión cerrada.');
       },
       
-      /**
-       * Función interna llamada por el middleware `persist` para indicar que la carga
-       * desde localStorage ha finalizado.
-       */
       _setHydrated: () => {
         set({ isHydrated: true });
       },
     }),
     {
-      name: 'mega-fabrica-auth-storage', // Nombre claro para el almacenamiento
+      name: 'mega-fabrica-auth-storage',
       storage: createJSONStorage(() => localStorage),
-      
-      // --- INICIO DE MODIFICACIÓN CLAVE ---
-      // Solo persistimos el token. El resto de datos debe ser fresco del backend.
-      partialize: (state) => ({ 
-        token: state.token 
-      }),
-      // --- FIN DE MODIFICACIÓN CLAVE ---
-
-      // Cuando la rehidratación termina, llamamos a nuestra función para actualizar el estado.
+      partialize: (state) => ({ token: state.token }),
       onRehydrateStorage: () => (state) => {
         if (state) {
           state._setHydrated();
@@ -106,7 +80,6 @@ const useUserStore = create(
   )
 );
 
-// Añadimos un listener para actualizar el token en Axios cada vez que cambie
 useUserStore.subscribe(
   (state) => state.token,
   (token) => {
@@ -115,6 +88,5 @@ useUserStore.subscribe(
     }
   }
 );
-
 
 export default useUserStore;

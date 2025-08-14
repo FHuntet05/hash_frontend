@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/HomePage.jsx (v3.1 - RUTA DE IMPORTACIÓN CORREGIDA)
+// RUTA: frontend/src/pages/HomePage.jsx (v3.2 - CORRECCIÓN DE REACTIVIDAD Y LOGS)
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,10 +8,7 @@ import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
 import PurchasedFactoryItem from '../components/factories/PurchasedFactoryItem';
-// --- INICIO DE CORRECCIÓN ---
-// La ruta ahora apunta a la carpeta 'home' donde realmente está el archivo.
-import TaskCenter from '../components/home/TaskCenter'; 
-// --- FIN DE CORRECCIÓN ---
+import TaskCenter from '../components/home/TaskCenter';
 import Loader from '../components/common/Loader';
 
 const UserBalanceDisplay = ({ balance }) => {
@@ -69,6 +66,14 @@ const HomePage = () => {
     if (!user) {
         return <div className="flex items-center justify-center h-full"><Loader text={t('common.loadingUser')} /></div>;
     }
+
+    // --- INICIO DE CORRECCIÓN Y DEPURACIÓN ---
+    // 1. Forzamos la reactividad creando una variable local para el array.
+    const purchasedFactories = user?.purchasedFactories || [];
+    // 2. Añadimos un log para ver qué datos está recibiendo este componente.
+    console.log('[HomePage - DEBUG] Renderizando. Datos del usuario:', user);
+    console.log('[HomePage - DEBUG] Número de fábricas encontradas:', purchasedFactories.length);
+    // --- FIN DE CORRECCIÓN Y DEPURACIÓN ---
     
     return (
         <motion.div 
@@ -81,9 +86,10 @@ const HomePage = () => {
             <FactoryAnimation />
             <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.myFactories', 'Mis Fábricas')}</h2>
-                {user.purchasedFactories && user.purchasedFactories.length > 0 ? (
+                {/* 3. Usamos la nueva variable local en la condición y el map. */}
+                {purchasedFactories.length > 0 ? (
                     <div className="space-y-4">
-                        {user.purchasedFactories.map(pf => (
+                        {purchasedFactories.map(pf => (
                             <PurchasedFactoryItem 
                                 key={pf._id} 
                                 purchasedFactory={pf}
