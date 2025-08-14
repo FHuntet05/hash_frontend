@@ -23,3 +23,9 @@ body {
     scrollbar-width: none;  /* Firefox */
   }
 }
+.fan-blades {
+  animation-name: spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  transform-origin: center;
+}

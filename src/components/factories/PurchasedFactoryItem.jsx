@@ -1,9 +1,10 @@
-// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v4.1 - Corrección de Visibilidad)
+// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v5.0 - Icono Personalizado)
 
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFactoryCycle } from '../../hooks/useFactoryCycle';
-import { FaFan, FaCoins } from 'react-icons/fa';
+import { FaCoins } from 'react-icons/fa';
+import HardwareIcon from '../icons/HardwareIcon'; // --- CAMBIO CLAVE: Importar nuestro nuevo icono ---
 
 const ProgressBar = ({ progress, bgColorClass }) => (
   <div className="w-full bg-black/10 rounded-full h-2 overflow-hidden">
@@ -60,11 +61,10 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
           </div>
         </div>
         
-        {/* --- CAMBIO CLAVE: Ajuste de color para visibilidad --- */}
-        <FaFan 
-            className="text-text-tertiary animate-spin" // Cambiado de 'text-white/50' a un gris visible
-            style={{ animationDuration: `${animationDuration}s` }} 
-            size={24}
+        {/* --- CAMBIO CLAVE: Reemplazar FaFan por HardwareIcon --- */}
+        <HardwareIcon 
+          className="w-8 h-8 text-text-tertiary" // Controlamos tamaño y color aquí
+          animationDuration={animationDuration} // Pasamos la duración calculada como prop
         />
         {/* --- FIN DEL CAMBIO --- */}
       </div>
