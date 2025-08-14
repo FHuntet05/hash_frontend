@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/HomePage.jsx (v3.0 - FINAL CON TAREAS Y FIX DE FÁBRICA)
+// RUTA: frontend/src/pages/HomePage.jsx (v3.1 - RUTA DE IMPORTACIÓN CORREGIDA)
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,11 +8,13 @@ import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
 import PurchasedFactoryItem from '../components/factories/PurchasedFactoryItem';
-import TaskCenter from '../components/tasks/TaskCenter'; // Importar el nuevo TaskCenter
+// --- INICIO DE CORRECCIÓN ---
+// La ruta ahora apunta a la carpeta 'home' donde realmente está el archivo.
+import TaskCenter from '../components/home/TaskCenter'; 
+// --- FIN DE CORRECCIÓN ---
 import Loader from '../components/common/Loader';
 
 const UserBalanceDisplay = ({ balance }) => {
-    // ... (sin cambios)
     const { t } = useTranslation();
     const formattedBalance = typeof balance === 'number' ? balance.toFixed(4) : '0.0000';
     return (
@@ -26,7 +28,6 @@ const UserBalanceDisplay = ({ balance }) => {
 };
 
 const FactoryAnimation = () => {
-    // ... (sin cambios)
     const { t } = useTranslation();
     const [isVideoLoading, setVideoLoading] = React.useState(true);
     return (
@@ -51,11 +52,8 @@ const FactoryAnimation = () => {
 
 const HomePage = () => {
     const { t } = useTranslation();
-    // --- INICIO DE CORRECCIÓN: Usar una selección reactiva del store ---
-    // Esto asegura que el componente se vuelva a renderizar cuando 'user' cambie.
     const user = useUserStore(state => state.user);
     const setUser = useUserStore(state => state.setUser);
-    // --- FIN DE CORRECCIÓN ---
 
     const handleClaim = async (purchasedFactoryId) => {
         toast.loading(t('homePage.toasts.claiming', 'Reclamando...'), { id: 'claim_request' });
@@ -102,9 +100,7 @@ const HomePage = () => {
             </div>
              <div>
                 <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.tasks', 'Tareas')}</h2>
-                {/* --- INICIO DE MODIFICACIÓN: Integrar TaskCenter --- */}
                 <TaskCenter />
-                {/* --- FIN DE MODIFICACIÓN --- */}
             </div>
         </motion.div>
     );

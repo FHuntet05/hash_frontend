@@ -1,16 +1,19 @@
-// RUTA: frontend/src/components/tasks/TaskCenter.jsx (NUEVO ARCHIVO)
+// RUTA: frontend/src/components/home/TaskCenter.jsx (RUTA DE IMPORTACIÓN CORREGIDA)
 
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useTaskLogic } from '../../hooks/useTaskLogic';
-import TaskItem from './TaskItem'; // Asegúrate de que TaskItem.jsx esté en la misma carpeta
+// --- INICIO DE CORRECCIÓN ---
+// La ruta ahora sube un nivel ('..') desde 'home' y luego entra a 'tasks'.
+import TaskItem from '../tasks/TaskItem'; 
+// --- FIN DE CORRECCIÓN ---
+
 
 const TaskCenter = () => {
   const { t } = useTranslation();
   const { taskStatus, isLoading, handleClaimTask, handleGoToTask } = useTaskLogic();
 
-  // Esta lista ahora se encuentra en el frontend y se puede editar fácilmente.
   const allTasks = [
     { id: 'boughtUpgrade', title: t('tasks.upgrade.title', 'Primera Compra'), description: t('tasks.upgrade.desc', 'Compra cualquier fábrica en la tienda.'), reward: 1.5 },
     { id: 'invitedTenFriends', title: t('tasks.invite.title', 'Invitar 3 Amigos'), description: t('tasks.invite.desc', 'Tu equipo debe tener al menos 3 miembros.'), reward: 1.0 },
