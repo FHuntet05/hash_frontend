@@ -1,11 +1,11 @@
-// RUTA: frontend/src/hooks/useTasks.js (NUEVO ARCHIVO)
+// RUTA: frontend/src/hooks/useTasks.js (NUEVO ARCHIVO - CORRECCIÓN DE OMISIÓN)
 
-import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import useUserStore from '../store/userStore';
 
 // Función para obtener el estado de las tareas desde el backend
 const fetchTasksStatus = async () => {
@@ -23,20 +23,25 @@ export const useTasks = () => {
     const { t } = useTranslation();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const setUser = useUserStore(state => state.setUser);
 
     // Usamos react-query para gestionar el fetching, cacheo y estado de carga/error
     const { data: tasks = [], isLoading, error } = useQuery('tasksStatus', fetchTasksStatus, {
-        staleTime: 5 * 60 * 1000, // Los datos se consideran frescos por 5 minutos
+        staleTime: 5 * 60 * 1000,
     });
 
     // Usamos useMutation para manejar la operación de reclamo
     const { mutate: claimTask, isLoading: isClaiming } = useMutation(claimTaskRequest, {
         onSuccess: (data) => {
             toast.success(data.message || t('tasks.toasts.claimSuccess'));
-            // Invalidamos la query 'tasksStatus' para que se vuelva a obtener la lista actualizada
+            // Invalidamos las queries para que se obtengan los datos más frescos
             queryClient.invalidateQueries('tasksStatus');
-            // También invalidamos los datos del usuario por si la recompensa actualiza el saldo
-            queryClient.invalidateQueries('userData'); 
+            queryClient.invalidateQueries('userData'); // invalida el hook useUser que obtiene los datos del usuario
+            
+            // Opcionalmente, si la respuesta del claim trae el usuario actualizado
+            if (data.user) {
+                setUser(data.user);
+            }
         },
         onError: (error) => {
             toast.error(error.response?.data?.message || t('common.error'));
@@ -44,18 +49,16 @@ export const useTasks = () => {
     });
 
     // Manejador para el botón "Ir"
-    const handleGoToTask = useCallback((task) => {
+    const handleGoToTask = (task) => {
         if (task.taskId === 'TELEGRAM_VISIT' && task.actionUrl) {
-            // Abre el enlace en una nueva pestaña
             window.open(task.actionUrl, '_blank');
-            // Inmediatamente después del clic, reclamamos la tarea
-            // Asumimos que el backend marcará la tarea como completada al recibir este reclamo.
+            // La lógica ahora es que el backend marca la visita al reclamar.
+            // Para mejorar la UX, podemos intentar el reclamo inmediatamente.
             claimTask(task.taskId);
         } else if (task.actionUrl) {
-            // Para otras tareas como "comprar fábrica", navegamos dentro de la app
             navigate(task.actionUrl);
         }
-    }, [navigate, claimTask]);
+    };
 
     return {
         tasks,
