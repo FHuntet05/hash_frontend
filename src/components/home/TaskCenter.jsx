@@ -1,31 +1,30 @@
-// RUTA: frontend/src/components/home/TaskCenter.jsx (RUTA DE IMPORTACIÓN CORREGIDA)
+// RUTA: frontend/src/components/home/TaskCenter.jsx (v2.0 - Dinámico con Backend)
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { useTaskLogic } from '../../hooks/useTaskLogic';
-// --- INICIO DE CORRECCIÓN ---
-// La ruta ahora sube un nivel ('..') desde 'home' y luego entra a 'tasks'.
-import TaskItem from '../tasks/TaskItem'; 
-// --- FIN DE CORRECCIÓN ---
-
+import { useTasks } from '../../hooks/useTasks'; // Usamos nuestro nuevo hook
+import TaskItem from '../tasks/TaskItem';
+import { motion } from 'framer-motion';
 
 const TaskCenter = () => {
   const { t } = useTranslation();
-  const { taskStatus, isLoading, handleClaimTask, handleGoToTask } = useTaskLogic();
-
-  const allTasks = [
-    { id: 'boughtUpgrade', title: t('tasks.upgrade.title', 'Primera Compra'), description: t('tasks.upgrade.desc', 'Compra cualquier fábrica en la tienda.'), reward: 1.5 },
-    { id: 'invitedTenFriends', title: t('tasks.invite.title', 'Invitar 3 Amigos'), description: t('tasks.invite.desc', 'Tu equipo debe tener al menos 3 miembros.'), reward: 1.0 },
-    { id: 'joinedTelegram', title: t('tasks.telegram.title', 'Unirse al Grupo'), description: t('tasks.telegram.desc', 'Visita nuestra comunidad oficial de Telegram.'), reward: 0.5, link: 'https://t.me/MegaFabricaOficial' },
-  ];
+  const { tasks, isLoading, handleClaimTask, handleGoToTask } = useTasks();
 
   if (isLoading) {
       return (
         <div className="w-full space-y-3">
+          {/* Skeleton loaders para una mejor UX */}
           <div className="h-24 bg-card/50 rounded-2xl animate-pulse"></div>
           <div className="h-24 bg-card/50 rounded-2xl animate-pulse"></div>
         </div>
+      );
+  }
+
+  if (!tasks || tasks.length === 0) {
+      return (
+          <div className="bg-card/70 backdrop-blur-md rounded-2xl p-6 text-center text-text-secondary border border-white/20">
+              <p>{t('tasks.noTasks', 'No hay tareas disponibles en este momento.')}</p>
+          </div>
       );
   }
   
@@ -34,16 +33,16 @@ const TaskCenter = () => {
       className="space-y-3" 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }}
+      transition={{ staggerChildren: 0.1 }}
     >
-        {allTasks.map(task => (
+      {tasks.map(task => (
         <TaskItem
-            key={task.id}
-            task={task}
-            status={taskStatus}
+            key={task.taskId}
+            task={task} // Pasamos el objeto de tarea completo desde el backend
             onGoToTask={handleGoToTask}
             onClaim={handleClaimTask}
         />
-        ))}
+      ))}
     </motion.div>
   );
 };
