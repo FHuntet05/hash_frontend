@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/admin/components/Sidebar.jsx (SINCRONIZADO CON MEGA FÁBRICA)
+// RUTA: frontend/src/pages/admin/components/Sidebar.jsx (RUTAS CORREGIDAS Y ESTILO OSCURO)
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
@@ -8,22 +8,23 @@ import {
   HiOutlineFunnel, HiOutlineMegaphone, HiOutlineCommandLine 
 } from 'react-icons/hi2';
 
+// --- RUTAS VERIFICADAS ---
 const navLinks = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: HiOutlineHome },
   { name: 'Usuarios', href: '/admin/users', icon: HiOutlineUsers },
-  { name: 'Transacciones', href: '/admin/transactions', icon: HiOutlineReceiptRefund },
+  { name: 'Transacciones', href: '/admin/transactions', icon: HiOutlineReceiptRefund }, // Verificado
   { name: 'Retiros', href: '/admin/withdrawals', icon: HiOutlineQuestionMarkCircle },
-  { name: 'Tesorería', href: '/admin/treasury', icon: HiOutlineBuildingLibrary },
+  { name: 'Tesorería', href: '/admin/treasury', icon: HiOutlineBuildingLibrary }, // Verificado
   { name: 'Dispensador Gas', href: '/admin/gas-dispenser', icon: HiOutlineFunnel },
   { name: 'Notificaciones', href: '/admin/notifications', icon: HiOutlineMegaphone },
   { name: 'Monitor Blockchain', href: '/admin/blockchain-monitor', icon: HiOutlineCommandLine },
-  // MODIFICADO: Nombre y ruta actualizados a 'Fábricas'
   { name: 'Fábricas', href: '/admin/factories', icon: HiOutlineWrenchScrewdriver },
   { name: 'Seguridad', href: '/admin/security', icon: HiOutlineShieldCheck },
   { name: 'Ajustes', href: '/admin/settings', icon: HiOutlineCog6Tooth },
 ];
 
 const Sidebar = ({ onLinkClick = () => {} }) => {
+    // --- ESTILOS ADAPTADOS AL TEMA OSCURO ---
     const linkClasses = "flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary hover:bg-accent-start/10 hover:text-white transition-colors";
     const activeLinkClasses = "bg-accent-start/20 text-white font-bold";
   

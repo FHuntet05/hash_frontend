@@ -1,40 +1,44 @@
-// RUTA: frontend/tailwind.config.js (v3.2 - ANIMACIÓN SPIN INTEGRADA)
+// RUTA: frontend/tailwind.config.js (v4.0 - CON PALETA DARK MODE)
 
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        // --- PALETA SEMÁNTICA "CRISTALINO Y ENERGÉTICO" ---
-        // Fondos
-        background: '#f8fafc', // slate-50 (Blanco Hueso, según su última directiva)
-        card: '#ffffff',       // Blanco puro (para usar con transparencia, ej: bg-card/70)
-
-        // Texto
+        // --- PALETA TEMA CLARO (USUARIO) ---
+        background: '#f8fafc', 
+        card: '#ffffff',
         text: {
-          primary: '#1e293b',   // slate-800
-          secondary: '#475569', // slate-600
-          tertiary: '#94a3b8',  // slate-400
+          primary: '#1e293b',
+          secondary: '#475569',
+          tertiary: '#94a3b8',
         },
-
-        // Acentos (Azul, Verde, Naranja)
         accent: {
-          primary: '#0ea5e9',         // sky-500 (Azul)
-          primary_hover: '#0284c7',   // sky-600
-          secondary: '#84cc16',       // lime-500 (Verde)
-          secondary_hover: '#65a30d', // lime-600
-          tertiary: '#f97316',        // orange-500 (Naranja)
-          tertiary_hover: '#ea580c',  // orange-600
+          primary: '#0ea5e9',
+          primary_hover: '#0284c7',
+          secondary: '#84cc16',
+          secondary_hover: '#65a30d',
+          tertiary: '#f97316',
+          tertiary_hover: '#ea580c',
         },
-        
         status: {
             success: '#16a34a',
             warning: '#f59e0b',
             danger: '#dc2626',
             danger_hover: '#b91c1c'
         },
+        border: '#e2e8f0',
 
-        border: '#e2e8f0', // slate-200
+        // --- INICIO: NUEVA PALETA TEMA OSCURO (ADMIN) ---
+        dark: {
+          primary: '#111827',   // gray-900 (Fondo principal más oscuro)
+          secondary: '#1f2937', // gray-800 (Fondo de tarjetas y sidebar)
+          tertiary: '#374151',  // gray-700 (Bordes, fondos de input)
+        },
+        // Acentos para el modo oscuro
+        'accent-start': '#3b82f6', // blue-500
+        'accent-end': '#14b8a6',   // teal-500
+        // --- FIN: NUEVA PALETA TEMA OSCURO ---
       },
       
       boxShadow: {
@@ -42,7 +46,6 @@ export default {
         'medium': '0 8px 30px rgb(0 0 0 / 0.12)',
       },
 
-      // --- INICIO DE CORRECCIÓN ---
       keyframes: {
         spin: {
           'from': { transform: 'rotate(0deg)' },
@@ -51,10 +54,8 @@ export default {
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        // Se añade la utilidad 'animate-spin' que usará los keyframes de arriba
         'spin': 'spin 1s linear infinite', 
       }
-      // --- FIN DE CORRECCIÓN ---
     },
   },
   plugins: [],

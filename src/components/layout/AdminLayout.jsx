@@ -1,4 +1,4 @@
-// frontend/src/components/layout/AdminLayout.jsx (REFACTORIZADO PARA MOBILE-FIRST)
+// RUTA: frontend/src/components/layout/AdminLayout.jsx (REDiseñado CON TEMA OSCURO)
 
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
@@ -7,7 +7,6 @@ import useAdminStore from '../../store/adminStore';
 import AdminHeaderMobile from '../../pages/admin/components/AdminHeaderMobile';
 import MobileDrawer from '../../pages/admin/components/MobileDrawer';
 
-// Mapeo de rutas a títulos para el header móvil
 const routeTitles = {
   '/admin/dashboard': 'Dashboard',
   '/admin/users': 'Gestión de Usuarios',
@@ -17,7 +16,7 @@ const routeTitles = {
   '/admin/gas-dispenser': 'Dispensador de Gas',
   '/admin/notifications': 'Notificaciones',
   '/admin/blockchain-monitor': 'Monitor Blockchain',
-  '/admin/tools': 'Gestión de Fábricas',
+  '/admin/factories': 'Gestión de Fábricas',
   '/admin/security': 'Seguridad',
   '/admin/settings': 'Ajustes del Sistema',
 };
@@ -26,16 +25,12 @@ const AdminLayout = () => {
   const { admin, logout } = useAdminStore();
   const navigate = useNavigate();
   const location = useLocation();
-
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [pageTitle, setPageTitle] = useState('Admin Panel');
 
   useEffect(() => {
-    // Actualizar el título de la página en cada cambio de ruta
     const currentTitle = Object.entries(routeTitles).find(([path]) => location.pathname.startsWith(path))?.[1] || 'Admin Panel';
     setPageTitle(currentTitle);
-    
-    // Cerrar el drawer al cambiar de página en móvil
     setIsDrawerOpen(false);
   }, [location.pathname]);
 
@@ -44,18 +39,16 @@ const AdminLayout = () => {
     navigate('/admin/login');
   };
 
+  // --- INICIO DE CAMBIOS VISUALES ---
   return (
-    <div className="flex min-h-screen bg-dark-primary text-white">
-      {/* Sidebar estática para pantallas de medianas a grandes (md y superior) */}
-      <div className="hidden md:flex">
+    <div className="flex min-h-screen bg-dark-primary text-gray-200">
+      <div className="hidden md:flex flex-shrink-0">
         <Sidebar />
       </div>
 
-      {/* Contenedor del Drawer para pantallas pequeñas */}
       <MobileDrawer isOpen={isDrawerOpen} setIsOpen={setIsDrawerOpen} />
 
       <div className="flex-grow flex flex-col">
-        {/* Header estático para pantallas grandes */}
         <header className="hidden bg-dark-secondary p-4 md:flex justify-end items-center border-b border-white/10">
           <div className="flex items-center gap-4">
             <span className="text-text-secondary">Bienvenido, <strong className="text-white">{admin?.username}</strong></span>
@@ -68,16 +61,15 @@ const AdminLayout = () => {
           </div>
         </header>
 
-        {/* Header dinámico para pantallas pequeñas */}
         <AdminHeaderMobile onMenuClick={() => setIsDrawerOpen(true)} title={pageTitle} />
         
-        {/* Contenido principal de la página (común para ambas vistas) */}
-        <main className="flex-grow p-4 md:p-6">
-          <Outlet /> {/* Aquí se renderizará el componente de la ruta activa */}
+        <main className="flex-grow p-4 md:p-6 overflow-y-auto">
+          <Outlet />
         </main>
       </div>
     </div>
   );
+  // --- FIN DE CAMBIOS VISUALES ---
 };
 
 export default AdminLayout;
