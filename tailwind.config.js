@@ -1,4 +1,4 @@
-// RUTA: frontend/tailwind.config.js (VERSIÓN FINAL v3.1 - FONDO BLANCO HUESO)
+// RUTA: frontend/tailwind.config.js (v3.2 - ANIMACIÓN SPIN INTEGRADA)
 
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -41,10 +41,20 @@ export default {
         'subtle': '0 4px 12px 0 rgb(0 0 0 / 0.07)',
         'medium': '0 8px 30px rgb(0 0 0 / 0.12)',
       },
-      
+
+      // --- INICIO DE CORRECCIÓN ---
+      keyframes: {
+        spin: {
+          'from': { transform: 'rotate(0deg)' },
+          'to': { transform: 'rotate(360deg)' },
+        }
+      },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        // Se añade la utilidad 'animate-spin' que usará los keyframes de arriba
+        'spin': 'spin 1s linear infinite', 
       }
+      // --- FIN DE CORRECCIÓN ---
     },
   },
   plugins: [],

@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v3.2 - PRUEBA DE BORDE ROJO)
+// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v3.3 - USANDO CLASES DE TAILWIND)
 
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -50,15 +50,16 @@ const PurchasedFactoryItem = ({ purchasedFactory, onClaim }) => {
   }, [lifetimeProgress]);
 
   return (
-    // --- INICIO DE LA PRUEBA: SE AÑADE UN BORDE ROJO GRUESO ---
-    <div className="bg-card/70 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col gap-3 shadow-medium border-4 border-red-500">
-    {/* --- FIN DE LA PRUEBA --- */}
+    <div className="bg-card/70 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col gap-3 shadow-medium">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-bold text-text-primary">{factory.name}</h3>
+        {/* --- INICIO DE CORRECCIÓN --- */}
+        {/* Se usa la clase 'animate-spin' de Tailwind y se aplica la duración con un style en línea */}
         <FaFan 
-            className="text-white/50" 
-            style={{ animation: `spin ${animationDuration}s linear infinite` }} 
+            className="text-white/50 animate-spin" 
+            style={{ animationDuration: `${animationDuration}s` }} 
         />
+        {/* --- FIN DE CORRECCIÓN --- */}
       </div>
 
       <div className="flex gap-4 items-center">
