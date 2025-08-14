@@ -1,8 +1,11 @@
-// RUTA: frontend/src/pages/admin/components/UsersTable.jsx (RENDERIZADO ROBUSTO Y A PRUEBA DE CRASHES)
+// RUTA: frontend/src/pages/admin/components/UsersTable.jsx (CORRECCIÓN DE ÍCONO Y RENDERIZADO ROBUSTO)
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HiBadgeCheck, HiPencil, HiOutlineShieldExclamation, HiOutlineShieldCheck, HiOutlineCurrencyDollar } from 'react-icons/hi2';
+// --- INICIO DE CORRECCIÓN ---
+// Se ha corregido el nombre del ícono: HiBadgeCheck -> HiCheckBadge
+import { HiCheckBadge, HiPencil, HiOutlineShieldExclamation, HiOutlineShieldCheck, HiOutlineCurrencyDollar } from 'react-icons/hi2';
+// --- FIN DE CORRECCIÓN ---
 
 const UsersTable = ({ users, onEdit, onStatusChange, onAdjustBalance }) => {
   return (
@@ -30,10 +33,8 @@ const UsersTable = ({ users, onEdit, onStatusChange, onAdjustBalance }) => {
                   </div>
                 </Link>
               </th>
-              {/* --- INICIO DE CORRECCIÓN: RENDERIZADO DEFENSIVO --- */}
               <td className="px-6 py-4 font-mono">{(user.balance?.usdt || 0).toFixed(2)}</td>
               <td className="px-6 py-4 font-mono">{user.referrals?.length || 0}</td>
-              {/* --- FIN DE CORRECCIÓN --- */}
               <td className="px-6 py-4">
                 {user.status === 'active' ? 
                   <span className="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-green-300 bg-green-500/20 rounded-full">
@@ -46,7 +47,9 @@ const UsersTable = ({ users, onEdit, onStatusChange, onAdjustBalance }) => {
               </td>
               <td className="px-6 py-4">
                 {user.role === 'admin' ? 
-                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold text-accent-start bg-accent-start/20 rounded-full"><HiBadgeCheck className="w-4 h-4" /> Admin</span> : 
+                  // --- INICIO DE CORRECCIÓN ---
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold text-accent-start bg-accent-start/20 rounded-full"><HiCheckBadge className="w-4 h-4" /> Admin</span> : 
+                  // --- FIN DE CORRECCIÓN ---
                   <span className="px-2 py-1 text-xs font-semibold text-gray-400 bg-gray-500/20 rounded-full">User</span>
                 }
               </td>
