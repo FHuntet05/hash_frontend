@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/TeamPage.jsx (v3.4 - RENDERIZADO ROBUSTO Y SIN PARPADEO)
+// RUTA: frontend/src/pages/TeamPage.jsx (v3.5 - MODO DE DEPURACIÓN PROFUNDA)
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ import TeamLevelCard from '../components/team/TeamLevelCard';
 import Loader from '../components/common/Loader';
 import SocialShare from '../components/team/SocialShare';
 
-const POLLING_INTERVAL = 20000; // 20 segundos
+const POLLING_INTERVAL = 20000;
 
 const TeamPage = () => {
   const { t } = useTranslation();
@@ -23,11 +23,14 @@ const TeamPage = () => {
 
   const fetchAllData = useCallback(async (isInitialLoad = false) => {
     try {
-      // Optimizamos la ejecución en paralelo
       const [teamResponse] = await Promise.all([
         api.get('/team/summary'),
         refreshUserData()
       ]);
+
+      // --- LOG DE DEPURACIÓN 1: ¿QUÉ DATOS LLEGAN DE LA API? ---
+      console.log('[DEBUG] Respuesta de la API /team/summary:', teamResponse.data);
+
       setTeamData(teamResponse.data);
     } catch (error) {
       if (isInitialLoad) {
@@ -47,16 +50,16 @@ const TeamPage = () => {
       const intervalId = setInterval(() => fetchAllData(false), POLLING_INTERVAL);
       return () => clearInterval(intervalId);
     } else {
-      setInitialLoading(false); // Si no hay usuario, no estamos cargando.
+      setInitialLoading(false);
     }
   }, [user, fetchAllData]);
 
+  // --- LOG DE DEPURACIÓN 2: ¿QUÉ HAY EN EL ESTADO ANTES DE RENDERIZAR? ---
+  console.log('[DEBUG] Estado `teamData` antes de renderizar:', teamData);
+
   const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
   const isEnvVarMissing = !botUsername;
-
-  const referralLink = !isEnvVarMissing && user?.referralCode
-    ? `https://t.me/${botUsername}?start=${user.referralCode}`
-    : '';
+  const referralLink = !isEnvVarMissing && user?.referralCode ? `https://t.me/${botUsername}?start=${user.referralCode}` : '';
   
   const copyToClipboard = () => {
     if (isEnvVarMissing || !referralLink) {
@@ -71,26 +74,13 @@ const TeamPage = () => {
     return <div className="flex items-center justify-center h-full pt-16"><Loader /></div>;
   }
 
-  // --- INICIO DE CORRECCIÓN CRÍTICA ---
-  // Se extraen los datos de forma segura, con valores por defecto para evitar errores.
   const totalMembers = teamData?.totalTeamMembers || 0;
   const totalCommission = teamData?.totalCommission || 0;
   const levels = teamData?.levels || [];
-  // --- FIN DE CORRECCIÓN CRÍTICA ---
-
+  
   const stats = [
-    { 
-      title: t('teamPage.stats.members', 'Miembros Totales'), 
-      value: totalMembers, 
-      icon: HiOutlineUserGroup, 
-      color: "text-accent-primary" 
-    },
-    { 
-      title: t('teamPage.stats.commission', 'Comisión Total'), 
-      value: totalCommission.toFixed(2), 
-      icon: HiOutlineBanknotes, 
-      color: "text-accent-secondary" 
-    },
+    { title: t('teamPage.stats.members', 'Miembros Totales'), value: totalMembers, icon: HiOutlineUserGroup, color: "text-accent-primary" },
+    { title: t('teamPage.stats.commission', 'Comisión Total'), value: totalCommission.toFixed(2), icon: HiOutlineBanknotes, color: "text-accent-secondary" },
   ];
 
   return (
@@ -129,17 +119,23 @@ const TeamPage = () => {
 
       <div>
         <h2 className="text-lg font-semibold text-text-primary mb-4">{t('teamPage.levelsTitle', 'Niveles del Equipo')}</h2>
-        {/* Usamos la variable 'levels' que ya tiene un valor por defecto seguro */}
         {levels.length > 0 ? (
           <div className="space-y-3">
-            {levels.map(levelData => (
-              <TeamLevelCard 
-                key={levelData.level} 
-                level={levelData.level} 
-                members={levelData.totalMembers}
-                totalCommission={levelData.totalCommission}
-              />
-            ))}
+            {levels.map(levelData => {
+              // --- LOG DE DEPURACIÓN 3: ¿QUÉ PROPS SE ESTÁN PASANDO A CADA TARJETA? ---
+              console.log(`[DEBUG] Props para TeamLevelCard Nivel ${levelData.level}:`, {
+                members: levelData.totalMembers,
+                totalCommission: levelData.totalCommission,
+              });
+              return (
+                <TeamLevelCard 
+                  key={levelData.level} 
+                  level={levelData.level} 
+                  members={levelData.totalMembers}
+                  totalCommission={levelData.totalCommission}
+                />
+              );
+            })}
           </div>
         ) : (
           <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-white/20 shadow-subtle">
