@@ -1,7 +1,18 @@
-// frontend/src/hooks/useFactoryCycle.js (NUEVO)
+// RUTA: frontend/src/hooks/useFactoryCycle.js (CON CICLO DE PRUEBA CONFIGURABLE)
+
 import { useState, useEffect, useMemo } from 'react';
 
-const CYCLE_DURATION_SECONDS = 24 * 60 * 60; // 24 horas en segundos
+// --- INICIO DE MODIFICACIÓN PARA PRUEBAS ---
+// INSTRUCCIONES: Para probar el botón de reclamo, use el "VALOR DE PRUEBA".
+// ANTES DE DESPLEGAR A PRODUCCIÓN, DEBE OBLIGATORIAMENTE cambiar al "VALOR DE PRODUCCIÓN".
+
+// VALOR DE PRODUCCIÓN (24 horas): Descomente esta línea para producción.
+// const CYCLE_DURATION_SECONDS = 24 * 60 * 60; 
+
+// VALOR DE PRUEBA (30 segundos): Comente o elimine esta línea para producción.
+const CYCLE_DURATION_SECONDS = 30; // <-- Ciclo de 30 segundos para pruebas
+// --- FIN DE MODIFICACIÓN PARA PRUEBAS ---
+
 
 /**
  * Hook para gestionar el temporizador y el estado de una fábrica individual.

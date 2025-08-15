@@ -1,48 +1,140 @@
 {
   "nav": {
-    "home": "تعديني",
+    "home": "الرئيسية",
     "ranking": "التصنيف",
-    "upgrade": "ترقية",
-    "team": "فريق",
-    "profile": "ملفي"
+    "factories": "المتجر",
+    "team": "الفريق",
+    "profile": "الملف الشخصي"
   },
-  "profile": {
-    "recharge": "شحن",
-    "withdraw": "سحب",
-    "records": "السجلات",
-    "exchange": "NTX/USDT",
-    "invite": "دعوة",
-    "password": "كلمة المرور",
-    "language": "اللغة",
-    "faq": "الأسئلة الشائعة",
-    "about": "معلومات عنا",
-    "support": "دعم العملاء",
-    "logout": "تسجيل الخروج",
-    "comingSoon": {
-      "withdraw": "وظيفة السحب قريبا.",
-      "records": "السجل المالي قريبا.",
-      "exchange": "تبادل NTX/USDT قريبا.",
-      "password": "إدارة كلمة المرور قريبا.",
-      "faq": "الأسئلة الشائعة قريبا.",
-      "about": "صفحة 'معلومات عنا' قريبا.",
-      "support": "الاتصال بالدعم قريبا."
+  "common": {
+    "error": "حدث خطأ",
+    "copied": "تم النسخ!",
+    "copyError": "لم يتم النسخ",
+    "continue": "متابعة",
+    "loading": "جاري التحميل...",
+    "close": "إغلاق",
+    "day": "يوم",
+    "loadingUser": "جاري تحميل بيانات المستخدم..."
+  },
+  "homePage": {
+    "mainBalance": "الرصيد الرئيسي",
+    "myFactories": "مصانعي",
+    "noFactories": "ليس لديك مصانع نشطة.",
+    "goToStore": "قم بزيارة المتجر للحصول على مصنعك الأول والبدء في الإنتاج.",
+    "tasks": "المهام",
+    "toasts": {
+      "claiming": "جاري المطالبة بالإنتاج...",
+      "claimSuccess": "تمت المطالبة بالإنتاج!"
     }
   },
-  "tools": {
-    "title": "أدوات التعدين",
-    "subtitle": "قم بترقية معداتك لزيادة أرباحك.",
-    "loading": "جار التحميل...",
-    "error": "تعذر تحميل الأدوات."
+  "profilePage": {
+    "balanceUsdtLabel": "الرصيد الرئيسي",
+    "toasts": {
+      "insufficientBalance": "رصيد غير كافٍ. الحد الأدنى للسحب هو {{min}} USDT.",
+      "generatingAddress": "جاري إنشاء عنوانك...",
+      "addressGenerated": "تم إنشاء العنوان."
+    }
   },
-    "common": { "error": "خطأ", "copied": "تم النسخ!", "continue": "متابعة", "loading": "جار التحميل...", "close": "إغلاق" },
-    "homePage": { "buttons": { "start": "بدء", "claim": "مطالبة" }, "toasts": { "startingCycle": "جارٍ بدء الدورة...", "cycleStarted": "تم بدء دورة التعدين!", "claiming": "جارٍ المطالبة..." }, "errors": { "noUser": "خطأ: تعذر استرداد معلومات المستخدم. يرجى محاولة إعادة تشغيل التطبيق." }, "taskCenter": "مركز المهام" },
-    "profilePage": { "balanceNtxLabel": "محفظة القيمة (NTX)", "balanceUsdtLabel": "محفظة الوساطة (USDT)", "toasts": { "insufficientBalance": "رصيد غير كاف. الحد الأدنى للسحب هو {{min}} USDT.", "insufficientNtx": "رصيد NTX غير كاف. الحد الأدنى للتبديل هو {{min}} NTX.", "loadingPrices": "جارٍ جلب أسعار السوق...", "selectCoin": "اختر عملة للدفع." } },
-    "teamPage": { "stats": { "members": "أعضاء الفريق", "totalCommission": "العمولة الإجمالية", "teamRecharge": "شحن الفريق", "teamWithdrawals": "سحوبات الفريق" }, "referralLink": { "copy": "نسخ", "shareOn": "مشاركة على", "shareText": "تعال وكوّن فريقك ولنكسب المال معًا!" }, "levels": { "level": "المستوى", "totalMembers": "إجمالي الأعضاء", "validMembers": "الأعضاء الصالحون", "showDetails": "عرض التفاصيل" }, "shareWithFriends": "شارك مع الأصدقاء", "detailsModal": { "errorLoading": "تعذر تحميل تفاصيل الفريق." } },
-    "factoryPage": { "hoursOfWork": "ساعات العمل", "miningSpeed": "سرعة التعدين", "perDay": "NTX/يوم", "tabs": { "allTools": "أدوات التعدين", "myTools": "ترقية" }, "purchaseHistory": "سجل المشتريات", "noActiveTools": "ليس لديك أدوات نشطة." },
-    "rankingPage": { "tabs": { "global": "التصنيف العالمي", "team": "تصنيف الفرق" }, "loading": "جارٍ تحميل التصنيف...", "error": "تعذر تحميل التصنيف." },
-    "historyPage": { "title": "سجل المعاملات", "loading": "جارٍ تحميل السجل...", "error": "تعذر تحميل السجل.", "empty": "ليس لديك معاملات بعد." },
-    "faqPage": { "title": "الأسئلة الشائعة", "q1": "ما هو NEURO LINK؟", "a1": "NEURO LINK هي منصة محاكاة تعدين تعتمد على اللعب تتيح لك كسب رموز NTX من خلال شراء وإدارة الأدوات الافتراضية.", "q2": "كيف يمكنني زيادة أرباحي؟", "a2": "يمكنك زيادة معدل التعدين الخاص بك عن طريق شراء أدوات أقوى في قسم 'الترقية'. يمكنك أيضًا كسب مكافآت عن طريق دعوة الأصدقاء للانضمام إلى فريقك.", "q3": "ما هو رمز NTX؟", "a3": "NTX هو الرمز الأصلي لمنصة NEURO LINK. يمكنك تجميعه من خلال التعدين واستخدامه داخل النظام البيئي للتطبيق.", "q4": "كيف يعمل نظام الإحالة؟", "a4": "عندما يقوم شخص ما بالتسجيل باستخدام رمز الدعوة الخاص بك، فإنه ينضم إلى فريقك. تكسب نسبة مئوية من نشاط التعدين لأعضاء فريقك، موزعة على عدة مستويات." },
-    "aboutPage": { "title": "معلومات عنا", "p1": "نحن فريق شغوف بتقنية البلوك تشين والتمويل اللامركزي. مهمتنا مع NEURO LINK هي إنشاء بوابة سهلة وممتعة إلى عالم العملات المشفرة.", "p2": "نعتقد أن التعلم يجب أن يكون تجربة جذابة، وقد صممنا هذه المنصة لمحاكاة مفاهيم التعدين والمكافآت بطريقة بسيطة ومرئية." },
-    "supportPage": { "title": "دعم العملاء", "p1": "إذا كان لديك أي مشاكل أو أسئلة أو اقتراحات، فلا تتردد في الاتصال بنا. فريق الدعم لدينا هنا لمساعدتك.", "supportLink": "الدعم" },
-    "taskLogic": { "markingVisited": "جارٍ التحديد كـ تمت زيارته...", "visitSuccess": "عُد للمطالبة بمكافأتك!", "visitError": "حدث خطأ ما.", "claimingReward": "جارٍ المطالبة بالمكافأة...", "claimSuccess": "تمت المطالبة بالمكافأة!", "claimError": "تعذر المطالبة بالمهمة.", "statusError": "تعذر تحديث حالة المهام." }
+  "profile": {
+    "recharge": "إيداع",
+    "withdraw": "سحب",
+    "records": "السجل",
+    "invite": "الفريق",
+    "setWithdrawalPassword": "إعداد كلمة مرور السحب",
+    "changeWithdrawalPassword": "تغيير كلمة مرور السحب",
+    "language": "اللغة",
+    "faq": "الأسئلة الشائعة",
+    "about": "من نحن",
+    "support": "الدعم",
+    "logout": "تسجيل الخروج",
+    "mainActionsTitle": "الإجراءات الرئيسية",
+    "settingsTitle": "الإعدادات والمزيد"
+  },
+  "teamPage": {
+    "title": "ادعُ أصدقاءك",
+    "description": "شارك رابطك واكسب عمولات عن كل عضو في فريقك.",
+    "generatingLink": "جاري إنشاء الرابط...",
+    "toasts": {
+      "fetchError": "خطأ في تحميل بيانات الفريق",
+      "linkCopied": "تم نسخ رابط الدعوة!",
+      "linkError": "ไม่สามารถสร้างลิงก์คำเชิญได้"
+    },
+    "stats": {
+      "members": "إجمالي الأعضاء",
+      "commission": "إجمالي العمولات"
+    },
+    "levelsTitle": "مستويات الفريق",
+    "levelLabel": "المستوى {{level}}",
+    "levels": {
+      "totalMembers": "أعضاء",
+      "commission": "عمولة"
+    },
+    "noLevelsData": "ليس لديك أي أعضاء في فريقك بعد. ابدأ بالدعوة!"
+  },
+  "factoriesPage": {
+    "title": "متجر المصانع",
+    "subtitle": "احصل على مصانع جديدة لزيادة إنتاجك.",
+    "error": "لم يتم تحميل المصانع.",
+    "noFactoriesAvailable": "لا توجد مصانع متاحة في المتجر حاليًا."
+  },
+  "purchasedFactory": {
+    "nextClaim": "المطالبة التالية",
+    "lifespan": "العمر الافتراضي",
+    "dayCounter": "يوم {{dayNumber}} من {{totalDays}}",
+    "claim": "مطالبة",
+    "producing": "قيد الإنتاج"
+  },
+  "factoryCard": {
+    "price": "السعر",
+    "dailyProduction": "الإنتاج اليومي",
+    "duration": "المدة",
+    "days": "{{count}} أيام",
+    "buyButton": "شراء",
+    "owned": "تمتلكها"
+  },
+  "factoryPurchaseModal": {
+    "quantity": "الكمية:",
+    "totalCost": "التكلفة الإجمالية",
+    "yourBalance": "رصيدك",
+    "buyNow": "شراء الآن",
+    "rechargeNow": "اشحن للشراء",
+    "toasts": {
+      "purchasing": "جاري معالجة الشراء...",
+      "purchaseSuccess": "تم الشراء بنجاح!",
+      "purchaseError": "خطأ في معالجة الشراء.",
+      "insufficientFunds": "رصيد غير كافٍ. يتم توجيهك للإيداع..."
+    }
+  },
+  "directDepositModal": {
+    "titleV2": "عنوان الإيداع الخاص بك",
+    "instructionV2": "أودع أي مبلغ من USDT إلى عنوانك الشخصي. سيتم إضافة الأموال تلقائيًا.",
+    "addressLabel": "عنوانك الفريد لـ {{currency}}",
+    "warningV2": "تأكد من إرسال الأموال عبر الشبكة الصحيحة: {{network}} (BEP20)."
+  },
+  "setWithdrawalPasswordModal": {
+    "title_set": "إعداد كلمة مرور السحب",
+    "title_change": "تغيير كلمة مرور السحب",
+    "intro_set": "سيتم استخدام كلمة المرور هذه لتفويض جميع عمليات السحب الخاصة بك. احتفظ بها في مكان آمن.",
+    "intro_change": "أدخل كلمة المرور الحالية لتعيين كلمة مرور جديدة.",
+    "currentPassword_label": "كلمة المرور الحالية",
+    "newPassword_label": "كلمة المرور الجديدة (6 أحرف على الأقل)",
+    "confirmPassword_label": "تأكيد كلمة المرور الجديدة",
+    "saveButton": "حفظ كلمة المرور",
+    "toasts": {
+      "passwordsDontMatch": "كلمات المرور الجديدة غير متطابقة.",
+      "saving": "جاري الحفظ...",
+      "saveSuccess": "تم حفظ كلمة المرور بنجاح.",
+      "saveError": "خطأ في حفظ كلمة المرور."
+    }
+  },
+  "tasks": {
+    "claimed": "تمت المطالبة",
+    "claim": "مطالبة",
+    "go": "اذهب",
+    "pending": "قيد الانتظار",
+    "noTasks": "لا توجد مهام متاحة حاليًا.",
+    "toasts": {
+      "claimSuccess": "تمت المطالبة بالمكافأة!"
+    }
+  }
 }

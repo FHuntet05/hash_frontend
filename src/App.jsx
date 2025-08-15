@@ -1,15 +1,16 @@
-// RUTA: frontend/src/App.jsx (v2.0 - CON LÓGICA DE MANTENIMIENTO)
+// RUTA: frontend/src/App.jsx (v2.1 - CON SOPORTE RTL PARA ÁRABE)
 
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import useUserStore from './store/userStore';
+import { useTranslation } from 'react-i18next'; // Importación ya presente, se utilizará.
 
 // --- IMPORTS ---
 import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminProtectedRoute from './components/layout/AdminProtectedRoute';
 import Loader from './components/common/Loader';
-import MaintenanceScreen from './components/MaintenanceScreen'; // <-- NUEVA IMPORTACIÓN
+import MaintenanceScreen from './components/MaintenanceScreen';
 import HomePage from './pages/HomePage';
 import FactoriesPage from './pages/FactoriesPage'; 
 import RankingPage from './pages/RankingPage';
@@ -48,28 +49,34 @@ const AppInitializer = () => {
     return null;
 };
 
-// Componente para proteger las rutas de usuario
 const UserGatekeeper = ({ children }) => { 
-  // --- INICIO DE LÓGICA DE MANTENIMIENTO ---
   const { isAuthenticated, isLoadingAuth, isMaintenanceMode, maintenanceMessage } = useUserStore();
   
-  // 1. La comprobación de mantenimiento es la de más alta prioridad.
   if (isMaintenanceMode) {
       return <MaintenanceScreen message={maintenanceMessage} />;
   }
-  // --- FIN DE LÓGICA DE MANTENIMIENTO ---
   
   if (isLoadingAuth) { 
     return ( <div className="w-full h-screen flex items-center justify-center bg-background"><Loader text="Autenticando..." /></div> ); 
   } 
   if (!isAuthenticated) { 
-    // Esta pantalla ahora se mostrará para errores de autenticación reales (baneo, token inválido, etc.)
     return ( <div className="w-full h-screen flex items-center justify-center p-4 bg-background text-text-secondary text-center">Error de autenticación.<br/>Por favor, reinicia la app desde Telegram.</div> ); 
   } 
   return children; 
 };
 
 function App() {
+  // --- INICIO DE LÓGICA RTL ---
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    // Esta función se ejecutará cada vez que cambie el idioma.
+    const direction = i18n.language === 'ar' ? 'rtl' : 'ltr';
+    // Se aplica la dirección al tag <html>, permitiendo que Tailwind CSS ajuste el layout.
+    document.documentElement.dir = direction;
+  }, [i18n.language]);
+  // --- FIN DE LÓGICA RTL ---
+
   return (
     <Router>
       <Routes>

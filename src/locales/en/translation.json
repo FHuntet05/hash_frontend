@@ -1,48 +1,140 @@
 {
   "nav": {
-    "home": "Mine",
+    "home": "Home",
     "ranking": "Ranking",
-    "upgrade": "Upgrade",
+    "factories": "Shop",
     "team": "Team",
-    "profile": "Me"
+    "profile": "Profile"
   },
-  "profile": {
-    "recharge": "Recharge",
-    "withdraw": "Withdraw",
-    "records": "Records",
-    "exchange": "NTX/USDT",
-    "invite": "Invite",
-    "password": "Password",
-    "language": "Language",
-    "faq": "FAQ",
-    "about": "About us",
-    "support": "Customer Support",
-    "logout": "Log Out",
-    "comingSoon": {
-      "withdraw": "Withdrawal function coming soon.",
-      "records": "Financial history coming soon.",
-      "exchange": "NTX/USDT exchange coming soon.",
-      "password": "Password management coming soon.",
-      "faq": "FAQ coming soon.",
-      "about": "'About us' page coming soon.",
-      "support": "Contact support coming soon."
+  "common": {
+    "error": "An error occurred",
+    "copied": "Copied!",
+    "copyError": "Could not copy",
+    "continue": "Continue",
+    "loading": "Loading...",
+    "close": "Close",
+    "day": "Day",
+    "loadingUser": "Loading user data..."
+  },
+  "homePage": {
+    "mainBalance": "Main Balance",
+    "myFactories": "My Factories",
+    "noFactories": "You have no active factories.",
+    "goToStore": "Visit the shop to acquire your first factory and start producing.",
+    "tasks": "Tasks",
+    "toasts": {
+      "claiming": "Claiming production...",
+      "claimSuccess": "Production claimed!"
     }
   },
-  "tools": {
-    "title": "Mining Tools",
-    "subtitle": "Upgrade your equipment to increase your earnings.",
-    "loading": "Loading...",
-    "error": "Could not load the tools."
+  "profilePage": {
+    "balanceUsdtLabel": "Main Balance",
+    "toasts": {
+      "insufficientBalance": "Insufficient balance. The minimum to withdraw is {{min}} USDT.",
+      "generatingAddress": "Generating your address...",
+      "addressGenerated": "Address generated."
+    }
   },
-    "common": { "error": "Error", "copied": "Copied!", "continue": "Continue", "loading": "Loading...", "close": "Close" },
-    "homePage": { "buttons": { "start": "START", "claim": "CLAIM" }, "toasts": { "startingCycle": "Starting cycle...", "cycleStarted": "Mining cycle started!", "claiming": "Claiming..." }, "errors": { "noUser": "Error: Could not retrieve user information. Please try restarting the application." }, "taskCenter": "Task Center" },
-    "profilePage": { "balanceNtxLabel": "Value Portfolio (NTX)", "balanceUsdtLabel": "Brokerage Portfolio (USDT)", "toasts": { "insufficientBalance": "Insufficient balance. The minimum to withdraw is {{min}} USDT.", "insufficientNtx": "Insufficient NTX balance. The minimum to exchange is {{min}} NTX.", "loadingPrices": "Fetching market prices...", "selectCoin": "Select a currency to pay." } },
-    "teamPage": { "stats": { "members": "Team Members", "totalCommission": "Total Commission", "teamRecharge": "Team Recharges", "teamWithdrawals": "Team Withdrawals" }, "referralLink": { "copy": "Copy", "shareOn": "Share on", "shareText": "Come and build your team and let's make money together!" }, "levels": { "level": "LEVEL", "totalMembers": "Total Members", "validMembers": "Valid Members", "showDetails": "SHOW DETAILS" }, "shareWithFriends": "SHARE WITH FRIENDS", "detailsModal": { "errorLoading": "Could not load team details." } },
-    "factoryPage": { "hoursOfWork": "Working hours", "miningSpeed": "Mining speed", "perDay": "NTX/Day", "tabs": { "allTools": "Mining Tools", "myTools": "Upgrade" }, "purchaseHistory": "Purchase History", "noActiveTools": "You have no active tools." },
-    "rankingPage": { "tabs": { "global": "Global Ranking", "team": "Team Ranking" }, "loading": "Loading ranking...", "error": "Could not load the ranking." },
-    "historyPage": { "title": "Records History", "loading": "Loading history...", "error": "Could not load history.", "empty": "You have no transactions yet." },
-    "faqPage": { "title": "Frequently Asked Questions (FAQ)", "q1": "What is NEURO LINK?", "a1": "NEURO LINK is a gamified mining simulation platform that allows you to earn NTX tokens by purchasing and managing virtual tools.", "q2": "How can I increase my earnings?", "a2": "You can increase your mining rate by purchasing more powerful tools in the 'Upgrade' section. You can also earn bonuses by inviting friends to join your team.", "q3": "What is the NTX token?", "a3": "NTX is the native token of the NEURO LINK platform. You accumulate it through mining and can use it within the application's ecosystem.", "q4": "How does the referral system work?", "a4": "When someone signs up using your invitation code, they join your team. You earn a percentage of your team members' mining activity, spread across several levels." },
-    "aboutPage": { "title": "About Us", "p1": "We are a team passionate about blockchain technology and decentralized finance. Our mission with NEURO LINK is to create an accessible and fun gateway to the world of cryptocurrencies.", "p2": "We believe learning should be an engaging experience, and we have designed this platform to simulate the concepts of mining and rewards in a simple and visual way." },
-    "supportPage": { "title": "Customer Support", "p1": "If you have any problems, questions, or suggestions, do not hesitate to contact us. Our support team is here to help you.", "supportLink": "Support" },
-    "taskLogic": { "markingVisited": "Marking as visited...", "visitSuccess": "Come back to claim your reward!", "visitError": "Something went wrong.", "claimingReward": "Claiming reward...", "claimSuccess": "Reward claimed!", "claimError": "Could not claim the task.", "statusError": "Could not update task status." }
+  "profile": {
+    "recharge": "Deposit",
+    "withdraw": "Withdraw",
+    "records": "History",
+    "invite": "Team",
+    "setWithdrawalPassword": "Set Withdrawal Password",
+    "changeWithdrawalPassword": "Change Withdrawal Password",
+    "language": "Language",
+    "faq": "FAQ",
+    "about": "About Us",
+    "support": "Support",
+    "logout": "Log Out",
+    "mainActionsTitle": "Main Actions",
+    "settingsTitle": "Settings & More"
+  },
+  "teamPage": {
+    "title": "Invite Your Friends",
+    "description": "Share your link and earn commissions for each member of your team.",
+    "generatingLink": "Generating link...",
+    "toasts": {
+      "fetchError": "Error loading team data",
+      "linkCopied": "Invitation link copied!",
+      "linkError": "Could not generate invitation link."
+    },
+    "stats": {
+      "members": "Total Members",
+      "commission": "Total Commission"
+    },
+    "levelsTitle": "Team Levels",
+    "levelLabel": "Level {{level}}",
+    "levels": {
+      "totalMembers": "Members",
+      "commission": "Commission"
+    },
+    "noLevelsData": "You don't have any team members yet. Start inviting!"
+  },
+  "factoriesPage": {
+    "title": "Factory Shop",
+    "subtitle": "Acquire new factories to increase your production.",
+    "error": "Could not load factories.",
+    "noFactoriesAvailable": "There are no factories available in the shop at the moment."
+  },
+  "purchasedFactory": {
+    "nextClaim": "Next Claim",
+    "lifespan": "Lifespan",
+    "dayCounter": "Day {{dayNumber}} of {{totalDays}}",
+    "claim": "CLAIM",
+    "producing": "PRODUCING"
+  },
+  "factoryCard": {
+    "price": "Price",
+    "dailyProduction": "Daily Production",
+    "duration": "Duration",
+    "days": "{{count}} days",
+    "buyButton": "Buy",
+    "owned": "Owned"
+  },
+  "factoryPurchaseModal": {
+    "quantity": "Quantity:",
+    "totalCost": "Total Cost",
+    "yourBalance": "Your Balance",
+    "buyNow": "Buy Now",
+    "rechargeNow": "Recharge to Buy",
+    "toasts": {
+      "purchasing": "Processing purchase...",
+      "purchaseSuccess": "Purchase successful!",
+      "purchaseError": "Error processing purchase.",
+      "insufficientFunds": "Insufficient balance. Redirecting to deposit..."
+    }
+  },
+  "directDepositModal": {
+    "titleV2": "Your Deposit Address",
+    "instructionV2": "Deposit any amount of USDT to your personal address. Funds will be credited automatically.",
+    "addressLabel": "Your Unique {{currency}} Address",
+    "warningV2": "Make sure to send funds through the correct network: {{network}} (BEP20)."
+  },
+  "setWithdrawalPasswordModal": {
+    "title_set": "Set Withdrawal Password",
+    "title_change": "Change Withdrawal Password",
+    "intro_set": "This password will be used to authorize all your withdrawals. Keep it safe.",
+    "intro_change": "Enter your current password to set a new one.",
+    "currentPassword_label": "Current Password",
+    "newPassword_label": "New Password (min. 6 characters)",
+    "confirmPassword_label": "Confirm New Password",
+    "saveButton": "Save Password",
+    "toasts": {
+      "passwordsDontMatch": "The new passwords do not match.",
+      "saving": "Saving...",
+      "saveSuccess": "Password saved successfully.",
+      "saveError": "Error saving password."
+    }
+  },
+  "tasks": {
+    "claimed": "Claimed",
+    "claim": "Claim",
+    "go": "Go",
+    "pending": "Pending",
+    "noTasks": "No tasks available at the moment.",
+    "toasts": {
+      "claimSuccess": "Reward claimed!"
+    }
+  }
 }
