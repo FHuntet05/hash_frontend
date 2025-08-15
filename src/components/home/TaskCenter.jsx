@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/home/TaskCenter.jsx (v2.0 - Dinámico con Backend)
+// RUTA: frontend/src/components/home/TaskCenter.jsx (v2.1 - INTERNACIONALIZADO)
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,6 @@ const TaskCenter = () => {
   if (isLoading) {
       return (
         <div className="w-full space-y-3">
-          {/* Skeleton loaders para una mejor UX */}
           <div className="h-24 bg-card/50 rounded-2xl animate-pulse"></div>
           <div className="h-24 bg-card/50 rounded-2xl animate-pulse"></div>
         </div>
@@ -35,14 +34,28 @@ const TaskCenter = () => {
       animate={{ opacity: 1 }}
       transition={{ staggerChildren: 0.1 }}
     >
-      {tasks.map(task => (
-        <TaskItem
-            key={task.taskId}
-            task={task} // Pasamos el objeto de tarea completo desde el backend
-            onGoToTask={handleGoToTask}
-            onClaim={handleClaimTask}
-        />
-      ))}
+      {tasks.map(task => {
+        // --- INICIO DE MODIFICACIÓN CRÍTICA ---
+        // Reconstruimos el objeto 'task' con el texto traducido antes de pasarlo al componente hijo.
+        const translatedTask = {
+          ...task,
+          // La clave será, por ejemplo, 'tasks.INVITE_3.title'
+          title: t(`tasks.${task.taskId}.title`), 
+          // La clave será, por ejemplo, 'tasks.INVITE_3.description'
+          // Pasamos el 'target' como variable de interpolación.
+          description: t(`tasks.${task.taskId}.description`, { count: task.target }),
+        };
+        // --- FIN DE MODIFICACIÓN CRÍTICA ---
+        
+        return (
+          <TaskItem
+              key={task.taskId}
+              task={translatedTask} // Pasamos el objeto de tarea ya traducido
+              onGoToTask={handleGoToTask}
+              onClaim={handleClaimTask}
+          />
+        );
+      })}
     </motion.div>
   );
 };

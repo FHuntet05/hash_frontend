@@ -135,6 +135,30 @@
     "noTasks": "No tasks available at the moment.",
     "toasts": {
       "claimSuccess": "Reward claimed!"
+    },
+    "FIRST_PURCHASE": {
+      "title": "First Purchase",
+      "description": "Buy any factory in the shop."
+    },
+    "INVITE_3": {
+      "title": "Invite 3 Friends",
+      "description": "Your team must have at least 3 Level 1 members."
+    },
+    "INVITE_5": {
+      "title": "Invite 5 Friends",
+      "description": "Your team must have at least 5 Level 1 members."
+    },
+    "INVITE_10": {
+      "title": "Invite 10 Friends",
+      "description": "Your team must have at least 10 Level 1 members."
+    },
+    "INVITE_20": {
+      "title": "Invite 20 Friends",
+      "description": "Your team must have at least 20 Level 1 members."
+    },
+    "TELEGRAM_VISIT": {
+      "title": "Join the Community",
+      "description": "Visit our official Telegram group."
     }
   }
 }

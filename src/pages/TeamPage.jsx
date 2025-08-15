@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/TeamPage.jsx (v3.2 - CON ACTUALIZACIÓN AUTOMÁTICA)
+// RUTA: frontend/src/pages/TeamPage.jsx (v3.3 - POLLING SIN PARPADEO)
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,52 +17,44 @@ const POLLING_INTERVAL = 20000; // 20 segundos
 
 const TeamPage = () => {
   const { t } = useTranslation();
-  // --- INICIO DE MODIFICACIÓN: Obtenemos la nueva acción del store ---
   const { user, refreshUserData } = useUserStore();
-  // --- FIN DE MODIFICACIÓN ---
   const [teamData, setTeamData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  
+  // --- INICIO DE MODIFICACIÓN: ESTADO DE CARGA SEPARADO ---
+  // 'initialLoading' controla el loader grande de la primera carga.
+  const [initialLoading, setInitialLoading] = useState(true);
+  // --- FIN DE MODIFICACIÓN ---
 
-  // --- INICIO DE MODIFICACIÓN: Lógica de actualización con useCallback ---
   const fetchAllData = useCallback(async (isInitialLoad = false) => {
-    if (isInitialLoad) {
-      setLoading(true);
-    }
+    // Ya no usamos el estado 'loading' general para evitar el parpadeo.
     try {
-      // Hacemos ambas llamadas en paralelo para mayor eficiencia
       const [teamResponse] = await Promise.all([
         api.get('/team/summary'),
-        refreshUserData() // Llamamos a la acción del store para actualizar el saldo global
+        refreshUserData()
       ]);
       setTeamData(teamResponse.data);
     } catch (error) {
-      // Solo mostramos el toast en la carga inicial para no molestar al usuario
       if (isInitialLoad) {
         toast.error(t('teamPage.toasts.fetchError', 'Error al cargar datos del equipo'));
       }
       console.error("Error en polling de TeamPage:", error);
     } finally {
+      // Solo desactivamos el loader grande en la carga inicial.
       if (isInitialLoad) {
-        setLoading(false);
+        setInitialLoading(false);
       }
     }
   }, [t, refreshUserData]);
 
   useEffect(() => {
     if (user) {
-      // 1. Hacemos una llamada inicial inmediata
       fetchAllData(true);
-
-      // 2. Establecemos el intervalo para las actualizaciones periódicas (polling)
       const intervalId = setInterval(() => {
-        fetchAllData(false); // Las siguientes llamadas no muestran el loader
+        fetchAllData(false);
       }, POLLING_INTERVAL);
-
-      // 3. Limpiamos el intervalo cuando el componente se desmonta (el usuario navega a otra página)
       return () => clearInterval(intervalId);
     }
   }, [user, fetchAllData]);
-  // --- FIN DE MODIFICACIÓN ---
 
   const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
   const isEnvVarMissing = !botUsername;
@@ -80,9 +72,11 @@ const TeamPage = () => {
     toast.success(t('teamPage.toasts.linkCopied', '¡Enlace de invitación copiado!'));
   };
 
-  if (loading || !user) {
+  // --- INICIO DE MODIFICACIÓN: Comprobación del nuevo estado de carga ---
+  if (initialLoading || !user) {
     return <div className="flex items-center justify-center h-full pt-16"><Loader /></div>;
   }
+  // --- FIN DE MODIFICACIÓN ---
 
   const stats = [
     { 

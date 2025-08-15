@@ -1,3 +1,4 @@
+
 {
   "nav": {
     "home": "الرئيسية",
@@ -9,7 +10,7 @@
   "common": {
     "error": "حدث خطأ",
     "copied": "تم النسخ!",
-    "copyError": "لم يتم النسخ",
+    "copyError": "لم أتمكن من النسخ",
     "continue": "متابعة",
     "loading": "جاري التحميل...",
     "close": "إغلاق",
@@ -20,18 +21,18 @@
     "mainBalance": "الرصيد الرئيسي",
     "myFactories": "مصانعي",
     "noFactories": "ليس لديك مصانع نشطة.",
-    "goToStore": "قم بزيارة المتجر للحصول على مصنعك الأول والبدء في الإنتاج.",
+    "goToStore": "قم بزيارة المتجر للحصول على مصنعك الأول وبدء الإنتاج.",
     "tasks": "المهام",
     "toasts": {
       "claiming": "جاري المطالبة بالإنتاج...",
-      "claimSuccess": "تمت المطالبة بالإنتاج!"
+      "claimSuccess": "تمت المطالبة بالإنتاج بنجاح!"
     }
   },
   "profilePage": {
     "balanceUsdtLabel": "الرصيد الرئيسي",
     "toasts": {
       "insufficientBalance": "رصيد غير كافٍ. الحد الأدنى للسحب هو {{min}} USDT.",
-      "generatingAddress": "جاري إنشاء عنوانك...",
+      "generatingAddress": "جاري إنشاء عنوان الإيداع...",
       "addressGenerated": "تم إنشاء العنوان."
     }
   },
@@ -44,8 +45,8 @@
     "changeWithdrawalPassword": "تغيير كلمة مرور السحب",
     "language": "اللغة",
     "faq": "الأسئلة الشائعة",
-    "about": "من نحن",
-    "support": "الدعم",
+    "about": "عنا",
+    "support": "الدعم الفني",
     "logout": "تسجيل الخروج",
     "mainActionsTitle": "الإجراءات الرئيسية",
     "settingsTitle": "الإعدادات والمزيد"
@@ -56,8 +57,8 @@
     "generatingLink": "جاري إنشاء الرابط...",
     "toasts": {
       "fetchError": "خطأ في تحميل بيانات الفريق",
-      "linkCopied": "تم نسخ رابط الدعوة!",
-      "linkError": "ไม่สามารถสร้างลิงก์คำเชิญได้"
+      "linkCopied": "تم نسخ رابط الدعوة بنجاح!",
+      "linkError": "تعذر إنشاء رابط الدعوة."
     },
     "stats": {
       "members": "إجمالي الأعضاء",
@@ -67,20 +68,20 @@
     "levelLabel": "المستوى {{level}}",
     "levels": {
       "totalMembers": "أعضاء",
-      "commission": "عمولة"
+      "commission": "العمولة"
     },
-    "noLevelsData": "ليس لديك أي أعضاء في فريقك بعد. ابدأ بالدعوة!"
+    "noLevelsData": "ليس لديك أي أعضاء في فريقك بعد. ابدأ بدعوة أصدقائك!"
   },
   "factoriesPage": {
     "title": "متجر المصانع",
     "subtitle": "احصل على مصانع جديدة لزيادة إنتاجك.",
-    "error": "لم يتم تحميل المصانع.",
+    "error": "تعذر تحميل المصانع.",
     "noFactoriesAvailable": "لا توجد مصانع متاحة في المتجر حاليًا."
   },
   "purchasedFactory": {
     "nextClaim": "المطالبة التالية",
     "lifespan": "العمر الافتراضي",
-    "dayCounter": "يوم {{dayNumber}} من {{totalDays}}",
+    "dayCounter": "اليوم {{dayNumber}} من {{totalDays}}",
     "claim": "مطالبة",
     "producing": "قيد الإنتاج"
   },
@@ -90,19 +91,19 @@
     "duration": "المدة",
     "days": "{{count}} أيام",
     "buyButton": "شراء",
-    "owned": "تمتلكها"
+    "owned": "تم الشراء"
   },
   "factoryPurchaseModal": {
     "quantity": "الكمية:",
     "totalCost": "التكلفة الإجمالية",
-    "yourBalance": "رصيدك",
+    "yourBalance": "رصيدك الحالي",
     "buyNow": "شراء الآن",
     "rechargeNow": "اشحن للشراء",
     "toasts": {
       "purchasing": "جاري معالجة الشراء...",
       "purchaseSuccess": "تم الشراء بنجاح!",
-      "purchaseError": "خطأ في معالجة الشراء.",
-      "insufficientFunds": "رصيد غير كافٍ. يتم توجيهك للإيداع..."
+      "purchaseError": "خطأ أثناء معالجة الشراء.",
+      "insufficientFunds": "رصيد غير كافٍ. يتم تحويلك إلى صفحة الإيداع..."
     }
   },
   "directDepositModal": {
@@ -114,14 +115,14 @@
   "setWithdrawalPasswordModal": {
     "title_set": "إعداد كلمة مرور السحب",
     "title_change": "تغيير كلمة مرور السحب",
-    "intro_set": "سيتم استخدام كلمة المرور هذه لتفويض جميع عمليات السحب الخاصة بك. احتفظ بها في مكان آمن.",
+    "intro_set": "سيتم استخدام كلمة المرور هذه لتفويض جميع عمليات السحب. احتفظ بها في مكان آمن.",
     "intro_change": "أدخل كلمة المرور الحالية لتعيين كلمة مرور جديدة.",
     "currentPassword_label": "كلمة المرور الحالية",
     "newPassword_label": "كلمة المرور الجديدة (6 أحرف على الأقل)",
     "confirmPassword_label": "تأكيد كلمة المرور الجديدة",
     "saveButton": "حفظ كلمة المرور",
     "toasts": {
-      "passwordsDontMatch": "كلمات المرور الجديدة غير متطابقة.",
+      "passwordsDontMatch": "كلمتا المرور الجديدتان غير متطابقتين.",
       "saving": "جاري الحفظ...",
       "saveSuccess": "تم حفظ كلمة المرور بنجاح.",
       "saveError": "خطأ في حفظ كلمة المرور."
@@ -131,10 +132,34 @@
     "claimed": "تمت المطالبة",
     "claim": "مطالبة",
     "go": "اذهب",
-    "pending": "قيد الانتظار",
+    "pending": "قيد الإنجاز",
     "noTasks": "لا توجد مهام متاحة حاليًا.",
     "toasts": {
-      "claimSuccess": "تمت المطالبة بالمكافأة!"
+      "claimSuccess": "تمت المطالبة بالمكافأة بنجاح!"
+    },
+    "FIRST_PURCHASE": {
+      "title": "الشراء الأول",
+      "description": "اشترِ أي مصنع في المتجر."
+    },
+    "INVITE_3": {
+      "title": "دعوة 3 أصدقاء",
+      "description": "يجب أن يضم فريقك 3 أعضاء على الأقل في المستوى 1."
+    },
+    "INVITE_5": {
+      "title": "دعوة 5 أصدقاء",
+      "description": "يجب أن يضم فريقك 5 أعضاء على الأقل في المستوى 1."
+    },
+    "INVITE_10": {
+      "title": "دعوة 10 أصدقاء",
+      "description": "يجب أن يضم فريقك 10 أعضاء على الأقل في المستوى 1."
+    },
+    "INVITE_20": {
+      "title": "دعوة 20 صديقًا",
+      "description": "يجب أن يضم فريقك 20 عضوًا على الأقل في المستوى 1."
+    },
+    "TELEGRAM_VISIT": {
+      "title": "الانضمام للمجتمع",
+      "description": "قم بزيارة مجموعتنا الرسمية على تيليجرام."
     }
   }
 }
