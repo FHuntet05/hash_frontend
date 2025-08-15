@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/TeamPage.jsx (v3.3 - POLLING SIN PARPADEO)
+// RUTA: frontend/src/pages/TeamPage.jsx (v3.4 - RENDERIZADO ROBUSTO Y SIN PARPADEO)
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,15 +19,11 @@ const TeamPage = () => {
   const { t } = useTranslation();
   const { user, refreshUserData } = useUserStore();
   const [teamData, setTeamData] = useState(null);
-  
-  // --- INICIO DE MODIFICACIÓN: ESTADO DE CARGA SEPARADO ---
-  // 'initialLoading' controla el loader grande de la primera carga.
   const [initialLoading, setInitialLoading] = useState(true);
-  // --- FIN DE MODIFICACIÓN ---
 
   const fetchAllData = useCallback(async (isInitialLoad = false) => {
-    // Ya no usamos el estado 'loading' general para evitar el parpadeo.
     try {
+      // Optimizamos la ejecución en paralelo
       const [teamResponse] = await Promise.all([
         api.get('/team/summary'),
         refreshUserData()
@@ -39,7 +35,6 @@ const TeamPage = () => {
       }
       console.error("Error en polling de TeamPage:", error);
     } finally {
-      // Solo desactivamos el loader grande en la carga inicial.
       if (isInitialLoad) {
         setInitialLoading(false);
       }
@@ -49,18 +44,18 @@ const TeamPage = () => {
   useEffect(() => {
     if (user) {
       fetchAllData(true);
-      const intervalId = setInterval(() => {
-        fetchAllData(false);
-      }, POLLING_INTERVAL);
+      const intervalId = setInterval(() => fetchAllData(false), POLLING_INTERVAL);
       return () => clearInterval(intervalId);
+    } else {
+      setInitialLoading(false); // Si no hay usuario, no estamos cargando.
     }
   }, [user, fetchAllData]);
 
   const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
   const isEnvVarMissing = !botUsername;
 
-  const referralLink = !isEnvVarMissing && user?.telegramId 
-    ? `https://t.me/${botUsername}?start=${user.telegramId}`
+  const referralLink = !isEnvVarMissing && user?.referralCode
+    ? `https://t.me/${botUsername}?start=${user.referralCode}`
     : '';
   
   const copyToClipboard = () => {
@@ -72,22 +67,27 @@ const TeamPage = () => {
     toast.success(t('teamPage.toasts.linkCopied', '¡Enlace de invitación copiado!'));
   };
 
-  // --- INICIO DE MODIFICACIÓN: Comprobación del nuevo estado de carga ---
-  if (initialLoading || !user) {
+  if (initialLoading) {
     return <div className="flex items-center justify-center h-full pt-16"><Loader /></div>;
   }
-  // --- FIN DE MODIFICACIÓN ---
+
+  // --- INICIO DE CORRECCIÓN CRÍTICA ---
+  // Se extraen los datos de forma segura, con valores por defecto para evitar errores.
+  const totalMembers = teamData?.totalTeamMembers || 0;
+  const totalCommission = teamData?.totalCommission || 0;
+  const levels = teamData?.levels || [];
+  // --- FIN DE CORRECCIÓN CRÍTICA ---
 
   const stats = [
     { 
       title: t('teamPage.stats.members', 'Miembros Totales'), 
-      value: teamData?.totalTeamMembers || 0, 
+      value: totalMembers, 
       icon: HiOutlineUserGroup, 
       color: "text-accent-primary" 
     },
     { 
       title: t('teamPage.stats.commission', 'Comisión Total'), 
-      value: `${(teamData?.totalCommission || 0).toFixed(2)}`, 
+      value: totalCommission.toFixed(2), 
       icon: HiOutlineBanknotes, 
       color: "text-accent-secondary" 
     },
@@ -105,22 +105,17 @@ const TeamPage = () => {
         <p className="text-text-secondary text-sm mt-2 mb-4">{t('teamPage.description', 'Comparte tu enlace y gana comisiones por cada miembro de tu equipo.')}</p>
         
         {isEnvVarMissing ? (
-            <div className="flex items-center gap-2 bg-status-danger/10 p-3 rounded-lg text-status-danger text-sm">
-                <HiOutlineExclamationTriangle className="w-6 h-6 flex-shrink-0" />
-                <span>Error de configuración del administrador: El nombre de usuario del bot no está definido.</span>
-            </div>
+          <div className="flex items-center gap-2 bg-status-danger/10 p-3 rounded-lg text-status-danger text-sm">
+            <HiOutlineExclamationTriangle className="w-6 h-6 flex-shrink-0" />
+            <span>Error de configuración del administrador: El nombre de usuario del bot no está definido.</span>
+          </div>
         ) : (
-            <div className="flex items-center bg-background/50 rounded-lg p-2 border border-border">
-              <input 
-                type="text" 
-                value={referralLink} 
-                readOnly 
-                className="w-full bg-transparent text-text-secondary text-sm outline-none" 
-              />
-              <button onClick={copyToClipboard} className="ml-2 p-2 rounded-md bg-accent-primary hover:bg-accent-primary-hover active:scale-95 text-white transition-colors">
-                <HiOutlineClipboardDocument className="w-5 h-5" />
-              </button>
-            </div>
+          <div className="flex items-center bg-background/50 rounded-lg p-2 border border-border">
+            <input type="text" value={referralLink} readOnly className="w-full bg-transparent text-text-secondary text-sm outline-none" />
+            <button onClick={copyToClipboard} className="ml-2 p-2 rounded-md bg-accent-primary hover:bg-accent-primary-hover active:scale-95 text-white transition-colors">
+              <HiOutlineClipboardDocument className="w-5 h-5" />
+            </button>
+          </div>
         )}
         
         <SocialShare referralLink={referralLink} />
@@ -134,9 +129,10 @@ const TeamPage = () => {
 
       <div>
         <h2 className="text-lg font-semibold text-text-primary mb-4">{t('teamPage.levelsTitle', 'Niveles del Equipo')}</h2>
-        {teamData?.levels && teamData.levels.length > 0 ? (
+        {/* Usamos la variable 'levels' que ya tiene un valor por defecto seguro */}
+        {levels.length > 0 ? (
           <div className="space-y-3">
-            {teamData.levels.map(levelData => (
+            {levels.map(levelData => (
               <TeamLevelCard 
                 key={levelData.level} 
                 level={levelData.level} 
