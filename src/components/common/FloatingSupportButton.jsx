@@ -6,7 +6,7 @@ import { HiChatBubbleLeftRight } from 'react-icons/hi2';
 
 const FloatingSupportButton = ({ dragRef }) => {
   // El enlace de soporte se mantiene configurable aquí.
-  const supportLink = 'https://t.me/Soporteneri';
+  const supportLink = 'https://t.me/ServicioFabrica24h';
 
   const handleSupportClick = () => {
     try {

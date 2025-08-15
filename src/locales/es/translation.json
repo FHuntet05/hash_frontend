@@ -50,6 +50,17 @@
     "mainActionsTitle": "Acciones Principales",
     "settingsTitle": "Ajustes y Más"
   },
+  "faqPage": {
+    "title": "Preguntas Frecuentes",
+    "q1": "¿Qué es Mega Fábrica?",
+    "a1": "Mega Fábrica es una plataforma de simulación económica donde puedes adquirir fábricas virtuales que generan ingresos pasivos en USDT de forma automática.",
+    "q2": "¿Cómo empiezo a ganar?",
+    "a2": "Simplemente adquiere una fábrica en nuestra tienda. Una vez comprada, comenzará a producir USDT cada 24 horas, que podrás reclamar directamente a tu saldo principal.",
+    "q3": "¿Cómo puedo retirar mis ganancias?",
+    "a3": "Puedes solicitar un retiro desde tu perfil. Asegúrate de haber configurado tu contraseña de retiro y de cumplir con el monto mínimo requerido.",
+    "q4": "¿Es seguro invertir aquí?",
+    "a4": "Utilizamos protocolos de seguridad estándar para proteger tu cuenta y tus fondos. Sin embargo, como con cualquier plataforma de ingresos, participa de manera responsable."
+  },
   "teamPage": {
     "title": "Invita a tus Amigos",
     "description": "Comparte tu enlace y gana comisiones por cada miembro de tu equipo.",

@@ -50,6 +50,17 @@
     "mainActionsTitle": "Main Actions",
     "settingsTitle": "Settings & More"
   },
+  "faqPage": {
+    "title": "Frequently Asked Questions",
+    "q1": "What is Mega Factory?",
+    "a1": "Mega Factory is an economic simulation platform where you can acquire virtual factories that automatically generate passive income in USDT.",
+    "q2": "How do I start earning?",
+    "a2": "Simply acquire a factory from our shop. Once purchased, it will start producing USDT every 24 hours, which you can claim directly to your main balance.",
+    "q3": "How can I withdraw my earnings?",
+    "a3": "You can request a withdrawal from your profile. Make sure you have set up your withdrawal password and meet the minimum required amount.",
+    "q4": "Is it safe to invest here?",
+    "a4": "We use standard security protocols to protect your account and funds. However, as with any income platform, please participate responsibly."
+  },
   "teamPage": {
     "title": "Invite Your Friends",
     "description": "Share your link and earn commissions for each member of your team.",

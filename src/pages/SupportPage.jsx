@@ -11,16 +11,16 @@ const SupportPage = () => {
     <StaticPageLayout title={t('supportPage.title', 'Soporte')}>
       {/* Contenido envuelto en una tarjeta de cristal */}
       <div className="bg-card/70 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-subtle space-y-4 text-text-secondary">
-        <p>{t('supportPage.p1', 'Si tienes alguna pregunta o necesitas ayuda con tu cuenta, nuestro equipo de soporte está disponible para asistirte.')}</p>
+        <p>{t('supportPage.p1', 'Si tienes alguna pregunta o necesitas ayuda con tu cuenta, nuestro CEO puede asistirle de igual manera.')}</p>
         <div>
           <h3 className="font-bold text-text-primary mb-1">{t('supportPage.supportLink', 'Canal de Soporte Oficial:')}</h3>
           <a 
-            href="https://t.me/Soporteneri" // Asegúrate de que este es el enlace correcto
+            href="https://t.me/GerentePro" // Asegúrate de que este es el enlace correcto
             target="_blank" 
             rel="noopener noreferrer" 
             className="text-accent-primary font-semibold hover:underline break-all"
           >
-            https://t.me/Soporteneri
+            https://t.me/GerentePro
           </a>
         </div>
       </div>
