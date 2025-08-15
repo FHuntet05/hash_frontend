@@ -1,4 +1,4 @@
-// RUTA: frontend/src/store/userStore.js (v3.0 - CON GESTIÓN DE MANTENIMIENTO)
+// RUTA: frontend/src/store/userStore.js (v3.1 - CON ACTUALIZACIÓN DE DATOS)
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -12,12 +12,8 @@ const useUserStore = create(
       settings: null,
       isAuthenticated: false, 
       isLoadingAuth: true,
-      
-      // --- NUEVOS ESTADOS ---
       isMaintenanceMode: false,
       maintenanceMessage: '',
-      // --- FIN DE NUEVOS ESTADOS ---
-
       isHydrated: false,
 
       syncUserWithBackend: async (telegramUser) => {
@@ -34,24 +30,21 @@ const useUserStore = create(
               isAuthenticated: true, 
               settings, 
               isLoadingAuth: false,
-              isMaintenanceMode: false, // Aseguramos que se desactive si la sincronización es exitosa
+              isMaintenanceMode: false,
               maintenanceMessage: ''
           });
 
         } catch (error) {
           console.error('[Store] Error durante la sincronización:', error.response?.data?.message || error.message);
           
-          // --- INICIO DE LÓGICA DE MANTENIMIENTO ---
           if (error.response && error.response.status === 503) {
-            // Si el servidor está en mantenimiento, lo guardamos en el estado.
             set({
               isLoadingAuth: false,
-              isAuthenticated: false, // El usuario no está autenticado
+              isAuthenticated: false,
               isMaintenanceMode: true,
               maintenanceMessage: error.response.data.maintenanceMessage || 'El sistema está en mantenimiento.'
             });
           } else {
-            // Para cualquier otro error (baneo, token inválido, etc.), deslogueamos.
             set({ 
               user: null, 
               token: null, 
@@ -62,9 +55,33 @@ const useUserStore = create(
               maintenanceMessage: ''
             });
           }
-          // --- FIN DE LÓGICA DE MANTENIMIENTO ---
         }
       },
+
+      // --- INICIO DE NUEVA ACCIÓN ---
+      /**
+       * Actualiza silenciosamente los datos del usuario (especialmente el saldo)
+       * desde el backend sin afectar el estado de autenticación.
+       * Esto es útil para actualizaciones en segundo plano (polling).
+       */
+      refreshUserData: async () => {
+        if (!get().isAuthenticated) return; // No hacer nada si no está autenticado
+
+        try {
+          // Usamos un endpoint que solo devuelve los datos del usuario actual.
+          // '/auth/profile' es un buen candidato.
+          const response = await api.get('/auth/profile'); 
+          const { user: updatedUser, settings: updatedSettings } = response.data;
+          
+          set({ user: updatedUser, settings: updatedSettings });
+          console.log('[Store] Datos de usuario refrescados en segundo plano.');
+        } catch (error) {
+          // No hacemos logout en caso de un error de refresco para no interrumpir al usuario.
+          // Podría ser un problema de red temporal.
+          console.error('[Store] Fallo al refrescar los datos del usuario:', error.response?.data?.message || error.message);
+        }
+      },
+      // --- FIN DE NUEVA ACCIÓN ---
 
       setUser: (newUserObject) => {
         set({ user: newUserObject });
@@ -77,7 +94,7 @@ const useUserStore = create(
           isAuthenticated: false,
           isLoadingAuth: false,
           settings: null,
-          isMaintenanceMode: false, // Limpiar al desloguear
+          isMaintenanceMode: false,
           maintenanceMessage: ''
         });
         console.log('[Store] Sesión cerrada.');
@@ -100,7 +117,6 @@ const useUserStore = create(
   )
 );
 
-// Este código no necesita cambios
 useUserStore.subscribe(
   (state) => state.token,
   (token) => {

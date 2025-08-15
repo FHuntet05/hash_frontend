@@ -1,6 +1,6 @@
-// RUTA: frontend/src/pages/TeamPage.jsx (v3.1 - LÓGICA DE ENLACE ROBUSTA Y CORREGIDA)
+// RUTA: frontend/src/pages/TeamPage.jsx (v3.2 - CON ACTUALIZACIÓN AUTOMÁTICA)
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import useUserStore from '../store/userStore';
 import api from '../api/axiosConfig';
@@ -13,37 +13,63 @@ import TeamLevelCard from '../components/team/TeamLevelCard';
 import Loader from '../components/common/Loader';
 import SocialShare from '../components/team/SocialShare';
 
+const POLLING_INTERVAL = 20000; // 20 segundos
+
 const TeamPage = () => {
   const { t } = useTranslation();
-  const { user } = useUserStore();
+  // --- INICIO DE MODIFICACIÓN: Obtenemos la nueva acción del store ---
+  const { user, refreshUserData } = useUserStore();
+  // --- FIN DE MODIFICACIÓN ---
   const [teamData, setTeamData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchTeamData = async () => {
+  // --- INICIO DE MODIFICACIÓN: Lógica de actualización con useCallback ---
+  const fetchAllData = useCallback(async (isInitialLoad = false) => {
+    if (isInitialLoad) {
       setLoading(true);
-      try {
-        const response = await api.get('/team/summary');
-        setTeamData(response.data);
-      } catch (error) {
+    }
+    try {
+      // Hacemos ambas llamadas en paralelo para mayor eficiencia
+      const [teamResponse] = await Promise.all([
+        api.get('/team/summary'),
+        refreshUserData() // Llamamos a la acción del store para actualizar el saldo global
+      ]);
+      setTeamData(teamResponse.data);
+    } catch (error) {
+      // Solo mostramos el toast en la carga inicial para no molestar al usuario
+      if (isInitialLoad) {
         toast.error(t('teamPage.toasts.fetchError', 'Error al cargar datos del equipo'));
-      } finally {
+      }
+      console.error("Error en polling de TeamPage:", error);
+    } finally {
+      if (isInitialLoad) {
         setLoading(false);
       }
-    };
-    if (user) {
-        fetchTeamData();
     }
-  }, [t, user]);
+  }, [t, refreshUserData]);
 
-  // --- INICIO DE CORRECCIÓN: Enlace de Referido Robusto ---
+  useEffect(() => {
+    if (user) {
+      // 1. Hacemos una llamada inicial inmediata
+      fetchAllData(true);
+
+      // 2. Establecemos el intervalo para las actualizaciones periódicas (polling)
+      const intervalId = setInterval(() => {
+        fetchAllData(false); // Las siguientes llamadas no muestran el loader
+      }, POLLING_INTERVAL);
+
+      // 3. Limpiamos el intervalo cuando el componente se desmonta (el usuario navega a otra página)
+      return () => clearInterval(intervalId);
+    }
+  }, [user, fetchAllData]);
+  // --- FIN DE MODIFICACIÓN ---
+
   const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
   const isEnvVarMissing = !botUsername;
 
   const referralLink = !isEnvVarMissing && user?.telegramId 
     ? `https://t.me/${botUsername}?start=${user.telegramId}`
     : '';
-  // --- FIN DE CORRECCIÓN ---
   
   const copyToClipboard = () => {
     if (isEnvVarMissing || !referralLink) {
