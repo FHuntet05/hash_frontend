@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/admin/components/FactoryFormModal.jsx (REFACTORIZADO)
+// RUTA: frontend/src/pages/admin/components/FactoryFormModal.jsx (CORREGIDO)
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -13,6 +13,7 @@ const modalVariants = {
 const FactoryFormModal = ({ factory, onSave, onClose }) => {
   const [formData, setFormData] = useState({
     name: '',
+    vipLevel: '', // <-- CAMBIO: Añadido al estado inicial
     price: '',
     dailyProduction: '',
     durationDays: '',
@@ -25,6 +26,7 @@ const FactoryFormModal = ({ factory, onSave, onClose }) => {
     if (factory) {
       setFormData({
         name: factory.name || '',
+        vipLevel: factory.vipLevel || '', // <-- CAMBIO: Se carga el valor al editar
         price: factory.price || '',
         dailyProduction: factory.dailyProduction || '',
         durationDays: factory.durationDays || '',
@@ -43,6 +45,7 @@ const FactoryFormModal = ({ factory, onSave, onClose }) => {
     e.preventDefault();
     const dataToSend = {
         ...formData,
+        vipLevel: Number(formData.vipLevel), // <-- CAMBIO: Se convierte a número
         price: Number(formData.price),
         dailyProduction: Number(formData.dailyProduction),
         durationDays: Number(formData.durationDays)
@@ -75,7 +78,13 @@ const FactoryFormModal = ({ factory, onSave, onClose }) => {
               <label className="text-sm font-medium">Duración (Días)</label>
               <input type="number" name="durationDays" value={formData.durationDays} onChange={handleChange} className="w-full mt-1 p-2 bg-black/20 rounded-md" required />
             </div>
-             <div className="flex items-center justify-start gap-4">
+            {/* --- INICIO DE NUEVO CAMPO --- */}
+            <div>
+              <label className="text-sm font-medium">Nivel VIP</label>
+              <input type="number" name="vipLevel" value={formData.vipLevel} onChange={handleChange} className="w-full mt-1 p-2 bg-black/20 rounded-md" required />
+            </div>
+            {/* --- FIN DE NUEVO CAMPO --- */}
+             <div className="md:col-span-2 flex items-center justify-start gap-4 pt-2">
               <label htmlFor="isFree" className="text-sm font-medium">¿Es Gratuita?</label>
               <input type="checkbox" id="isFree" name="isFree" checked={formData.isFree} onChange={handleChange} className="h-5 w-5 rounded bg-black/20 text-accent-start focus:ring-accent-start border-gray-500" />
             </div>
