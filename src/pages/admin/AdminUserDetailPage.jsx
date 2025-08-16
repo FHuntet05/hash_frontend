@@ -1,6 +1,6 @@
-// RUTA: frontend/src/pages/admin/AdminUserDetailPage.jsx (v2.0 - CÓDIGO COMPLETO)
+// RUTA: frontend/src/pages/admin/AdminUserDetailPage.jsx (v2.1 - GESTIÓN DE ROLES INTEGRADA)
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axiosConfig';
 import toast from 'react-hot-toast';
@@ -8,6 +8,7 @@ import Loader from '../../components/common/Loader';
 import { HiArrowLeft, HiOutlinePencil, HiOutlinePlusCircle, HiOutlineNoSymbol, HiOutlineCheckCircle } from 'react-icons/hi2';
 import EditUserModal from './components/EditUserModal';
 import AdjustBalanceModal from './components/AdjustBalanceModal';
+import useAdminStore from '../../store/adminStore'; // <-- 1. IMPORTAMOS EL STORE DE ADMIN
 
 // Componente interno para un interruptor (toggle) reutilizable
 const SettingToggle = ({ id, name, checked, onChange, label, description, disabled = false }) => (
@@ -23,9 +24,7 @@ const SettingToggle = ({ id, name, checked, onChange, label, description, disabl
     </div>
 );
 
-// --- COMPONENTE INTERNO: UserInfoCard ---
 const UserInfoCard = ({ user, onEdit, onAdjustBalance, onSetStatus, onSetForcePurchase }) => {
-    // Cálculo de referidos por nivel
     const level1Refs = user.referrals?.filter(r => r.level === 1).length || 0;
     const level2Refs = user.referrals?.filter(r => r.level === 2).length || 0;
     const level3Refs = user.referrals?.filter(r => r.level === 3).length || 0;
@@ -74,7 +73,6 @@ const UserInfoCard = ({ user, onEdit, onAdjustBalance, onSetStatus, onSetForcePu
     </div>
 )};
 
-// --- COMPONENTE INTERNO: UserWalletsCard ---
 const UserWalletsCard = ({ wallets }) => (
     <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
         <h3 className="text-xl font-semibold mb-4">Wallets de Depósito</h3>
@@ -90,7 +88,6 @@ const UserWalletsCard = ({ wallets }) => (
     </div>
 );
 
-// --- COMPONENTE INTERNO: TransactionsTable ---
 const TransactionsTable = ({ userId }) => {
     const [transactions, setTransactions] = useState({ items: [], page: 1, totalPages: 1 });
     const [isLoading, setIsLoading] = useState(true);
@@ -98,9 +95,6 @@ const TransactionsTable = ({ userId }) => {
     const fetchTransactions = useCallback(async (page = 1) => {
         setIsLoading(true);
         try {
-            // Nota: La API de detalles ya devuelve las transacciones, así que esta llamada
-            // separada podría refactorizarse en el futuro para usar los datos ya cargados
-            // y solo hacer fetch al cambiar de página. Por ahora, se mantiene simple.
             const { data } = await api.get(`/admin/users/${userId}/details?page=${page}`);
             setTransactions(data.transactions);
         } catch (error) { toast.error("No se pudieron cargar las transacciones."); }
@@ -125,7 +119,7 @@ const TransactionsTable = ({ userId }) => {
                             <tr key={tx._id} className="hover:bg-dark-tertiary border-b border-white/10">
                                 <td className="p-3 text-sm">{new Date(tx.createdAt).toLocaleString()}</td>
                                 <td className="p-3 text-sm">{tx.type}</td>
-                                <td className={`p-3 text-sm font-mono ${tx.amount > 0 || tx.type === 'deposit' ? 'text-green-400' : 'text-red-400'}`}>{tx.amount > 0 ? '+' : ''}{tx.amount.toFixed(2)} {tx.currency}</td>
+                                <td className={`p-3 text-sm font-mono ${tx.amount > 0 || tx.type === 'deposit' || tx.type === 'admin_credit' ? 'text-green-400' : 'text-red-400'}`}>{tx.amount > 0 ? '+' : ''}{tx.amount.toFixed(2)} {tx.currency}</td>
                                 <td className="p-3 text-sm text-text-secondary">{tx.description}</td>
                             </tr>
                         ))}
@@ -145,13 +139,21 @@ const TransactionsTable = ({ userId }) => {
     );
 };
 
-// --- COMPONENTE PRINCIPAL: AdminUserDetailPage ---
 const AdminUserDetailPage = () => {
     const { id } = useParams();
     const [userData, setUserData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
+    
+    // <-- 2. OBTENEMOS EL USUARIO ADMIN LOGUEADO DESDE EL STORE
+    const { user: loggedInAdmin } = useAdminStore();
+
+    // <-- 3. VERIFICAMOS SI EL ADMIN ES SUPER ADMIN USANDO LA VARIABLE DE ENTORNO
+    const isSuperAdmin = useMemo(() => {
+        const superAdminId = import.meta.env.VITE_SUPER_ADMIN_TELEGRAM_ID;
+        return loggedInAdmin?.telegramId === superAdminId;
+    }, [loggedInAdmin]);
 
     const fetchAllDetails = useCallback(async () => {
         setIsLoading(true);
@@ -165,11 +167,17 @@ const AdminUserDetailPage = () => {
     useEffect(() => { fetchAllDetails(); }, [fetchAllDetails]);
 
     const handleSaveUser = async (userId, formData) => {
-        const promise = api.put(`/admin/users/${userId}`, formData);
+        // <-- 4. MODIFICAMOS LA FUNCIÓN PARA QUE INCLUYA EL ROL SI ES SUPER ADMIN
+        const dataToSend = { ...formData };
+        if (!isSuperAdmin) {
+            delete dataToSend.role; // Si no es super admin, eliminamos el campo 'role' por seguridad.
+        }
+        
+        const promise = api.put(`/admin/users/${userId}`, dataToSend);
         toast.promise(promise, {
             loading: 'Guardando...',
             success: () => { setIsEditModalOpen(false); fetchAllDetails(); return 'Usuario actualizado.'; },
-            error: 'No se pudo actualizar.'
+            error: (err) => err.response?.data?.message || 'No se pudo actualizar.'
         });
     };
 
@@ -219,7 +227,8 @@ const AdminUserDetailPage = () => {
                 <UserWalletsCard wallets={userData.cryptoWallets} />
                 <TransactionsTable userId={id} />
             </div>
-            {isEditModalOpen && <EditUserModal user={userData.user} onSave={handleSaveUser} onClose={() => setIsEditModalOpen(false)} />}
+            {/* <-- 5. PASAMOS EL PROP 'isSuperAdmin' AL MODAL --> */}
+            {isEditModalOpen && <EditUserModal user={userData.user} onSave={handleSaveUser} onClose={() => setIsEditModalOpen(false)} isSuperAdmin={isSuperAdmin} />}
             {isAdjustModalOpen && <AdjustBalanceModal user={userData.user} onSave={handleAdjustBalance} onClose={() => setIsAdjustModalOpen(false)} />}
         </div>
     );

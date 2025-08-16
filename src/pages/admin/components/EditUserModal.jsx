@@ -1,8 +1,8 @@
-// frontend/src/pages/admin/components/EditUserModal.jsx (RECONSTRUIDO CON GESTIÓN DE CREDENCIALES)
+// frontend/src/pages/admin/components/EditUserModal.jsx (v2.1 - GESTIÓN DE ROLES INTEGRADA)
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { HiXMark, HiOutlineUser, HiOutlineCurrencyDollar, HiOutlineLockClosed } from 'react-icons/hi2';
+import { HiXMark, HiOutlineUser, HiOutlineCurrencyDollar, HiOutlineLockClosed, HiOutlineShieldCheck } from 'react-icons/hi2';
 
 const backdropVariants = {
   hidden: { opacity: 0 },
@@ -15,11 +15,18 @@ const modalVariants = {
   exit: { scale: 0.9, opacity: 0, transition: { duration: 0.2 } },
 };
 
-const EditUserModal = ({ user, onSave, onClose }) => {
+// --- INICIO DE MODIFICACIÓN ---
+// El modal ahora acepta un prop 'isSuperAdmin' para controlar la visibilidad del selector de rol.
+const EditUserModal = ({ user, onSave, onClose, isSuperAdmin }) => {
+// --- FIN DE MODIFICACIÓN ---
+
   const [formData, setFormData] = useState({
     username: '',
     balanceUsdt: 0,
-    password: '', // Nuevo campo para la contraseña
+    password: '',
+    // --- INICIO DE MODIFICACIÓN ---
+    role: 'user', // Se añade el campo 'role' al estado del formulario.
+    // --- FIN DE MODIFICACIÓN ---
   });
 
   useEffect(() => {
@@ -27,7 +34,10 @@ const EditUserModal = ({ user, onSave, onClose }) => {
       setFormData({
         username: user.username,
         balanceUsdt: user.balance.usdt,
-        password: '', // El campo de contraseña siempre empieza vacío por seguridad
+        password: '',
+        // --- INICIO DE MODIFICACIÓN ---
+        role: user.role || 'user', // Se establece el rol actual del usuario.
+        // --- FIN DE MODIFICACIÓN ---
       });
     }
   }, [user]);
@@ -43,12 +53,14 @@ const EditUserModal = ({ user, onSave, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Creamos un objeto con los datos a enviar.
-    // Solo incluimos la contraseña si el campo no está vacío.
+    // --- INICIO DE MODIFICACIÓN ---
+    // El objeto a enviar ahora incluye el campo 'role'.
     const dataToSend = {
       username: formData.username,
       balanceUsdt: formData.balanceUsdt,
+      role: formData.role,
     };
+    // --- FIN DE MODIFICACIÓN ---
 
     if (formData.password) {
       if (formData.password.length < 6) {
@@ -82,7 +94,6 @@ const EditUserModal = ({ user, onSave, onClose }) => {
 
         <form onSubmit={handleSubmit}>
           <main className="p-6 space-y-4">
-            {/* Campo Username */}
             <div>
               <label htmlFor="username" className="block mb-2 text-sm font-medium text-text-secondary">Nombre de Usuario</label>
               <div className="relative">
@@ -91,7 +102,6 @@ const EditUserModal = ({ user, onSave, onClose }) => {
               </div>
             </div>
 
-            {/* Campo Balance USDT */}
             <div>
               <label htmlFor="balanceUsdt" className="block mb-2 text-sm font-medium text-text-secondary">Balance (USDT)</label>
               <div className="relative">
@@ -100,7 +110,29 @@ const EditUserModal = ({ user, onSave, onClose }) => {
               </div>
             </div>
 
-            {/* Campo Password (Opcional) */}
+            {/* --- INICIO DE NUEVO CAMPO: ROL --- */}
+            <div>
+              <label htmlFor="role" className="block mb-2 text-sm font-medium text-text-secondary">Rol del Usuario</label>
+              <div className="relative">
+                <HiOutlineShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
+                <select 
+                  name="role" 
+                  id="role" 
+                  value={formData.role} 
+                  onChange={handleChange} 
+                  className={`w-full pl-10 pr-4 py-2 bg-black/20 rounded-lg border border-white/10 focus:ring-accent-start focus:border-accent-start ${!isSuperAdmin ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={!isSuperAdmin}
+                >
+                  <option value="user">Usuario</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
+              {!isSuperAdmin && (
+                <p className="mt-1 text-xs text-yellow-400">Solo un Super Administrador puede cambiar el rol.</p>
+              )}
+            </div>
+            {/* --- FIN DE NUEVO CAMPO: ROL --- */}
+
             <div>
               <label htmlFor="password" className="block mb-2 text-sm font-medium text-text-secondary">Restablecer Contraseña (Opcional)</label>
               <div className="relative">
