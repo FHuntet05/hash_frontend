@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/admin/AdminSettingsPage.jsx (CON CONTROL DE RETIROS)
+// RUTA: frontend/src/pages/admin/AdminSettingsPage.jsx (v2.0 - AÑADIDO INTERRUPTOR "FORZAR COMPRA")
 
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../api/axiosConfig';
@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import Loader from '../../components/common/Loader';
 
 const SettingToggle = ({ id, name, checked, onChange, label, description }) => (
-    <div className="flex items-center justify-between py-2">
+    <div className="flex items-center justify-between py-4">
         <div>
             <label htmlFor={id} className="font-medium text-white">{label}</label>
             {description && <p className="text-sm text-text-secondary">{description}</p>}
@@ -50,7 +50,7 @@ const AdminSettingsPage = () => {
     e.preventDefault();
     const settingsToSave = {
       ...settings,
-      minimumWithdrawal: Number(settings.minimumWithdrawal),
+      minWithdrawal: Number(settings.minWithdrawal), // Corregido: 'minimumWithdrawal' a 'minWithdrawal' para coincidir con el estado
       withdrawalFeePercent: Number(settings.withdrawalFeePercent),
     };
 
@@ -81,7 +81,7 @@ const AdminSettingsPage = () => {
       {/* Sección de Controles Generales */}
       <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
         <h2 className="text-xl font-semibold mb-4">Controles Generales</h2>
-        <div className="space-y-4 divide-y divide-white/10">
+        <div className="space-y-2 divide-y divide-white/10">
           <SettingToggle 
             id="maintenanceMode"
             name="maintenanceMode"
@@ -90,13 +90,6 @@ const AdminSettingsPage = () => {
             label="Modo Mantenimiento"
             description="Desactiva el acceso a la aplicación para los usuarios."
           />
-          {settings.maintenanceMode && (
-            <div className="pt-4">
-              <label htmlFor="maintenanceMessage" className="block text-sm font-medium text-text-secondary mb-1">Mensaje de Mantenimiento</label>
-              <input type="text" id="maintenanceMessage" name="maintenanceMessage" value={settings.maintenanceMessage} onChange={handleChange} className="w-full p-2 bg-black/20 rounded-md" />
-            </div>
-          )}
-           {/* --- NUEVO INTERRUPTOR --- */}
           <SettingToggle 
             id="withdrawalsEnabled"
             name="withdrawalsEnabled"
@@ -105,23 +98,35 @@ const AdminSettingsPage = () => {
             label="Habilitar Retiros"
             description="Permite o bloquea todas las solicitudes de retiro en la plataforma."
           />
-           {/* --- FIN DE NUEVO INTERRUPTOR --- */}
         </div>
       </div>
 
       {/* Sección de Parámetros Financieros */}
       <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
-        <h2 className="text-xl font-semibold mb-4">Parámetros Financieros</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <h2 className="text-xl font-semibold mb-4">Parámetros Financieros y Reglas de Retiro</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <div>
-            <label htmlFor="minimumWithdrawal" className="block text-sm font-medium text-text-secondary mb-1">Monto Mínimo de Retiro (USDT)</label>
-            <input type="number" id="minimumWithdrawal" name="minimumWithdrawal" value={settings.minimumWithdrawal} onChange={handleChange} className="w-full p-2 bg-black/20 rounded-md" step="0.01" />
+            <label htmlFor="minWithdrawal" className="block text-sm font-medium text-text-secondary mb-1">Monto Mínimo de Retiro (USDT)</label>
+            <input type="number" id="minWithdrawal" name="minWithdrawal" value={settings.minWithdrawal} onChange={handleChange} className="w-full p-2 bg-black/20 rounded-md" step="0.01" />
           </div>
           <div>
             <label htmlFor="withdrawalFeePercent" className="block text-sm font-medium text-text-secondary mb-1">Comisión de Retiro (%)</label>
             <input type="number" id="withdrawalFeePercent" name="withdrawalFeePercent" value={settings.withdrawalFeePercent} onChange={handleChange} className="w-full p-2 bg-black/20 rounded-md" step="0.1" />
           </div>
         </div>
+        
+        {/* --- INICIO DE LA MODIFICACIÓN --- */}
+        <div className="mt-4 pt-4 border-t border-white/10">
+            <SettingToggle 
+                id="forcePurchaseOnAllWithdrawals"
+                name="forcePurchaseOnAllWithdrawals"
+                checked={settings.forcePurchaseOnAllWithdrawals}
+                onChange={handleChange}
+                label="Forzar Compra para Retirar (Global)"
+                description="Si se activa, TODOS los usuarios deben comprar una fábrica (no gratuita) para poder retirar."
+            />
+        </div>
+        {/* --- FIN DE LA MODIFICACIÓN --- */}
       </div>
 
       <div className="flex justify-end">
