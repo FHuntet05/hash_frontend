@@ -16,7 +16,7 @@ const routeTitles = {
   '/admin/gas-dispenser': 'Dispensador de Gas',
   '/admin/notifications': 'Notificaciones',
   '/admin/blockchain-monitor': 'Monitor Blockchain',
-  '/admin/factories': 'Gestión de Fábricas',
+  '/admin/factories': 'Gestión de Chips',
   '/admin/security': 'Seguridad',
   '/admin/settings': 'Ajustes del Sistema',
 };

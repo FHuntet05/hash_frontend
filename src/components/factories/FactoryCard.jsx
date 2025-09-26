@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 // RUTA: frontend/src/components/factories/FactoryCard.jsx (v3.0 - REDISEÑO "OBSIDIAN BLUE" Y SEMÁNTICA "MINER")
+=======
+// RUTA: frontend/src/components/factories/FactoryCard.jsx (v3.1 - COMPRA MÚLTIPLE HABILITADA)
+>>>>>>> 6803624c75f3447cccf5ca336538f739109a7503
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+<<<<<<< HEAD
 
 const MinerCard = ({ miner, onBuyClick, isOwned }) => { // Componente renombrado internamente
   const { t } = useTranslation();
@@ -62,6 +67,67 @@ const MinerCard = ({ miner, onBuyClick, isOwned }) => { // Componente renombrado
         >
             {isOwned ? t('minerCard.alreadyOwned', 'ADQUIRIDO') : t('minerCard.buyNow', 'COMPRAR AHORA')}
         </button>
+=======
+import { FaCoins } from 'react-icons/fa';
+import { HiOutlineClock } from 'react-icons/hi2';
+
+const Stat = ({ icon: Icon, value, label }) => (
+    <div className="flex flex-col items-center text-center">
+        <Icon className="w-5 h-5 mb-1 text-accent-primary opacity-80" />
+        <p className="font-bold text-text-primary">{value}</p>
+        <p className="text-xs text-text-secondary">{label}</p>
+    </div>
+);
+
+// --- INICIO DE LA MODIFICACIÓN CRÍTICA ---
+// Se ha eliminado la prop 'isOwned' de la desestructuración.
+const FactoryCard = ({ factory, onBuyClick }) => {
+// --- FIN DE LA MODIFICACIÓN CRÍTICA ---
+  const { t } = useTranslation();
+
+  return (
+    <motion.div 
+      className="bg-card/70 backdrop-blur-md rounded-2xl p-6 border border-border flex flex-col items-center text-center gap-4 shadow-medium transition-all"
+      // La animación de hover ahora es incondicional.
+      whileHover={{ scale: 1.03 }}
+    >
+      {/* Se eliminan las clases condicionales de la imagen (grayscale). */}
+      <img 
+        src={factory.imageUrl || '/assets/images/tool-placeholder.png'} 
+        alt={factory.name} 
+        className="w-24 h-24 object-contain flex-shrink-0 mb-2"
+      />
+      <h3 className="text-xl font-bold text-text-primary -mt-2">{factory.name}</h3> 
+      
+      <div className="w-full flex justify-around items-center py-4 border-y border-border">
+        <Stat 
+          icon={FaCoins} 
+          value={`${factory.dailyProduction || 0} USDT`}
+          label={t('factoryCard.daily', 'Diario')}
+        />
+        <Stat 
+          icon={HiOutlineClock} 
+          value={t('factoryCard.days', { count: factory.durationDays || 0 })}
+          label={t('factoryCard.lifespanSimple', 'Duración')}
+        />
+      </div>
+      
+      <div className="flex flex-col items-center">
+        <p className="text-sm text-text-secondary">{t('factoryCard.price', 'Precio')}</p>
+        <p className="font-bold text-3xl text-accent-primary my-1">{factory.price || 0} <span className="text-xl">USDT</span></p>
+      </div>
+
+      {/* --- BOTÓN DE COMPRA AHORA INCONDICIONAL --- */}
+      <button 
+        onClick={() => onBuyClick(factory)}
+        // Se elimina la propiedad 'disabled'.
+        // Las clases ahora son fijas, siempre mostrando el estado activo.
+        className="w-full mt-2 py-3 text-white font-bold rounded-full transition-all duration-150 bg-accent-primary hover:bg-accent-primary-hover shadow-subtle transform active:scale-95"
+      >
+        {t('factoryCard.buyNow', 'COMPRAR AHORA')}
+      </button>
+      {/* --- FIN DE LA MODIFICACIÓN DEL BOTÓN --- */}
+>>>>>>> 6803624c75f3447cccf5ca336538f739109a7503
     </motion.div>
   );
 };

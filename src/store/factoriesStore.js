@@ -10,11 +10,11 @@ const useFactoriesStore = create((set) => ({
   fetchFactories: async () => {
     set({ loading: true, error: null });
     try {
-      // El endpoint del admin para obtener las fábricas (antes tools) ahora es /factories
+      // El endpoint del admin para obtener las Chips (antes tools) ahora es /factories
       const response = await api.get('/admin/factories'); 
       set({ factories: response.data, loading: false });
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Error al cargar las fábricas';
+      const errorMessage = err.response?.data?.message || 'Error al cargar las Chips';
       set({ error: errorMessage, loading: false });
     }
   },

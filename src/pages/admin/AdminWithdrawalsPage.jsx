@@ -1,10 +1,30 @@
-// frontend/src/pages/admin/AdminWithdrawalsPage.jsx (VERSIÓN v17.0.3 - CORRECCIÓN DE RUTA)
+// frontend/src/pages/admin/AdminWithdrawalsPage.jsx (v18.0 - TABLA FINANCIERA COMPLETA)
 import React, { useState, useEffect, useCallback } from 'react';
 import useAdminStore from '../../store/adminStore';
 import api from '../../api/axiosConfig';
 import toast from 'react-hot-toast';
 import Loader from '../../components/common/Loader';
 import { HiOutlineClipboardDocument, HiOutlineClipboardDocumentCheck } from 'react-icons/hi2';
+
+// --- INICIO DE LA REINGENIERÍA DE LA TABLA ---
+
+// Sub-componente para la celda de montos, que ahora muestra un desglose completo.
+const AmountCell = ({ withdrawal }) => {
+  const { grossAmount, feeAmount, netAmount } = withdrawal;
+
+  // Se muestra el MONTO NETO como el valor principal y más importante.
+  return (
+    <div className="font-mono">
+      <p className="font-bold text-lg text-green-400">{netAmount?.toFixed(2) || 'N/A'}</p>
+      <p className="text-xs text-text-secondary mt-1">
+        Solicitado: {grossAmount?.toFixed(2) || 'N/A'}
+      </p>
+      <p className="text-xs text-text-secondary">
+        Comisión: -{feeAmount?.toFixed(2) || 'N/A'}
+      </p>
+    </div>
+  );
+};
 
 const WithdrawalsTable = ({ withdrawals, onProcess, processingId }) => {
   const [copiedAddress, setCopiedAddress] = useState('');
@@ -23,7 +43,8 @@ const WithdrawalsTable = ({ withdrawals, onProcess, processingId }) => {
         <thead className="text-xs text-text-secondary uppercase bg-black/20">
           <tr>
             <th className="px-6 py-3">Usuario</th>
-            <th className="px-6 py-3">Monto (USDT)</th>
+            {/* El título de la columna ahora refleja el valor principal que se muestra. */}
+            <th className="px-6 py-3">Monto a Pagar (USDT)</th>
             <th className="px-6 py-3">Dirección de Retiro</th>
             <th className="px-6 py-3">Fecha Solicitud</th>
             <th className="px-6 py-3 text-center">Acciones</th>
@@ -38,13 +59,16 @@ const WithdrawalsTable = ({ withdrawals, onProcess, processingId }) => {
                   <span>{tx.user?.username || 'Usuario no encontrado'}</span>
                 </div>
               </td>
-              <td className="px-6 py-4 font-mono">{tx.amount.toFixed(2)}</td>
+              {/* Se utiliza el nuevo sub-componente para renderizar la celda de montos. */}
+              <td className="px-6 py-4">
+                <AmountCell withdrawal={tx} />
+              </td>
               <td className="px-6 py-4 font-mono text-text-secondary">
                 <div className="flex items-center gap-2">
-                  <span className="truncate max-w-xs">{tx.metadata?.walletAddress || 'N/A'}</span>
-                  {tx.metadata?.walletAddress && (
-                    <button onClick={() => handleCopy(tx.metadata.walletAddress)} className="text-gray-400 hover:text-white">
-                      {copiedAddress === tx.metadata.walletAddress ? <HiOutlineClipboardDocumentCheck className="w-5 h-5 text-green-400" /> : <HiOutlineClipboardDocument className="w-5 h-5" />}
+                  <span className="truncate max-w-xs">{tx.walletAddress || 'N/A'}</span>
+                  {tx.walletAddress && (
+                    <button onClick={() => handleCopy(tx.walletAddress)} className="text-gray-400 hover:text-white">
+                      {copiedAddress === tx.walletAddress ? <HiOutlineClipboardDocumentCheck className="w-5 h-5 text-green-400" /> : <HiOutlineClipboardDocument className="w-5 h-5" />}
                     </button>
                   )}
                 </div>
@@ -67,6 +91,7 @@ const WithdrawalsTable = ({ withdrawals, onProcess, processingId }) => {
     </div>
   );
 };
+// --- FIN DE LA REINGENIERÍA DE LA TABLA ---
 
 
 const AdminWithdrawalsPage = () => {
@@ -76,21 +101,18 @@ const AdminWithdrawalsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [processingId, setProcessingId] = useState(null);
-  const { adminInfo } = useAdminStore();
 
   const fetchWithdrawals = useCallback(async (targetPage = 1) => {
     setIsLoading(true);
     setError(null);
     try {
-      // CORRECCIÓN: Se ha eliminado el prefijo '/api' de la ruta.
       const { data } = await api.get(`/admin/withdrawals/pending?page=${targetPage}`);
       setWithdrawals(data.withdrawals);
       setPage(data.page);
       setPages(data.pages);
     } catch (err) {
-      // CORRECCIÓN: Añadido un mensaje de error que muestra la ruta fallida.
       const requestedPath = err.config?.url || 'desconocida';
-      const errorMessage = `Ruta no encontrada - ${requestedPath}`;
+      const errorMessage = `Error al obtener datos de la ruta: ${requestedPath}`;
       console.error("Error al obtener retiros:", err);
       setError(errorMessage);
       toast.error("Error al cargar las solicitudes.");
@@ -120,7 +142,6 @@ const AdminWithdrawalsPage = () => {
       }
     }
     
-    // CORRECCIÓN: Se ha eliminado el prefijo '/api' de la ruta.
     const processPromise = api.put(`/admin/withdrawals/${txId}/process`, { status, adminNotes: notes });
 
     try {

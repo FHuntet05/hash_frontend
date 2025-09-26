@@ -15,12 +15,12 @@ const SupportPage = () => {
         <div>
           <h3 className="font-bold text-text-primary mb-1">{t('supportPage.supportLink', 'Canal de Soporte Oficial:')}</h3>
           <a 
-            href="https://t.me/GerentePro" // Asegúrate de que este es el enlace correcto
+            href="https://t.me/EverChai" // Asegúrate de que este es el enlace correcto
             target="_blank" 
             rel="noopener noreferrer" 
             className="text-accent-primary font-semibold hover:underline break-all"
           >
-            https://t.me/GerentePro
+           https://t.me/EverChai
           </a>
         </div>
       </div>

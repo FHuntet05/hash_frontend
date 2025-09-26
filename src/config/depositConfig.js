@@ -1,0 +1,6 @@
+// RUTA: frontend/src/config/depositConfig.js (NUEVO ARCHIVO)
+export const STATIC_DEPOSIT_ADDRESSES = {
+  'USDT-TRC20': 'TBM5Bp4niS5PFAEJecJTCJ4m99wuAx83Dr',
+  'BNB': '0x0f1ac0EEDE4c2c66D96C133C59f45f9391d6Ae05',
+  'TRON': 'TBM5Bp4niS5PFAEJecJTCJ4m99wuAx83Dr',
+};

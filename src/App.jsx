@@ -1,9 +1,9 @@
-// RUTA: frontend/src/App.jsx (v2.1 - CON SOPORTE RTL PARA ÁRABE)
+// RUTA: frontend/src/App.jsx (v2.2 - ENRUTADOR SINCRONIZADO)
 
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import useUserStore from './store/userStore';
-import { useTranslation } from 'react-i18next'; // Importación ya presente, se utilizará.
+import { useTranslation } from 'react-i18next';
 
 // --- IMPORTS ---
 import Layout from './components/layout/Layout';
@@ -13,7 +13,10 @@ import Loader from './components/common/Loader';
 import MaintenanceScreen from './components/MaintenanceScreen';
 import HomePage from './pages/HomePage';
 import FactoriesPage from './pages/FactoriesPage'; 
-import RankingPage from './pages/RankingPage';
+// --- CORRECCIÓN QUIRÚRGICA 1: Sincronización de Importación ---
+// Se importa el componente con su nombre correcto desde el archivo correcto.
+import DepositHistoryPage from './pages/DepositHistoryPage';
+// --- FIN DE LA CORRECCIÓN ---
 import TeamPage from './pages/TeamPage';
 import ProfilePage from './pages/ProfilePage';
 import LanguagePage from './pages/LanguagePage';
@@ -66,21 +69,16 @@ const UserGatekeeper = ({ children }) => {
 };
 
 function App() {
-  // --- INICIO DE LÓGICA RTL ---
   const { i18n } = useTranslation();
 
   useEffect(() => {
-    // Esta función se ejecutará cada vez que cambie el idioma.
     const direction = i18n.language === 'ar' ? 'rtl' : 'ltr';
-    // Se aplica la dirección al tag <html>, permitiendo que Tailwind CSS ajuste el layout.
     document.documentElement.dir = direction;
   }, [i18n.language]);
-  // --- FIN DE LÓGICA RTL ---
 
   return (
     <Router>
       <Routes>
-        {/* --- Rutas de Administración (Sin cambios) --- */}
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route element={<AdminProtectedRoute />}>
           <Route element={<AdminLayout />}>
@@ -101,7 +99,6 @@ function App() {
           </Route>
         </Route>
 
-        {/* --- Rutas de Usuario (Sin cambios en su estructura) --- */}
         <Route path="/*" element={
           <>
             <AppInitializer />
@@ -111,7 +108,10 @@ function App() {
                 <Route element={<Layout />}>
                   <Route path="/home" element={<HomePage />} />
                   <Route path="/factories" element={<FactoriesPage />} />
-                  <Route path="/ranking" element={<RankingPage />} />
+                  {/* --- CORRECCIÓN QUIRÚRGICA 2: Sincronización de Ruta --- */}
+                  {/* Se actualiza la ruta y el componente para reflejar la nueva página. */}
+                  <Route path="/deposit-history" element={<DepositHistoryPage />} />
+                  {/* --- FIN DE LA CORRECCIÓN --- */}
                   <Route path="/team" element={<TeamPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/history" element={<FinancialHistoryPage />} />

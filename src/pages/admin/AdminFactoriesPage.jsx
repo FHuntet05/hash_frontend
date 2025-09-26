@@ -20,7 +20,7 @@ const AdminFactoriesPage = () => {
       const { data } = await api.get('/admin/factories'); // Endpoint corregido
       setFactories(data);
     } catch (e) {
-      toast.error('No se pudieron cargar las fábricas.');
+      toast.error('No se pudieron cargar las Chips.');
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +77,7 @@ const AdminFactoriesPage = () => {
     <>
       <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold">Gestión de Fábricas</h1>
+          <h1 className="text-2xl font-semibold">Gestión de Chips</h1>
           <button onClick={() => handleOpenModal()} className="px-4 py-2 font-bold text-white bg-accent-start rounded-lg hover:bg-accent-end transition-colors">
             Crear Fábrica
           </button>
@@ -106,7 +106,7 @@ const AdminFactoriesPage = () => {
         ) : (
           <div className="text-center py-16 text-text-secondary">
             <HiOutlineCubeTransparent className="mx-auto h-12 w-12 text-gray-500" />
-            <h3 className="mt-2 text-lg font-medium">No hay fábricas creadas</h3>
+            <h3 className="mt-2 text-lg font-medium">No hay Chips creadas</h3>
             <p className="mt-1 text-sm">Empieza por crear tu primera fábrica.</p>
           </div>
         )}

@@ -7,7 +7,7 @@ import { HiOutlineVideoCamera } from 'react-icons/hi2';
 
 const SocialShare = ({ referralLink }) => {
   const { t } = useTranslation();
-  const shareText = encodeURIComponent(t('socialShare.text', '¡Únete a mi equipo en Mega Fábrica y empecemos a producir juntos! Mi enlace:'));
+  const shareText = encodeURIComponent(t('socialShare.text', '¡Únete a mi equipo en EVERCHAIN BOT y empecemos a producir juntos! Mi enlace:'));
 
   const socialPlatforms = [
     { name: 'X', icon: FaXTwitter, url: `https://twitter.com/intent/tweet?url=${referralLink}&text=${shareText}`, color: 'hover:text-white hover:bg-[#000000]' },

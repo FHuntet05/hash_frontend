@@ -1,8 +1,8 @@
 {
   "nav": {
-    "home": "Principal",
-    "ranking": "Ranking",
-    "factories": "Tienda",
+    "home": "Inicio",
+    "history": "Historial",
+    "factories": "Invertir",
     "team": "Equipo",
     "profile": "Perfil"
   },
@@ -14,31 +14,43 @@
     "loading": "Cargando...",
     "close": "Cerrar",
     "day": "Día",
-    "loadingUser": "Cargando datos del usuario..."
+    "loadingUser": "Cargando datos del usuario...",
+    "max": "MÁX",
+    "processing": "Procesando...",
+    "saving": "Guardando..."
   },
   "homePage": {
     "mainBalance": "Saldo Principal",
-    "myFactories": "Mis Fábricas",
-    "noFactories": "No tienes fábricas activas.",
-    "goToStore": "Visita la tienda para empezar a producir.",
+    "myFactories": "Mis Chips",
+    "noFactories": "No tienes Chips activos.",
+    "goToStore": "Visita la tienda para adquirir tu primer Chip y empezar a producir.",
     "tasks": "Tareas",
+    "loadingAnimation": "Cargando animación...",
     "toasts": {
       "claiming": "Reclamando producción...",
       "claimSuccess": "¡Producción reclamada!"
     }
   },
+  "activityTicker": {
+    "hasWithdrawn": "ha retirado"
+  },
   "profilePage": {
-    "balanceUsdtLabel": "Saldo Principal",
+    "balanceUsdtLabel": "Saldo Total",
+    "totalRecharged": "Total Recargado",
+    "totalWithdrawn": "Total Retirado",
     "toasts": {
       "insufficientBalance": "Saldo insuficiente. El mínimo para retirar es {{min}} USDT.",
       "generatingAddress": "Generando tu dirección...",
-      "addressGenerated": "Dirección generada."
+      "addressGenerated": "Dirección generada.",
+      "walletNotSet": "Por favor, guarda tu billetera de retiro primero.",
+      "passwordNotSet": "Por favor, configura tu contraseña de retiro primero."
     }
   },
   "profile": {
     "recharge": "Depositar",
     "withdraw": "Retirar",
     "records": "Historial",
+    "saveWallet": "Guardar Billetera",
     "invite": "Equipo",
     "setWithdrawalPassword": "Configurar Contraseña de Retiro",
     "changeWithdrawalPassword": "Cambiar Contraseña de Retiro",
@@ -50,58 +62,43 @@
     "mainActionsTitle": "Acciones Principales",
     "settingsTitle": "Ajustes y Más"
   },
-  "faqPage": {
-    "title": "Preguntas Frecuentes",
-    "q1": "¿Qué es Mega Fábrica?",
-    "a1": "Mega Fábrica es una plataforma de simulación económica donde puedes adquirir fábricas virtuales que generan ingresos pasivos en USDT de forma automática.",
-    "q2": "¿Cómo empiezo a ganar?",
-    "a2": "Simplemente adquiere una fábrica en nuestra tienda. Una vez comprada, comenzará a producir USDT cada 24 horas, que podrás reclamar directamente a tu saldo principal.",
-    "q3": "¿Cómo puedo retirar mis ganancias?",
-    "a3": "Puedes solicitar un retiro desde tu perfil. Asegúrate de haber configurado tu contraseña de retiro y de cumplir con el monto mínimo requerido.",
-    "q4": "¿Es seguro invertir aquí?",
-    "a4": "Utilizamos protocolos de seguridad estándar para proteger tu cuenta y tus fondos. Sin embargo, como con cualquier plataforma de ingresos, participa de manera responsable."
+  "depositHistory": {
+    "title": "Historial de Depósitos",
+    "subtitle": "Actividad de depósitos recientes en la plataforma.",
+    "userDeposited": "{{username}} ha depositado"
   },
-  "teamPage": {
-    "title": "Invita a tus Amigos",
-    "description": "Comparte tu enlace y gana comisiones por cada miembro de tu equipo.",
-    "generatingLink": "Generando enlace...",
-    "toasts": {
-      "fetchError": "Error al cargar datos del equipo",
-      "linkCopied": "¡Enlace de invitación copiado!",
-      "linkError": "No se pudo generar el enlace de invitación."
-    },
-    "stats": {
-      "members": "Miembros Totales",
-      "commission": "Comisión Total"
-    },
-    "levelsTitle": "Niveles del Equipo",
-    "levelLabel": "Nivel {{level}}",
-    "levels": {
-      "totalMembers": "Miembros",
-      "commission": "Comisión"
-    },
-    "noLevelsData": "Aún no tienes miembros en tu equipo. ¡Empieza a invitar!"
+  "time": {
+    "yearsAgo": "hace {{count}} años",
+    "monthsAgo": "hace {{count}} meses",
+    "daysAgo": "hace {{count}} días",
+    "hoursAgo": "hace {{count}} horas",
+    "minutesAgo": "hace {{count}} minutos",
+    "justNow": "Justo ahora"
   },
   "factoriesPage": {
-    "title": "Tienda de Fábricas",
-    "subtitle": "Adquiere nuevas fábricas para aumentar tu producción.",
-    "error": "No se pudieron cargar las fábricas.",
-    "noFactoriesAvailable": "No hay fábricas disponibles en la tienda en este momento."
+    "title": "Tienda de Chips",
+    "subtitle": "Adquiere nuevos Chips para aumentar tu producción.",
+    "error": "No se pudieron cargar los Chips.",
+    "noFactoriesAvailable": "No hay Chips disponibles en la tienda en este momento."
   },
   "purchasedFactory": {
     "nextClaim": "Próximo Reclamo",
     "lifespan": "Vida Útil",
+    "production": "Procesando",
     "dayCounter": "Día {{dayNumber}} de {{totalDays}}",
     "claim": "RECLAMAR",
-    "producing": "PRODUCIENDO"
+    "producing": "TRABAJANDO"
   },
   "factoryCard": {
     "price": "Precio",
     "dailyProduction": "Producción Diaria",
+    "daily": "Producción Diaria",
     "duration": "Duración",
+    "lifespanSimple": "Duración",
     "days": "{{count}} días",
     "buyButton": "Comprar",
-    "owned": "Adquirida"
+    "buyNow": "INVERTIR",
+    "owned": "ADQUIRIDA"
   },
   "factoryPurchaseModal": {
     "quantity": "Cantidad:",
@@ -120,7 +117,7 @@
     "titleV2": "Tu Dirección de Depósito",
     "instructionV2": "Deposita cualquier cantidad de USDT en tu dirección personal. Los fondos se acreditarán automáticamente.",
     "addressLabel": "Tu Dirección Única {{currency}}",
-    "warningV2": "Asegúrate de enviar fondos a través de la red correcta: {{network}} (BEP20)."
+    "warningV2": "Asegúrate de enviar fondos a través de la red correcta: {{network}}."
   },
   "setWithdrawalPasswordModal": {
     "title_set": "Configurar Contraseña de Retiro",
@@ -135,40 +132,153 @@
       "passwordsDontMatch": "Las nuevas contraseñas no coinciden.",
       "saving": "Guardando...",
       "saveSuccess": "Contraseña guardada con éxito.",
-      "saveError": "Error al guardar la contraseña."
+      "saveError": "Error al guardar la contraseña.",
+      "currentRequired": "La contraseña actual es obligatoria.",
+      "minLength": "La nueva contraseña debe tener al menos 6 caracteres.",
+      "noMatch": "Las nuevas contraseñas no coinciden."
     }
+  },
+  "saveWalletModal": {
+    "titleEdit": "Actualizar Billetera de Retiro",
+    "titleSet": "Guardar Billetera de Retiro",
+    "subtitle": "Esta dirección se usará para todos tus retiros.",
+    "addressLabel": "Dirección de Billetera (USDT BEP20)",
+    "addressPlaceholder": "Pega tu dirección 0x...",
+    "passwordLabel": "Confirmar con Contraseña de Retiro",
+    "saveButton": "Guardar Billetera",
+    "notice": "Por seguridad, cualquier cambio en tu billetera de retiro requiere confirmar tu contraseña.",
+    "toasts": {
+      "allFieldsRequired": "Todos los campos son obligatorios.",
+      "invalidAddress": "El formato de la dirección de billetera no es válido.",
+      "processing": "Guardando billetera...",
+      "error": "Error al guardar la billetera."
+    }
+  },
+  "selectNetworkModal": {
+    "title": "Selecciona una Red",
+    "subtitle": "Elige la moneda y red para tu depósito.",
+    "processing": "Procesando...",
+    "addressNotConfigured": "La dirección para esta red no está configurada."
+  },
+  "withdrawalModal": {
+    "title": "Solicitar Retiro",
+    "balance": "Saldo disponible:",
+    "addressLabelSaved": "Retirar a Billetera Guardada",
+    "amountLabel": "Cantidad a Retirar (USDT)",
+    "minPlaceholder": "Mínimo {{minWithdrawal}} USDT",
+    "passwordLabel": "Contraseña de Retiro",
+    "fee": "Comisión ({{fee}}%):",
+    "youReceive": "Recibirás:",
+    "confirmButton": "Confirmar Solicitud",
+    "passwordNotSetTitle": "Acción Requerida",
+    "passwordNotSetBody": "Por tu seguridad, debes configurar una contraseña de retiro antes de poder solicitar un pago.",
+    "goToSettingsButton": "Configurar Contraseña",
+    "notice": "Las solicitudes de retiro son revisadas. Esto puede tomar algunas horas. La comisión se aplica sobre el monto retirado.",
+    "toasts": {
+      "allFieldsRequired": "Todos los campos son obligatorios.",
+      "minAmount": "La cantidad mínima para retirar es {{minWithdrawal}} USDT.",
+      "insufficientBalance": "No puedes retirar más de tu saldo disponible.",
+      "invalidAddress": "La dirección de billetera no es válida.",
+      "processing": "Enviando solicitud...",
+      "error": "Error al enviar la solicitud."
+    }
+  },
+  "teamPage": {
+    "title": "Invita a tus Amigos",
+    "description": "Comparte tu enlace y gana comisiones por cada miembro de tu equipo.",
+    "generatingLink": "Generando enlace...",
+    "toasts": {
+      "fetchError": "Error al cargar datos del equipo",
+      "linkCopied": "¡Enlace de invitación copiado!",
+      "linkError": "No se pudo generar el enlace de invitación."
+    },
+    "stats": {
+      "members": "Amigos",
+      "commission": "Ganancia"
+    },
+    "levelsTitle": "Niveles del Equipo",
+    "levelLabel": "Nivel {{level}}",
+    "levels": {
+      "totalMembers": "Amigos",
+      "commission": "Ganancia"
+    },
+    "noLevelsData": "Aún no tienes miembros en tu equipo. ¡Empieza a invitar!"
+  },
+  "faqPage": {
+    "title": "Preguntas Frecuentes",
+    "q1": "¿Qué es EverChain Bot?",
+    "a1": "EverChain Bot es una plataforma de simulación económica donde puedes adquirir Chips virtuales que generan ingresos pasivos en USDT de forma automática.",
+    "q2": "¿Cómo empiezo a ganar?",
+    "a2": "Simplemente adquiere un Chip en nuestra tienda. Una vez comprado, comenzará a producir USDT cada 24 horas, que podrás reclamar directamente a tu saldo principal.",
+    "q3": "¿Cómo puedo retirar mis ganancias?",
+    "a3": "Puedes solicitar un retiro desde tu perfil. Asegúrate de haber configurado tu contraseña de retiro y de cumplir con el monto mínimo requerido.",
+    "q4": "¿Es seguro invertir aquí?",
+    "a4": "Utilizamos protocolos de seguridad estándar para proteger tu cuenta y tus fondos. Sin embargo, como con cualquier plataforma de ingresos, participa de manera responsable."
   },
   "tasks": {
     "claimed": "Reclamado",
     "claim": "Reclamar",
     "go": "Ir",
     "pending": "Pendiente",
+    "locked": "Bloqueado",
     "noTasks": "No hay tareas disponibles en este momento.",
     "toasts": {
       "claimSuccess": "¡Recompensa reclamada!"
     },
-    "FIRST_PURCHASE": {
-      "title": "Primera Compra",
-      "description": "Compra cualquier fábrica en la tienda."
+    "PURCHASE_1": {
+      "title": "Pionero de Chips",
+      "description": "Compra tu primer Chip."
+    },
+    "PURCHASE_2": {
+      "title": "Doble Producción",
+      "description": "Adquiere un total de 2 Chips."
+    },
+    "PURCHASE_3": {
+      "title": "Trio Industrial",
+      "description": "Adquiere un total de 3 Chips."
+    },
+    "PURCHASE_4": {
+      "title": "Cuarteto de Cómputo",
+      "description": "Adquiere un total de 4 Chips."
+    },
+    "PURCHASE_5": {
+      "title": "Penta-Core",
+      "description": "Adquiere un total de 5 Chips."
+    },
+    "PURCHASE_6": {
+      "title": "Supervisor de Silicio",
+      "description": "Adquiere un total de 6 Chips."
+    },
+    "PURCHASE_7": {
+      "title": "Magnate de la Manufactura",
+      "description": "Adquiere un total de 7 Chips."
+    },
+    "PURCHASE_8": {
+      "title": "Octa-Procesador",
+      "description": "Adquiere un total de 8 Chips."
+    },
+    "PURCHASE_9": {
+      "title": "Nona-Nodo",
+      "description": "Adquiere un total de 9 Chips."
+    },
+    "PURCHASE_10": {
+      "title": "Maestro de la Década",
+      "description": "Adquiere un total de 10 Chips."
     },
     "INVITE_3": {
-      "title": "Invitar 3 Amigos",
-      "description": "Tu equipo debe tener al menos 3 miembros de Nivel 1."
+      "title": "Constructor de Red",
+      "description": "Invita a 3 amigos a tu equipo."
     },
     "INVITE_5": {
-      "title": "Invitar 5 Amigos",
-      "description": "Tu equipo debe tener al menos 5 miembros de Nivel 1."
+      "title": "Líder de Comunidad",
+      "description": "Invita a 5 amigos a tu equipo."
     },
     "INVITE_10": {
-      "title": "Invitar 10 Amigos",
-      "description": "Tu equipo debe tener al menos 10 miembros de Nivel 1."
-    },
-    "INVITE_20": {
-      "title": "Invitar 20 Amigos",
-      "description": "Tu equipo debe tener al menos 20 miembros de Nivel 1."
+      "title": "Embajador de la Plataforma",
+      "description": "Invita a 10 amigos a tu equipo."
     },
     "TELEGRAM_VISIT": {
-      "title": "Unirse a la Comunidad",
+      "title": "Únete a la Comunidad",
       "description": "Visita nuestro grupo oficial de Telegram."
     }
   }

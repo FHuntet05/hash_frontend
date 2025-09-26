@@ -1,15 +1,17 @@
-// RUTA: frontend/src/components/home/TaskCenter.jsx (v2.1 - INTERNACIONALIZADO)
+// RUTA: frontend/src/components/home/TaskCenter.jsx (v2.2 - SINCRONIZADO CON TAREAS 2.0)
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTaskLogic as useTasks } from '../../hooks/useTaskLogic'; 
+import { useTaskLogic } from '../../hooks/useTaskLogic'; 
 import TaskItem from '../tasks/TaskItem';
 import { motion } from 'framer-motion';
 
 const TaskCenter = () => {
   const { t } = useTranslation();
-  const { tasks, isLoading, handleClaimTask, handleGoToTask } = useTasks();
+  // Se renombra el hook para mayor claridad, pero la funcionalidad interna es la misma.
+  const { tasks, isLoading, handleClaimTask, handleGoToTask } = useTaskLogic();
 
+  // El estado de carga no necesita cambios.
   if (isLoading) {
       return (
         <div className="w-full space-y-3">
@@ -19,10 +21,11 @@ const TaskCenter = () => {
       );
   }
 
+  // El estado de "sin tareas" no necesita cambios.
   if (!tasks || tasks.length === 0) {
       return (
-          <div className="bg-card/70 backdrop-blur-md rounded-2xl p-6 text-center text-text-secondary border border-white/20">
-              <p>{t('tasks.noTasks', 'No hay tareas disponibles en este momento.')}</p>
+          <div className="bg-card/70 backdrop-blur-md rounded-2xl p-6 text-center text-text-secondary border border-border">
+              <p>{t('tasks.noTasks')}</p>
           </div>
       );
   }
@@ -32,25 +35,27 @@ const TaskCenter = () => {
       className="space-y-3" 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }}
+      // La animación de stagger es perfecta para la nueva lista de tareas.
       transition={{ staggerChildren: 0.1 }}
     >
       {tasks.map(task => {
-        // --- INICIO DE MODIFICACIÓN CRÍTICA ---
-        // Reconstruimos el objeto 'task' con el texto traducido antes de pasarlo al componente hijo.
+        // --- INICIO DE LA OPTIMIZACIÓN ---
+        // La lógica de traducción se mantiene, ya que es correcta y robusta.
+        // Se asegura la compatibilidad con interpolación para futuras descripciones.
         const translatedTask = {
           ...task,
-          // La clave será, por ejemplo, 'tasks.INVITE_3.title'
           title: t(`tasks.${task.taskId}.title`), 
-          // La clave será, por ejemplo, 'tasks.INVITE_3.description'
-          // Pasamos el 'target' como variable de interpolación.
-          description: t(`tasks.${task.taskId}.description`, { count: task.target }),
+          description: t(`tasks.${task.taskId}.description`, { 
+            // Se pasa el 'target' como variable de interpolación por si se necesita en el futuro.
+            count: task.target 
+          }),
         };
-        // --- FIN DE MODIFICACIÓN CRÍTICA ---
+        // --- FIN DE LA OPTIMIZACIÓN ---
         
         return (
           <TaskItem
               key={task.taskId}
-              task={translatedTask} // Pasamos el objeto de tarea ya traducido
+              task={translatedTask}
               onGoToTask={handleGoToTask}
               onClaim={handleClaimTask}
           />

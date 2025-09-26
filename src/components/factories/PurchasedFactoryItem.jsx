@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v6.0 - REDISEÑO "MINER" CON TIEMPO RESTANTE)
 
 import React, { useMemo } from 'react';
@@ -12,6 +13,52 @@ const ProgressBar = ({ progress, bgColorClass }) => (
     />
   </div>
 );
+=======
+// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v6.0 - INDICADORES VISUALES AVANZADOS)
+
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useFactoryCycle } from '../../hooks/useFactoryCycle';
+import { FaCoins } from 'react-icons/fa';
+import CpuChipIcon from '../icons/CpuChipIcon';
+
+// --- INICIO DE NUEVOS SUB-COMPONENTES VISUALES ---
+
+const ProductionBattery = ({ progress }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative w-8 h-24 bg-black/20 rounded-lg border-2 border-border p-1 flex items-end">
+        {/* Capa de llenado de la batería */}
+        <div
+          className="w-full bg-accent-primary rounded-sm transition-all duration-500 ease-out"
+          style={{ height: `${progress}%` }}
+        />
+      </div>
+      <span className="text-xs font-bold text-text-secondary">{t('purchasedFactory.production', 'Producción')}</span>
+    </div>
+  );
+};
+
+const LifetimeThermometer = ({ progress }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative w-8 h-24 bg-black/20 rounded-lg border-2 border-border p-1 flex items-end">
+        {/* Capa de llenado del termómetro con degradado */}
+        <div
+          className="w-full bg-gradient-to-t from-status-success via-status-warning to-status-danger rounded-sm transition-all duration-500 ease-out"
+          style={{ height: `${progress}%` }}
+        />
+      </div>
+      <span className="text-xs font-bold text-text-secondary">{t('purchasedFactory.lifespan', 'Vida Útil')}</span>
+    </div>
+  );
+};
+
+// --- FIN DE NUEVOS SUB-COMPONENTES VISUALES ---
+
+>>>>>>> 6803624c75f3447cccf5ca336538f739109a7503
 
 // El componente ahora espera `purchasedMiner`
 const PurchasedMinerItem = ({ purchasedMiner, onClaim }) => {
@@ -27,13 +74,23 @@ const PurchasedMinerItem = ({ purchasedMiner, onClaim }) => {
   const { miner, expiryDate, _id: purchasedMinerId, lastClaim } = purchasedMiner;
   const { countdown, progress: cycleProgress, isClaimable } = useFactoryCycle(lastClaim);
 
+<<<<<<< HEAD
   // --- INICIO DE NUEVA LÓGICA: Cálculo del tiempo restante ---
   const { timeLeftText, lifetimeProgress } = useMemo(() => {
+=======
+  const animationDuration = useMemo(() => {
+    return Math.max(0.5, 4 / (factory.dailyProduction || 1));
+  }, [factory.dailyProduction]);
+
+  const { lifetimeProgress } = useMemo(() => {
+    const start = new Date(purchaseDate).getTime();
+>>>>>>> 6803624c75f3447cccf5ca336538f739109a7503
     const end = new Date(expiryDate).getTime();
     const now = Date.now();
     const totalDuration = end - new Date(purchasedMiner.purchaseDate).getTime();
     const elapsed = now - new Date(purchasedMiner.purchaseDate).getTime();
     const progress = Math.min(100, (elapsed / totalDuration) * 100);
+<<<<<<< HEAD
 
     const remainingMs = Math.max(0, end - now);
     const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
@@ -75,12 +132,55 @@ const PurchasedMinerItem = ({ purchasedMiner, onClaim }) => {
                 <span className="text-xs font-semibold text-status-success mt-1">
                     +{miner.dailyProduction.toFixed(2)} USDT / 24h
                 </span>
-            </div>
+=======
+    return { lifetimeProgress: progress };
+  }, [purchaseDate, expiryDate]);
+
+  return (
+    <div className="bg-card/70 backdrop-blur-md rounded-2xl p-4 border border-border flex flex-col gap-4 shadow-medium">
+      {/* --- SECCIÓN SUPERIOR (SIN CAMBIOS) --- */}
+      <div className="flex justify-between items-start">
+        <div className="flex flex-col">
+          <h3 className="text-lg font-bold text-text-primary leading-tight">{factory.name}</h3>
+          <div className="flex items-center gap-1.5 text-status-success text-xs font-semibold mt-1">
+            <FaCoins />
+            <span>+{factory.dailyProduction.toFixed(2)} USDT / {t('common.day', 'Día')}</span>
+          </div>
         </div>
+        <CpuChipIcon 
+          className="w-8 h-8 text-accent-primary opacity-80"
+          animationDuration={animationDuration}
+        />
+      </div>
+
+      {/* --- INICIO DE LA RECONSTRUCCIÓN DEL CUERPO --- */}
+      <div className="flex justify-around items-center text-center">
+        <ProductionBattery progress={cycleProgress} />
+        
+        <div className="flex flex-col items-center">
+            <div className="w-20 h-20 bg-background/50 rounded-lg flex items-center justify-center flex-shrink-0 border border-border">
+                <img src={factory.imageUrl} alt={factory.name} className="w-16 h-16 object-contain" />
+>>>>>>> 6803624c75f3447cccf5ca336538f739109a7503
+            </div>
+            <span className="font-mono text-lg text-text-primary mt-2">{countdown}</span>
+            <span className="text-xs text-text-secondary">{t('purchasedFactory.nextClaim', 'Próximo Reclamo')}</span>
+        </div>
+<<<<<<< HEAD
         <button
           onClick={() => onClaim(purchasedMinerId)}
           disabled={!isClaimable}
           className={`px-4 py-2 text-sm font-bold rounded-lg transition-all duration-300 transform active:scale-95
+=======
+
+        <LifetimeThermometer progress={lifetimeProgress} />
+      </div>
+      {/* --- FIN DE LA RECONSTRUCCIÓN DEL CUERPO --- */}
+      
+      <button
+          onClick={() => onClaim(purchasedFactoryId)}
+          disabled={!isClaimable}
+          className={`w-full py-3 text-sm font-bold rounded-full transition-all duration-300 transform active:scale-95
+>>>>>>> 6803624c75f3447cccf5ca336538f739109a7503
             ${isClaimable 
               ? 'bg-accent text-white shadow-lg shadow-accent/20 hover:bg-accent-hover'
               : 'bg-text-terciary/50 text-text-secondary cursor-not-allowed'
