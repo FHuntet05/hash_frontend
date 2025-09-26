@@ -1,49 +1,39 @@
-// RUTA: frontend/tailwind.config.js (v4.0 - CON PALETA DARK MODE)
+// RUTA: frontend/tailwind.config.js (v5.0 - NUEVA PALETA "OBSIDIAN BLUE")
 
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        // --- PALETA TEMA CLARO (USUARIO) ---
-        background: '#f8fafc', 
-        card: '#ffffff',
+        // --- INICIO: NUEVA PALETA DE COLORES UNIFICADA ---
+        background: '#000000',      // Negro puro para el fondo principal.
+        surface: '#101010',         // Un gris muy oscuro para tarjetas, modales y superficies elevadas.
+        
         text: {
-          primary: '#1e293b',
-          secondary: '#475569',
-          tertiary: '#94a3b8',
+          primary: '#FFFFFF',      // Blanco puro para el texto principal y los títulos.
+          secondary: '#A0A0A0',    // Un gris claro para texto secundario y descriptivo.
+          terciary: '#505050',     // Un gris más oscuro para elementos de baja prioridad.
         },
+        
         accent: {
-          primary: '#0ea5e9',
-          primary_hover: '#0284c7',
-          secondary: '#84cc16',
-          secondary_hover: '#65a30d',
-          tertiary: '#f97316',
-          tertiary_hover: '#ea580c',
+          DEFAULT: '#3B82F6',       // Azul (blue-500) para botones principales y elementos activos.
+          hover: '#2563EB',         // Un azul más oscuro (blue-600) para el estado hover.
         },
-        status: {
-            success: '#16a34a',
-            warning: '#f59e0b',
-            danger: '#dc2626',
-            danger_hover: '#b91c1c'
-        },
-        border: '#e2e8f0',
 
-        // --- INICIO: NUEVA PALETA TEMA OSCURO (ADMIN) ---
-        dark: {
-          primary: '#111827',   // gray-900 (Fondo principal más oscuro)
-          secondary: '#1f2937', // gray-800 (Fondo de tarjetas y sidebar)
-          tertiary: '#374151',  // gray-700 (Bordes, fondos de input)
+        status: {
+            success: '#22C55E',     // Verde brillante (green-500) visible sobre negro.
+            warning: '#F59E0B',     // Amarillo/ámbar brillante (amber-500).
+            danger: '#EF4444',      // Rojo brillante (red-500).
+            danger_hover: '#DC2626' // Rojo más oscuro (red-600) para hover.
         },
-        // Acentos para el modo oscuro
-        'accent-start': '#3b82f6', // blue-500
-        'accent-end': '#14b8a6',   // teal-500
-        // --- FIN: NUEVA PALETA TEMA OSCURO ---
+
+        border: '#2A2A2A',         // Color de borde sutil para separar elementos sobre el fondo.
+        // --- FIN: NUEVA PALETA ---
       },
       
       boxShadow: {
-        'subtle': '0 4px 12px 0 rgb(0 0 0 / 0.07)',
-        'medium': '0 8px 30px rgb(0 0 0 / 0.12)',
+        'subtle': '0 4px 12px 0 rgb(255 255 255 / 0.05)',
+        'medium': '0 8px 30px rgb(255 255 255 / 0.1)',
       },
 
       keyframes: {

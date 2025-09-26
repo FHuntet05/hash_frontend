@@ -1,19 +1,20 @@
-/* RUTA: frontend/src/index.css (ANIMACIÓN SPIN ELIMINADA) */
+/* RUTA: frontend/src/index.css (v2.0 - ALINEADO CON NUEVO TEMA) */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
+  /* Estas clases ahora tomarán los nuevos colores (negro y blanco) de tailwind.config.js */
   @apply bg-background; 
   @apply text-text-primary;
+  
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- NUEVA UTILIDAD PARA OCULTAR LA BARRA DE DESPLAZAMIENTO --- */
-/* Podemos aplicar la clase 'no-scrollbar' a cualquier elemento con scroll. */
+/* --- La utilidad para la barra de desplazamiento se mantiene --- */
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
@@ -23,9 +24,10 @@ body {
     scrollbar-width: none;  /* Firefox */
   }
 }
-.fan-blades {
-  animation-name: spin;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  transform-origin: center;
-}
+
+/* 
+  --- ELIMINADO ---
+  Se ha eliminado la clase .fan-blades y su animación 'spin' para
+  cumplir con el requerimiento de cambiar las animaciones.
+  Las animaciones futuras se definirán según sea necesario.
+*/
