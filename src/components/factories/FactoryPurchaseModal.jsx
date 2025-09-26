@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/factories/FactoryPurchaseModal.jsx (v3.0 - FLUJO DE COMPRA INTELIGENTE)
+// RUTA: frontend/src/components/factories/FactoryPurchaseModal.jsx (v4.0 - SEMÁNTICA "MINER" Y NUEVO TEMA)
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -8,7 +8,8 @@ import useUserStore from '../../store/userStore';
 import toast from 'react-hot-toast';
 import api from '../../api/axiosConfig';
 
-const FactoryPurchaseModal = ({ factory, onClose, onGoToDeposit }) => {
+// El componente ahora espera la prop 'miner'.
+const MinerPurchaseModal = ({ miner, onClose, onGoToDeposit }) => {
   const { user, setUser } = useUserStore();
   const { t } = useTranslation();
   
@@ -20,42 +21,43 @@ const FactoryPurchaseModal = ({ factory, onClose, onGoToDeposit }) => {
   const handleIncrease = () => setQuantity(q => Math.min(q + 1, MAX_QUANTITY));
   const handleDecrease = () => setQuantity(q => Math.max(q - 1, 1));
 
-  const totalCost = (factory?.price || 0) * quantity;
+  const totalCost = (miner?.price || 0) * quantity;
   const userBalance = user?.balance?.usdt || 0;
   const canPayWithBalance = userBalance >= totalCost;
 
-  // --- INICIO DE MODIFICACIÓN: Lógica de compra revisada ---
   const handlePurchase = async () => {
     setIsProcessing(true);
     const purchaseToastId = 'purchase_request';
-    toast.loading(t('factoryPurchaseModal.toasts.purchasing', 'Procesando compra...'), { id: purchaseToastId });
+    toast.loading(t('minerPurchaseModal.toasts.purchasing', 'Procesando compra...'), { id: purchaseToastId });
     
     try {
-      const response = await api.post('/wallet/purchase-factory', {
-        factoryId: factory._id,
+      // --- INICIO DE MODIFICACIÓN CRÍTICA ---
+      // 1. Se apunta al nuevo endpoint del backend.
+      // 2. Se envía 'minerId' en lugar de 'factoryId'.
+      const response = await api.post('/wallet/purchase-miner', {
+        factoryId: miner._id, // Mantenemos el nombre 'factoryId' porque el controller espera ese campo del body por retrocompatibilidad temporal.
         quantity: quantity,
       });
+      // --- FIN DE MODIFICACIÓN CRÍTICA ---
+      
       setUser(response.data.user);
-      toast.success(t('factoryPurchaseModal.toasts.purchaseSuccess', '¡Compra exitosa!'), { id: purchaseToastId });
+      toast.success(t('minerPurchaseModal.toasts.purchaseSuccess', '¡Compra exitosa!'), { id: purchaseToastId });
       onClose();
     } catch (error) {
       const errorMessage = error.response?.data?.message || t('common.error');
       
-      // Lógica clave: si el error es de saldo insuficiente, iniciamos el flujo de depósito
       if (errorMessage.includes('insuficiente')) {
-          toast.error(t('factoryPurchaseModal.toasts.insufficientFunds', 'Saldo insuficiente. Redirigiendo a depósito...'), { id: purchaseToastId });
-          // Esperamos un momento para que el usuario lea el toast y luego cambiamos de modal
+          toast.error(t('minerPurchaseModal.toasts.insufficientFunds', 'Saldo insuficiente. Redirigiendo a depósito...'), { id: purchaseToastId });
           setTimeout(() => {
             onGoToDeposit();
           }, 1500);
       } else {
           toast.error(errorMessage, { id: purchaseToastId });
+          // Habilitar el botón si la compra falla por otra razón que no sea saldo.
+          setIsProcessing(false);
       }
-    } finally {
-      // No ponemos setIsProcessing(false) aquí para que el modal se cierre o cambie sin que el botón se reactive.
     }
   };
-  // --- FIN DE MODIFICACIÓN ---
   
   const backdropVariants = { visible: { opacity: 1 }, hidden: { opacity: 0 } };
   const modalVariants = {
@@ -66,39 +68,39 @@ const FactoryPurchaseModal = ({ factory, onClose, onGoToDeposit }) => {
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" onClick={onClose}
     >
       <motion.div
-        className="relative bg-card/80 backdrop-blur-lg rounded-2xl w-full max-w-sm text-text-primary border border-white/20 shadow-medium flex flex-col max-h-[90vh]"
+        className="relative bg-surface/80 backdrop-blur-xl rounded-2xl w-full max-w-sm text-text-primary border border-border shadow-medium flex flex-col max-h-[90vh]"
         variants={modalVariants}
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex-shrink-0 p-6 pb-4 border-b border-border">
-            <button className="absolute top-4 right-4 text-text-tertiary hover:text-text-primary" onClick={onClose}>
+            <button className="absolute top-4 right-4 text-text-secondary hover:text-text-primary" onClick={onClose}>
                 <HiXMark className="w-6 h-6" />
             </button>
-            <h2 className="text-xl font-bold text-center">{factory.name}</h2>
-            <img src={factory.imageUrl || '/assets/images/tool-placeholder.png'} alt={factory.name} className="w-20 h-20 mx-auto mt-2 object-contain" />
+            <h2 className="text-xl font-bold text-center">{miner.name}</h2>
+            <img src={miner.imageUrl || '/assets/images/tool-placeholder.png'} alt={miner.name} className="w-20 h-20 mx-auto mt-2 object-contain" />
         </header>
         
         <main className="flex-grow p-6 overflow-y-auto no-scrollbar">
             <div className="flex items-center justify-center">
-                <span className="text-text-secondary mr-4">{t('factoryPurchaseModal.quantity', 'Cantidad:')}</span>
-                <div className="flex items-center bg-background/50 rounded-lg border border-border">
-                    <button onClick={handleDecrease} disabled={quantity <= 1 || isProcessing} className="p-2 disabled:opacity-40 hover:bg-black/10 transition rounded-l-lg"><HiMinus className="w-5 h-5" /></button>
+                <span className="text-text-secondary mr-4">{t('minerPurchaseModal.quantity', 'Cantidad:')}</span>
+                <div className="flex items-center bg-background rounded-lg border border-border">
+                    <button onClick={handleDecrease} disabled={quantity <= 1 || isProcessing} className="p-2 disabled:opacity-40 hover:bg-surface transition rounded-l-lg"><HiMinus className="w-5 h-5" /></button>
                     <span className="px-5 py-1 text-text-primary font-bold text-lg">{quantity}</span>
-                    <button onClick={handleIncrease} disabled={quantity >= MAX_QUANTITY || isProcessing} className="p-2 disabled:opacity-40 hover:bg-black/10 transition rounded-r-lg"><HiPlus className="w-5 h-5" /></button>
+                    <button onClick={handleIncrease} disabled={quantity >= MAX_QUANTITY || isProcessing} className="p-2 disabled:opacity-40 hover:bg-surface transition rounded-r-lg"><HiPlus className="w-5 h-5" /></button>
                 </div>
             </div>
 
-            <div className="space-y-2 text-sm my-4">
-                <div className="flex justify-between items-center bg-background/50 p-3 rounded-lg border border-border">
-                    <span className="text-text-secondary">{t('factoryPurchaseModal.totalCost', 'Costo Total')}</span>
+            <div className="space-y-2 text-sm mt-6">
+                <div className="flex justify-between items-center bg-background p-3 rounded-lg border border-border">
+                    <span className="text-text-secondary">{t('minerPurchaseModal.totalCost', 'Costo Total')}</span>
                     <span className="font-bold text-xl text-text-primary">{totalCost.toFixed(2)} USDT</span>
                 </div>
-                <div className="flex justify-between items-center bg-background/50 p-3 rounded-lg border border-border">
-                    <span className="text-text-secondary">{t('factoryPurchaseModal.yourBalance', 'Tu Saldo')}</span>
+                <div className="flex justify-between items-center bg-background p-3 rounded-lg border border-border">
+                    <span className="text-text-secondary">{t('minerPurchaseModal.yourBalance', 'Tu Saldo')}</span>
                     <span className={`font-bold text-xl ${canPayWithBalance ? 'text-status-success' : 'text-status-danger'}`}>{userBalance.toFixed(2)} USDT</span>
                 </div>
             </div>
@@ -108,9 +110,9 @@ const FactoryPurchaseModal = ({ factory, onClose, onGoToDeposit }) => {
              <button 
                 onClick={handlePurchase} 
                 disabled={isProcessing} 
-                className="w-full flex items-center justify-center gap-3 p-3 rounded-full bg-accent-primary text-white font-bold disabled:opacity-50 transition-all hover:bg-accent-primary-hover active:scale-95">
+                className="w-full flex items-center justify-center gap-3 p-3 rounded-lg bg-accent text-white font-bold disabled:opacity-50 transition-all hover:bg-accent-hover active:scale-95 shadow-lg shadow-accent/20">
                 <HiOutlineCurrencyDollar className="w-6 h-6" />
-                <span>{t('factoryPurchaseModal.buyNow', 'Comprar Ya')} ({totalCost.toFixed(2)} USDT)</span>
+                <span>{t('minerPurchaseModal.buyNow', 'Confirmar Compra')} ({totalCost.toFixed(2)} USDT)</span>
             </button>
         </footer>
       </motion.div>
@@ -118,4 +120,5 @@ const FactoryPurchaseModal = ({ factory, onClose, onGoToDeposit }) => {
   )
 }
 
-export default FactoryPurchaseModal;
+// Mantenemos el nombre de exportación por compatibilidad temporal
+export default MinerPurchaseModal;

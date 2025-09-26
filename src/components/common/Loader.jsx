@@ -1,19 +1,47 @@
-// RUTA: frontend/src/components/common/Loader.jsx (DISEÑO CRISTALINO)
+// RUTA: frontend/src/components/common/Loader.jsx (v2.0 - ANIMACIÓN DE PUNTOS PULSANTES)
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ClipLoader } from 'react-spinners';
 import { useTranslation } from 'react-i18next';
 
-// Obtenemos los colores de Tailwind para usarlos en el componente de spinner.
-// Es mejor definir esto fuera del componente para que no se recalcule en cada render.
-const themeColors = {
-  accentPrimary: '#0ea5e9' // Corresponde a accent.primary (sky-500) en tailwind.config.js
+const BouncingDotsLoader = () => {
+  const bounceTransition = {
+    y: {
+      duration: 0.4,
+      repeat: Infinity,
+      repeatType: 'reverse',
+      ease: 'easeOut',
+    },
+  };
+
+  return (
+    <motion.div
+      className="flex justify-around items-end w-16 h-8"
+      transition={{ staggerChildren: 0.1 }}
+      initial="initial"
+      animate="animate"
+    >
+      <motion.span
+        className="block w-3 h-3 bg-text-secondary rounded-full"
+        variants={{ initial: { y: "0%" }, animate: { y: "-100%" } }}
+        transition={bounceTransition}
+      />
+      <motion.span
+        className="block w-3 h-3 bg-accent rounded-full"
+        variants={{ initial: { y: "0%" }, animate: { y: "-100%" } }}
+        transition={bounceTransition}
+      />
+      <motion.span
+        className="block w-3 h-3 bg-text-secondary rounded-full"
+        variants={{ initial: { y: "0%" }, animate: { y: "-100%" } }}
+        transition={bounceTransition}
+      />
+    </motion.div>
+  );
 };
 
 const Loader = ({ text }) => {
   const { t } = useTranslation();
-  // Si no se pasa texto, se usa uno por defecto y traducible.
   const displayText = text || t('common.loading', 'Cargando...');
 
   return (
@@ -25,10 +53,10 @@ const Loader = ({ text }) => {
       className="flex flex-col items-center justify-center"
     >
       <div 
-        className="bg-card/70 backdrop-blur-md p-6 rounded-2xl flex flex-col items-center justify-center gap-4 border border-white/20 shadow-medium"
+        className="bg-surface/50 backdrop-blur-md p-6 rounded-2xl flex flex-col items-center justify-center gap-4 border border-border shadow-medium"
       >
-        <ClipLoader color={themeColors.accentPrimary} size={35} speedMultiplier={0.8} />
-        {displayText && <p className="text-text-primary text-sm font-semibold">{displayText}</p>}
+        <BouncingDotsLoader />
+        {displayText && <p className="text-text-primary text-sm font-semibold mt-2">{displayText}</p>}
       </div>
     </motion.div>
   );
