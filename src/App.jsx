@@ -1,4 +1,4 @@
-// RUTA: frontend/src/App.jsx (v2.2 - ENRUTADOR SINCRONIZADO)
+// RUTA: frontend/src/App.jsx (v2.3 - ENRUTADOR "MINER" SINCRONIZADO)
 
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -11,27 +11,29 @@ import AdminLayout from './components/layout/AdminLayout';
 import AdminProtectedRoute from './components/layout/AdminProtectedRoute';
 import Loader from './components/common/Loader';
 import MaintenanceScreen from './components/MaintenanceScreen';
+// --- INICIO DE REFACTORIZACIÓN DE PÁGINAS ---
 import HomePage from './pages/HomePage';
-import FactoriesPage from './pages/FactoriesPage'; 
-// --- CORRECCIÓN QUIRÚRGICA 1: Sincronización de Importación ---
-// Se importa el componente con su nombre correcto desde el archivo correcto.
-import DepositHistoryPage from './pages/DepositHistoryPage';
-// --- FIN DE LA CORRECCIÓN ---
+import RankingPage from './pages/RankingPage';
+import MinersPage from './pages/MinersPage'; // CAMBIO: Importa la nueva MinersPage
 import TeamPage from './pages/TeamPage';
 import ProfilePage from './pages/ProfilePage';
 import LanguagePage from './pages/LanguagePage';
+// --- Se eliminó RankingPage porque no se estaba usando en el BottomNav, se puede re-añadir si es necesario.
+// --- Otras páginas no cambian ---
 import NotFoundPage from './pages/NotFoundPage';
 import FaqPage from './pages/FaqPage';
 import AboutPage from './pages/AboutPage';
 import SupportPage from './pages/SupportPage';
 import FinancialHistoryPage from './pages/FinancialHistoryPage';
+// --- Admin Pages (sin cambios en su lógica interna por ahora) ---
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminUserDetailPage from './pages/admin/AdminUserDetailPage';
 import AdminTransactionsPage from './pages/admin/AdminTransactionsPage';
 import AdminWithdrawalsPage from './pages/admin/AdminWithdrawalsPage';
-import AdminFactoriesPage from './pages/admin/AdminFactoriesPage';
+// Renombrar la página de admin en el siguiente paso para consistencia
+import AdminFactoriesPage from './pages/admin/AdminFactoriesPage'; 
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import AdminSecurityPage from './pages/admin/AdminSecurityPage';
 import AdminTreasuryPage from './pages/admin/AdminTreasuryPage';
@@ -39,6 +41,8 @@ import SweepControlPage from './pages/admin/SweepControlPage';
 import GasDispenserPage from './pages/admin/GasDispenserPage';
 import AdminNotificationsPage from './pages/admin/AdminNotificationsPage'; 
 import AdminBlockchainMonitorPage from './pages/admin/AdminBlockchainMonitorPage';
+// --- FIN DE REFACTORIZACIÓN ---
+
 
 const AppInitializer = () => {
     const { isAuthenticated, syncUserWithBackend } = useUserStore();
@@ -79,6 +83,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* --- Rutas de Administración --- */}
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route element={<AdminProtectedRoute />}>
           <Route element={<AdminLayout />}>
@@ -87,7 +92,8 @@ function App() {
             <Route path="/admin/users/:id/details" element={<AdminUserDetailPage />} />
             <Route path="/admin/transactions" element={<AdminTransactionsPage />} />
             <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
-            <Route path="/admin/factories" element={<AdminFactoriesPage />} />
+            {/* CAMBIO: Se actualiza la ruta de admin para la nueva semántica */}
+            <Route path="/admin/miners" element={<AdminFactoriesPage />} /> 
             <Route path="/admin/security" element={<AdminSecurityPage />} />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
             <Route path="/admin/treasury" element={<AdminTreasuryPage />} />
@@ -99,6 +105,7 @@ function App() {
           </Route>
         </Route>
 
+        {/* --- Rutas de Usuario --- */}
         <Route path="/*" element={
           <>
             <AppInitializer />
@@ -107,14 +114,14 @@ function App() {
                 <Route path="/" element={<Navigate to="/home" replace />} />
                 <Route element={<Layout />}>
                   <Route path="/home" element={<HomePage />} />
-                  <Route path="/factories" element={<FactoriesPage />} />
-                  {/* --- CORRECCIÓN QUIRÚRGICA 2: Sincronización de Ruta --- */}
-                  {/* Se actualiza la ruta y el componente para reflejar la nueva página. */}
-                  <Route path="/deposit-history" element={<DepositHistoryPage />} />
-                  {/* --- FIN DE LA CORRECCIÓN --- */}
+                  {/* --- INICIO DE CORRECCIÓN DE RUTA CRÍTICA --- */}
+                  {/* La URL '/market' ahora renderiza la MinersPage */}
+                  <Route path="/market" element={<MinersPage />} />
+                  {/* --- FIN DE CORRECCIÓN --- */}
                   <Route path="/team" element={<TeamPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/history" element={<FinancialHistoryPage />} />
+                   <Route path="/ranking" element={<RankingPage />} />
                 </Route>
                 <Route path="/language" element={<LanguagePage />} />
                 <Route path="/faq" element={<FaqPage />} />
