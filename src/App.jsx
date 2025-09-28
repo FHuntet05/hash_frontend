@@ -1,10 +1,10 @@
-// RUTA: frontend/src/App.jsx (v3.0 - ENRUTADOR CONTEXTUAL)
+// RUTA: frontend/src/App.jsx (v3.1 - CORRECCIÓN DE BUCLE DE REDIRECCIÓN ADMIN)
 
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import useUserStore from './store/userStore';
 import { useTranslation } from 'react-i18next';
-import { useTelegram } from './hooks/useTelegram'; // <-- 1. Importamos el nuevo hook
+import { useTelegram } from './hooks/useTelegram';
 
 // --- IMPORTS (SIN CAMBIOS) ---
 import Layout from './components/layout/Layout';
@@ -39,22 +39,16 @@ import AdminNotificationsPage from './pages/admin/AdminNotificationsPage';
 import AdminBlockchainMonitorPage from './pages/admin/AdminBlockchainMonitorPage';
 
 
-// --- COMPONENTES AUXILIARES DEL ENRUTADOR ---
-
-// Este componente solo se usa dentro del contexto de Telegram
 const AppInitializer = () => {
     const { isAuthenticated, syncUserWithBackend } = useUserStore();
     useEffect(() => {
         if (isAuthenticated) return;
         const tg = window.Telegram?.WebApp;
-        if (tg?.initDataUnsafe?.user?.id) {
-            syncUserWithBackend(tg.initDataUnsafe.user);
-        }
+        if (tg?.initDataUnsafe?.user?.id) { syncUserWithBackend(tg.initDataUnsafe.user); }
     }, [isAuthenticated, syncUserWithBackend]);
     return null;
 };
 
-// Este componente protege las rutas de usuario dentro de Telegram
 const UserGatekeeper = ({ children }) => { 
   const { isAuthenticated, isLoadingAuth, isMaintenanceMode, maintenanceMessage } = useUserStore();
   if (isMaintenanceMode) return <MaintenanceScreen message={maintenanceMessage} />;
@@ -63,25 +57,19 @@ const UserGatekeeper = ({ children }) => {
   return children; 
 };
 
-// --- ESTRUCTURA DEL ENRUTADOR PRINCIPAL ---
-
 function App() {
   const { i18n } = useTranslation();
-  const { isTelegramWebApp } = useTelegram(); // <-- 2. Obtenemos el contexto aquí
+  const { isTelegramWebApp } = useTelegram();
 
   useEffect(() => {
     const direction = i18n.language === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.dir = direction;
   }, [i18n.language]);
 
-  // <-- 3. Lógica de renderizado contextual
-  // Si estamos en la WebApp de Telegram, renderizamos solo las rutas de usuario.
-  // Si estamos en un navegador normal, renderizamos solo las rutas de admin.
   return (
     <Router>
       <Routes>
         {isTelegramWebApp ? (
-          // --- RUTAS PARA EL CONTEXTO DE TELEGRAM (USUARIO) ---
           <Route path="/*" element={
             <>
               <AppInitializer />
@@ -106,9 +94,12 @@ function App() {
             </>
           } />
         ) : (
-          // --- RUTAS PARA EL CONTEXTO DE NAVEGADOR (ADMIN) ---
           <>
+            {/* --- INICIO DE LA CORRECCIÓN CRÍTICA --- */}
+            {/* La ruta de Login ahora está fuera y es la primera en ser evaluada. */}
             <Route path="/admin/login" element={<AdminLoginPage />} />
+            
+            {/* AdminProtectedRoute ahora envuelve un grupo específico de rutas. */}
             <Route element={<AdminProtectedRoute />}>
               <Route element={<AdminLayout />}>
                 <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
@@ -124,10 +115,14 @@ function App() {
                 <Route path="/admin/sweep-control" element={<SweepControlPage />} />
                 <Route path="/admin/gas-dispenser" element={<GasDispenserPage />} />
                 <Route path="/admin/blockchain-monitor" element={<AdminBlockchainMonitorPage />} />
+                 {/* Una redirección para la raíz de /admin */}
+                <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
               </Route>
             </Route>
-            {/* Redirección por defecto para el navegador: si no es una ruta de admin, va al login */}
+
+            {/* Redirección por defecto: si no es una ruta de admin válida, va al login */}
             <Route path="*" element={<Navigate to="/admin/login" replace />} />
+            {/* --- FIN DE LA CORRECCIÓN CRÍTICA --- */}
           </>
         )}
       </Routes>

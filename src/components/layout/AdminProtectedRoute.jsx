@@ -1,46 +1,30 @@
-// frontend/src/components/layout/AdminProtectedRoute.jsx (VERSIÓN CON ADMIN STORE)
+// frontend/src/components/layout/AdminProtectedRoute.jsx (v2.0 - LÓGICA SIMPLIFICADA)
 
-import React, { useEffect } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import useAdminStore from '../../store/adminStore'; // MODIFICADO: Se usa el store de admin
+import React from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import useAdminStore from '../../store/adminStore';
 import Loader from '../common/Loader';
 
 const AdminProtectedRoute = () => {
-  // MODIFICADO: La fuente de verdad ahora es useAdminStore
-  const { admin, isAuthenticated, isLoading, isHydrated, setHydrated } = useAdminStore();
+  const { isAuthenticated, isLoading } = useAdminStore();
+  const location = useLocation();
 
-  // El estado de 'isHydrated' nos dice si Zustand ha terminado de cargar los datos desde localStorage.
-  // Es necesario esperar a que esto ocurra para tomar una decisión.
-  useEffect(() => {
-    // Esta función se llama desde el store cuando la rehidratación termina.
-    // La llamamos aquí también por si el store ya se rehidrató.
-    useAdminStore.persist.rehydrate();
-  }, []);
-
-
-  // Mientras los datos persistidos se cargan, mostramos un loader.
-  if (!isHydrated) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center bg-dark-primary">
-        <Loader text="Cargando sesión de admin..." />
-      </div>
-    );
-  }
-
-  // Si está cargando una petición de login, también esperamos.
+  // El estado 'isLoading' del store nos dice si se está procesando un login.
   if (isLoading) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-dark-primary">
-        <Loader text="Verificando sesión..." />
+        <Loader text="Verificando..." />
       </div>
     );
   }
 
-  // La condición de acceso es simple: ¿está el admin autenticado en su propio store?
-  const isAuthorizedAdmin = isAuthenticated && admin?.role === 'admin';
-  
-  // Si está autorizado, se le da acceso. Si no, se le redirige a la página de login.
-  return isAuthorizedAdmin ? <Outlet /> : <Navigate to="/admin/login" replace />;
+  // La condición es simple: si está autenticado, permite el acceso a las rutas anidadas (Outlet).
+  // Si no, lo redirige a la página de login, guardando la página que intentaba visitar.
+  return isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/admin/login" state={{ from: location }} replace />
+  );
 };
 
 export default AdminProtectedRoute;
