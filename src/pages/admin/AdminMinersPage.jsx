@@ -1,73 +1,79 @@
-// RUTA: frontend/src/pages/admin/AdminFactoriesPage.jsx (REFACTORIZADO)
+// RUTA: frontend/src/pages/admin/AdminMinersPage.jsx (REFACTORIZACIÓN COMPLETA)
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import api from '../../api/axiosConfig';
 import toast from 'react-hot-toast';
 import Loader from '../../components/common/Loader';
-import FactoryFormModal from './components/FactoryFormModal'; // Import renombrado
+// CAMBIO: Se importa el modal con su nuevo nombre.
+import MinerFormModal from './components/MinerFormModal'; 
 import { HiPencil, HiTrash, HiOutlineCubeTransparent } from 'react-icons/hi2';
 
-const AdminFactoriesPage = () => {
-  const [factories, setFactories] = useState([]);
+// CAMBIO CRÍTICO: El nombre del componente ahora es AdminMinersPage.
+const AdminMinersPage = () => {
+  // CAMBIO: Las variables de estado ahora usan la semántica "miner".
+  const [miners, setMiners] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingFactory, setEditingFactory] = useState(null);
+  const [editingMiner, setEditingMiner] = useState(null);
 
-  const fetchFactories = useCallback(async () => {
+  // CAMBIO: La función y la llamada a la API ahora usan "/admin/miners".
+  const fetchMiners = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { data } = await api.get('/admin/factories'); // Endpoint corregido
-      setFactories(data);
+      const { data } = await api.get('/admin/miners'); 
+      setMiners(data);
     } catch (e) {
-      toast.error('No se pudieron cargar las Chips.');
+      toast.error('No se pudieron cargar los mineros.');
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchFactories();
-  }, [fetchFactories]);
+    fetchMiners();
+  }, [fetchMiners]);
 
-  const handleOpenModal = (factory = null) => {
-    setEditingFactory(factory);
+  const handleOpenModal = (miner = null) => {
+    setEditingMiner(miner);
     setIsModalOpen(true);
   };
   
   const handleCloseModal = () => {
-    setEditingFactory(null);
+    setEditingMiner(null);
     setIsModalOpen(false);
   };
 
-  const handleSaveFactory = async (formData, factoryId) => {
-    const isEditing = !!factoryId;
+  // CAMBIO: La lógica de guardado ahora usa la semántica y endpoints de "miner".
+  const handleSaveMiner = async (formData, minerId) => {
+    const isEditing = !!minerId;
     const request = isEditing
-      ? api.put(`/admin/factories/${factoryId}`, formData)
-      : api.post('/admin/factories', formData);
+      ? api.put(`/admin/miners/${minerId}`, formData)
+      : api.post('/admin/miners', formData);
 
     try {
       await toast.promise(request, {
-        loading: 'Guardando fábrica...',
-        success: `Fábrica ${isEditing ? 'actualizada' : 'creada'}.`,
-        error: 'Ocurrió un error al guardar la fábrica.',
+        loading: 'Guardando minero...',
+        success: `Minero ${isEditing ? 'actualizado' : 'creado'}.`,
+        error: 'Ocurrió un error al guardar el minero.',
       });
-      fetchFactories();
+      fetchMiners();
       handleCloseModal();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error al guardar.');
     }
   };
 
-  const handleDeleteFactory = async (factoryId) => {
-    if (!window.confirm("¿Seguro que quieres eliminar esta fábrica? Esta acción es irreversible.")) return;
+  // CAMBIO: La lógica de eliminación ahora usa el endpoint de "miner".
+  const handleDeleteMiner = async (minerId) => {
+    if (!window.confirm("¿Seguro que quieres eliminar este minero? Esta acción es irreversible.")) return;
     try {
-      await toast.promise(api.delete(`/admin/factories/${factoryId}`), {
-        loading: 'Eliminando fábrica...',
-        success: 'Fábrica eliminada.',
+      await toast.promise(api.delete(`/admin/miners/${minerId}`), {
+        loading: 'Eliminando minero...',
+        success: 'Minero eliminado.',
         error: 'Ocurrió un error al eliminar.',
       });
-      fetchFactories();
+      fetchMiners();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error al eliminar.');
     }
@@ -77,28 +83,30 @@ const AdminFactoriesPage = () => {
     <>
       <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold">Gestión de Chips</h1>
+          {/* CAMBIO: Textos de UI actualizados. */}
+          <h1 className="text-2xl font-semibold">Gestión de Mineros</h1>
           <button onClick={() => handleOpenModal()} className="px-4 py-2 font-bold text-white bg-accent-start rounded-lg hover:bg-accent-end transition-colors">
-            Crear Fábrica
+            Crear Minero
           </button>
         </div>
-        {isLoading ? <div className="h-64 flex items-center justify-center"><Loader /></div> : factories.length > 0 ? (
+        {isLoading ? <div className="h-64 flex items-center justify-center"><Loader /></div> : miners.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {factories.map(factory => (
-              <div key={factory._id} className="bg-dark-primary p-4 rounded-lg border border-white/10 flex flex-col justify-between shadow-lg">
-                <img src={factory.imageUrl || 'https://i.postimg.cc/8PqYj4zR/nicebot.jpg'} alt={factory.name} className="w-full h-32 object-contain rounded-t-lg mb-4 bg-black/20" />
+            {/* CAMBIO: Se itera sobre "miners" y se usa la variable "miner". */}
+            {miners.map(miner => (
+              <div key={miner._id} className="bg-dark-primary p-4 rounded-lg border border-white/10 flex flex-col justify-between shadow-lg">
+                <img src={miner.imageUrl || 'https://i.postimg.cc/8PqYj4zR/nicebot.jpg'} alt={miner.name} className="w-full h-32 object-contain rounded-t-lg mb-4 bg-black/20" />
                 <div className="flex-grow">
-                  <h3 className="font-bold text-lg">{factory.name}</h3>
+                  <h3 className="font-bold text-lg">{miner.name}</h3>
                   <div className="text-sm text-text-secondary space-y-1 mt-2">
-                    <p>Precio: <span className="font-mono text-white">{factory.price} USDT</span></p>
-                    <p>Producción: <span className="font-mono text-white">{factory.dailyProduction} USDT/Día</span></p>
-                    <p>Duración: <span className="font-mono text-white">{factory.durationDays} días</span></p>
-                    <p>Gratuita: <span className={`font-mono ${factory.isFree ? 'text-green-400' : 'text-red-400'}`}>{factory.isFree ? 'Sí' : 'No'}</span></p>
+                    <p>Precio: <span className="font-mono text-white">{miner.price} USDT</span></p>
+                    <p>Producción: <span className="font-mono text-white">{miner.dailyProduction} USDT/Día</span></p>
+                    <p>Duración: <span className="font-mono text-white">{miner.durationDays} días</span></p>
+                    <p>Gratuito: <span className={`font-mono ${miner.isFree ? 'text-green-400' : 'text-red-400'}`}>{miner.isFree ? 'Sí' : 'No'}</span></p>
                   </div>
                 </div>
                 <div className="flex gap-2 mt-4 pt-4 border-t border-white/10">
-                  <button onClick={() => handleOpenModal(factory)} className="flex-1 px-3 py-1.5 text-xs flex items-center justify-center gap-2 bg-blue-500/20 text-blue-400 rounded-md hover:bg-blue-500/30 transition-colors"><HiPencil /> Editar</button>
-                  <button onClick={() => handleDeleteFactory(factory._id)} className="flex-1 px-3 py-1.5 text-xs flex items-center justify-center gap-2 bg-red-500/20 text-red-400 rounded-md hover:bg-red-500/30 transition-colors"><HiTrash /> Eliminar</button>
+                  <button onClick={() => handleOpenModal(miner)} className="flex-1 px-3 py-1.5 text-xs flex items-center justify-center gap-2 bg-blue-500/20 text-blue-400 rounded-md hover:bg-blue-500/30 transition-colors"><HiPencil /> Editar</button>
+                  <button onClick={() => handleDeleteMiner(miner._id)} className="flex-1 px-3 py-1.5 text-xs flex items-center justify-center gap-2 bg-red-500/20 text-red-400 rounded-md hover:bg-red-500/30 transition-colors"><HiTrash /> Eliminar</button>
                 </div>
               </div>
             ))}
@@ -106,15 +114,18 @@ const AdminFactoriesPage = () => {
         ) : (
           <div className="text-center py-16 text-text-secondary">
             <HiOutlineCubeTransparent className="mx-auto h-12 w-12 text-gray-500" />
-            <h3 className="mt-2 text-lg font-medium">No hay Chips creadas</h3>
-            <p className="mt-1 text-sm">Empieza por crear tu primera fábrica.</p>
+            <h3 className="mt-2 text-lg font-medium">No hay Mineros creados</h3>
+            <p className="mt-1 text-sm">Empieza por crear tu primer minero.</p>
           </div>
         )}
       </div>
       <AnimatePresence>
-        {isModalOpen && <FactoryFormModal factory={editingFactory} onClose={handleCloseModal} onSave={handleSaveFactory} />}
+        {/* CAMBIO: Se pasan las props correctas al nuevo modal. */}
+        {isModalOpen && <MinerFormModal miner={editingMiner} onClose={handleCloseModal} onSave={handleSaveMiner} />}
       </AnimatePresence>
     </>
   );
 };
+
+// CAMBIO CRÍTICO: Se exporta el componente con su nombre correcto.
 export default AdminMinersPage;
