@@ -121,7 +121,7 @@ function App() {
                   <Route path="/team" element={<TeamPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/history" element={<FinancialHistoryPage />} />
-                   //<Route path="/ranking" element={<RankingPage />} />
+                   {/* <Route path="/ranking" element={<RankingPage />} /> */}
                 </Route>
                 <Route path="/language" element={<LanguagePage />} />
                 <Route path="/faq" element={<FaqPage />} />
