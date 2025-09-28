@@ -93,7 +93,7 @@ function App() {
             <Route path="/admin/transactions" element={<AdminTransactionsPage />} />
             <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
             {/* CAMBIO: Se actualiza la ruta de admin para la nueva semántica */}
-            <Route path="/admin/miners" element={<AdminAdminMinersPage />} /> 
+            <Route path="/admin/miners" element={<AdminMinersPage />} /> 
             <Route path="/admin/security" element={<AdminSecurityPage />} />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
             <Route path="/admin/treasury" element={<AdminTreasuryPage />} />
