@@ -1,17 +1,17 @@
-// RUTA: frontend/src/App.jsx (v2.4 - CORRECCIÓN FINAL DE ENRUTADOR ADMIN)
+// RUTA: frontend/src/App.jsx (v3.0 - ENRUTADOR CONTEXTUAL)
 
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import useUserStore from './store/userStore';
 import { useTranslation } from 'react-i18next';
+import { useTelegram } from './hooks/useTelegram'; // <-- 1. Importamos el nuevo hook
 
-// --- IMPORTS ---
+// --- IMPORTS (SIN CAMBIOS) ---
 import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminProtectedRoute from './components/layout/AdminProtectedRoute';
 import Loader from './components/common/Loader';
 import MaintenanceScreen from './components/MaintenanceScreen';
-// --- PÁGINAS DE USUARIO ---
 import HomePage from './pages/HomePage';
 import RankingPage from './pages/RankingPage';
 import MinersPage from './pages/MinersPage';
@@ -23,26 +23,25 @@ import FaqPage from './pages/FaqPage';
 import AboutPage from './pages/AboutPage';
 import SupportPage from './pages/SupportPage';
 import FinancialHistoryPage from './pages/FinancialHistoryPage';
-// --- PÁGINAS DE ADMINISTRACIÓN ---
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminUserDetailPage from './pages/admin/AdminUserDetailPage';
 import AdminTransactionsPage from './pages/admin/AdminTransactionsPage';
 import AdminWithdrawalsPage from './pages/admin/AdminWithdrawalsPage';
-// --- INICIO DE LA CORRECCIÓN CRÍTICA ---
-// Se corrige el nombre de la variable importada para que coincida con su uso y con el nombre del archivo.
-import AdminMinersPage from './pages/admin/AdminMinersPage'; 
-// --- FIN DE LA CORRECCIÓN CRÍTICA ---
+import AdminMinersPage from './pages/admin/AdminMinersPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import AdminSecurityPage from './pages/admin/AdminSecurityPage';
 import AdminTreasuryPage from './pages/admin/AdminTreasuryPage';
 import SweepControlPage from './pages/admin/SweepControlPage';
 import GasDispenserPage from './pages/admin/GasDispenserPage';
-import AdminNotificationsPage from './pages/admin/AdminNotificationsPage'; 
+import AdminNotificationsPage from './pages/admin/AdminNotificationsPage';
 import AdminBlockchainMonitorPage from './pages/admin/AdminBlockchainMonitorPage';
 
 
+// --- COMPONENTES AUXILIARES DEL ENRUTADOR ---
+
+// Este componente solo se usa dentro del contexto de Telegram
 const AppInitializer = () => {
     const { isAuthenticated, syncUserWithBackend } = useUserStore();
     useEffect(() => {
@@ -55,78 +54,82 @@ const AppInitializer = () => {
     return null;
 };
 
+// Este componente protege las rutas de usuario dentro de Telegram
 const UserGatekeeper = ({ children }) => { 
   const { isAuthenticated, isLoadingAuth, isMaintenanceMode, maintenanceMessage } = useUserStore();
-  
-  if (isMaintenanceMode) {
-      return <MaintenanceScreen message={maintenanceMessage} />;
-  }
-  
-  if (isLoadingAuth) { 
-    return ( <div className="w-full h-screen flex items-center justify-center bg-background"><Loader text="Autenticando..." /></div> ); 
-  } 
-  if (!isAuthenticated) { 
-    return ( <div className="w-full h-screen flex items-center justify-center p-4 bg-background text-text-secondary text-center">Error de autenticación.<br/>Por favor, reinicia la app desde Telegram.</div> ); 
-  } 
+  if (isMaintenanceMode) return <MaintenanceScreen message={maintenanceMessage} />;
+  if (isLoadingAuth) return ( <div className="w-full h-screen flex items-center justify-center bg-background"><Loader text="Autenticando..." /></div> ); 
+  if (!isAuthenticated) return ( <div className="w-full h-screen flex items-center justify-center p-4 bg-background text-text-secondary text-center">Error de autenticación.<br/>Por favor, reinicia la app desde Telegram.</div> ); 
   return children; 
 };
 
+// --- ESTRUCTURA DEL ENRUTADOR PRINCIPAL ---
+
 function App() {
   const { i18n } = useTranslation();
+  const { isTelegramWebApp } = useTelegram(); // <-- 2. Obtenemos el contexto aquí
 
   useEffect(() => {
     const direction = i18n.language === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.dir = direction;
   }, [i18n.language]);
 
+  // <-- 3. Lógica de renderizado contextual
+  // Si estamos en la WebApp de Telegram, renderizamos solo las rutas de usuario.
+  // Si estamos en un navegador normal, renderizamos solo las rutas de admin.
   return (
     <Router>
       <Routes>
-        {/* --- Rutas de Administración --- */}
-        <Route path="/admin/login" element={<AdminLoginPage />} />
-        <Route element={<AdminProtectedRoute />}>
-          <Route element={<AdminLayout />}>
-            <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-            <Route path="/admin/users" element={<AdminUsersPage />} />
-            <Route path="/admin/users/:id/details" element={<AdminUserDetailPage />} />
-            <Route path="/admin/transactions" element={<AdminTransactionsPage />} />
-            <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
-            <Route path="/admin/miners" element={<AdminMinersPage />} /> 
-            <Route path="/admin/security" element={<AdminSecurityPage />} />
-            <Route path="/admin/settings" element={<AdminSettingsPage />} />
-            <Route path="/admin/treasury" element={<AdminTreasuryPage />} />
-            <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
-            <Route path="/admin/sweep-control" element={<SweepControlPage />} />
-            <Route path="/admin/gas-dispenser" element={<GasDispenserPage />} />
-            <Route path="/admin/blockchain-monitor" element={<AdminBlockchainMonitorPage />} />
-            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-          </Route>
-        </Route>
-
-        {/* --- Rutas de Usuario --- */}
-        <Route path="/*" element={
+        {isTelegramWebApp ? (
+          // --- RUTAS PARA EL CONTEXTO DE TELEGRAM (USUARIO) ---
+          <Route path="/*" element={
+            <>
+              <AppInitializer />
+              <UserGatekeeper>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/home" replace />} />
+                  <Route element={<Layout />}>
+                    <Route path="/home" element={<HomePage />} />
+                    <Route path="/market" element={<MinersPage />} />
+                    <Route path="/team" element={<TeamPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/history" element={<FinancialHistoryPage />} />
+                    <Route path="/ranking" element={<RankingPage />} /> 
+                  </Route>
+                  <Route path="/language" element={<LanguagePage />} />
+                  <Route path="/faq" element={<FaqPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/support" element={<SupportPage />} />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </UserGatekeeper>
+            </>
+          } />
+        ) : (
+          // --- RUTAS PARA EL CONTEXTO DE NAVEGADOR (ADMIN) ---
           <>
-            <AppInitializer />
-            <UserGatekeeper>
-              <Routes>
-                <Route path="/" element={<Navigate to="/home" replace />} />
-                <Route element={<Layout />}>
-                  <Route path="/home" element={<HomePage />} />
-                  <Route path="/market" element={<MinersPage />} />
-                  <Route path="/team" element={<TeamPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/history" element={<FinancialHistoryPage />} />
-                  <Route path="/ranking" element={<RankingPage />} /> 
-                </Route>
-                <Route path="/language" element={<LanguagePage />} />
-                <Route path="/faq" element={<FaqPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/support" element={<SupportPage />} />
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </UserGatekeeper>
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route element={<AdminProtectedRoute />}>
+              <Route element={<AdminLayout />}>
+                <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+                <Route path="/admin/users" element={<AdminUsersPage />} />
+                <Route path="/admin/users/:id/details" element={<AdminUserDetailPage />} />
+                <Route path="/admin/transactions" element={<AdminTransactionsPage />} />
+                <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
+                <Route path="/admin/miners" element={<AdminMinersPage />} /> 
+                <Route path="/admin/security" element={<AdminSecurityPage />} />
+                <Route path="/admin/settings" element={<AdminSettingsPage />} />
+                <Route path="/admin/treasury" element={<AdminTreasuryPage />} />
+                <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
+                <Route path="/admin/sweep-control" element={<SweepControlPage />} />
+                <Route path="/admin/gas-dispenser" element={<GasDispenserPage />} />
+                <Route path="/admin/blockchain-monitor" element={<AdminBlockchainMonitorPage />} />
+              </Route>
+            </Route>
+            {/* Redirección por defecto para el navegador: si no es una ruta de admin, va al login */}
+            <Route path="*" element={<Navigate to="/admin/login" replace />} />
           </>
-        } />
+        )}
       </Routes>
     </Router>
   );
