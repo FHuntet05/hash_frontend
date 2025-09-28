@@ -10,7 +10,7 @@ import useUserStore from '../store/userStore';
 // NOTA: Los siguientes componentes (FactoryCard, FactoryPurchaseModal) necesitarán
 // también una refactorización de texto y estilo en los próximos pasos.
 import FactoryCard from '../components/miners/FactoryCard';
-import FactoryPurchaseModal from '../components/miners/FactoryPurchaseModal';
+import FactoryPurchaseModal from '../components/miners/MinerPurchaseModal';
 import DirectDepositModal from '../components/modals/DirectDepositModal';
 import Loader from '../components/common/Loader';
 
