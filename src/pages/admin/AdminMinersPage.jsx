@@ -1,23 +1,19 @@
-// RUTA: frontend/src/pages/admin/AdminMinersPage.jsx (REFACTORIZACIÓN COMPLETA)
+// RUTA: frontend/src/pages/admin/AdminMinersPage.jsx (v2.1 - TEXTOS ALINEADOS)
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import api from '../../api/axiosConfig';
 import toast from 'react-hot-toast';
 import Loader from '../../components/common/Loader';
-// CAMBIO: Se importa el modal con su nuevo nombre.
 import MinerFormModal from './components/MinerFormModal'; 
 import { HiPencil, HiTrash, HiOutlineCubeTransparent } from 'react-icons/hi2';
 
-// CAMBIO CRÍTICO: El nombre del componente ahora es AdminMinersPage.
 const AdminMinersPage = () => {
-  // CAMBIO: Las variables de estado ahora usan la semántica "miner".
   const [miners, setMiners] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMiner, setEditingMiner] = useState(null);
 
-  // CAMBIO: La función y la llamada a la API ahora usan "/admin/miners".
   const fetchMiners = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -44,7 +40,6 @@ const AdminMinersPage = () => {
     setIsModalOpen(false);
   };
 
-  // CAMBIO: La lógica de guardado ahora usa la semántica y endpoints de "miner".
   const handleSaveMiner = async (formData, minerId) => {
     const isEditing = !!minerId;
     const request = isEditing
@@ -64,7 +59,6 @@ const AdminMinersPage = () => {
     }
   };
 
-  // CAMBIO: La lógica de eliminación ahora usa el endpoint de "miner".
   const handleDeleteMiner = async (minerId) => {
     if (!window.confirm("¿Seguro que quieres eliminar este minero? Esta acción es irreversible.")) return;
     try {
@@ -83,7 +77,6 @@ const AdminMinersPage = () => {
     <>
       <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
         <div className="flex justify-between items-center mb-6">
-          {/* CAMBIO: Textos de UI actualizados. */}
           <h1 className="text-2xl font-semibold">Gestión de Mineros</h1>
           <button onClick={() => handleOpenModal()} className="px-4 py-2 font-bold text-white bg-accent-start rounded-lg hover:bg-accent-end transition-colors">
             Crear Minero
@@ -91,7 +84,6 @@ const AdminMinersPage = () => {
         </div>
         {isLoading ? <div className="h-64 flex items-center justify-center"><Loader /></div> : miners.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* CAMBIO: Se itera sobre "miners" y se usa la variable "miner". */}
             {miners.map(miner => (
               <div key={miner._id} className="bg-dark-primary p-4 rounded-lg border border-white/10 flex flex-col justify-between shadow-lg">
                 <img src={miner.imageUrl || 'https://i.postimg.cc/8PqYj4zR/nicebot.jpg'} alt={miner.name} className="w-full h-32 object-contain rounded-t-lg mb-4 bg-black/20" />
@@ -120,12 +112,10 @@ const AdminMinersPage = () => {
         )}
       </div>
       <AnimatePresence>
-        {/* CAMBIO: Se pasan las props correctas al nuevo modal. */}
         {isModalOpen && <MinerFormModal miner={editingMiner} onClose={handleCloseModal} onSave={handleSaveMiner} />}
       </AnimatePresence>
     </>
   );
 };
 
-// CAMBIO CRÍTICO: Se exporta el componente con su nombre correcto.
 export default AdminMinersPage;

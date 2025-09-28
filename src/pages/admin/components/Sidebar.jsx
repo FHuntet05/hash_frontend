@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/admin/components/Sidebar.jsx (RUTAS CORREGIDAS Y ESTILO OSCURO)
+// RUTA: frontend/src/pages/admin/components/Sidebar.jsx (v2.0 - SEMÁNTICA "MINER")
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
@@ -8,30 +8,32 @@ import {
   HiOutlineFunnel, HiOutlineMegaphone, HiOutlineCommandLine 
 } from 'react-icons/hi2';
 
-// --- RUTAS VERIFICADAS ---
+// --- INICIO DE CORRECCIÓN SEMÁNTICA ---
 const navLinks = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: HiOutlineHome },
   { name: 'Usuarios', href: '/admin/users', icon: HiOutlineUsers },
-  { name: 'Transacciones', href: '/admin/transactions', icon: HiOutlineReceiptRefund }, // Verificado
+  { name: 'Transacciones', href: '/admin/transactions', icon: HiOutlineReceiptRefund },
   { name: 'Retiros', href: '/admin/withdrawals', icon: HiOutlineQuestionMarkCircle },
-  { name: 'Tesorería', href: '/admin/treasury', icon: HiOutlineBuildingLibrary }, // Verificado
+  { name: 'Tesorería', href: '/admin/treasury', icon: HiOutlineBuildingLibrary },
   { name: 'Dispensador Gas', href: '/admin/gas-dispenser', icon: HiOutlineFunnel },
   { name: 'Notificaciones', href: '/admin/notifications', icon: HiOutlineMegaphone },
   { name: 'Monitor Blockchain', href: '/admin/blockchain-monitor', icon: HiOutlineCommandLine },
-  { name: 'Chips', href: '/admin/factories', icon: HiOutlineWrenchScrewdriver },
+  // CAMBIO CRÍTICO: El nombre se actualiza a "Mineros" y el 'href' a '/admin/miners'.
+  { name: 'Mineros', href: '/admin/miners', icon: HiOutlineWrenchScrewdriver },
   { name: 'Seguridad', href: '/admin/security', icon: HiOutlineShieldCheck },
   { name: 'Ajustes', href: '/admin/settings', icon: HiOutlineCog6Tooth },
 ];
+// --- FIN DE CORRECCIÓN SEMÁNTICA ---
 
 const Sidebar = ({ onLinkClick = () => {} }) => {
-    // --- ESTILOS ADAPTADOS AL TEMA OSCURO ---
     const linkClasses = "flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary hover:bg-accent-start/10 hover:text-white transition-colors";
     const activeLinkClasses = "bg-accent-start/20 text-white font-bold";
   
     return (
       <aside className="w-64 bg-dark-secondary p-4 flex flex-col border-r border-white/10 h-full">
         <div className="text-center py-4 mb-4">
-          <h1 className="text-2xl font-bold text-accent-start">MEGA FÁBRICA</h1>
+          {/* CAMBIO: El título del panel se actualiza a la nueva marca. */}
+          <h1 className="text-2xl font-bold text-accent-start">MEGA MINERÍA</h1>
           <p className="text-sm text-text-secondary">Admin Panel</p>
         </div>
         <nav className="flex flex-col gap-2">
