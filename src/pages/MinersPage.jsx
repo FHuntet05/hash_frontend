@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/FactoriesPage.jsx (v4.0 - SEMÁNTICA "MINER" Y NUEVO TEMA "OBSIDIAN BLUE")
+// RUTA: frontend/src/pages/MinersPage.jsx (v4.1 - SINCRONIZACIÓN DE MODAL)
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,17 +7,17 @@ import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import useUserStore from '../store/userStore';
-// NOTA: Los siguientes componentes (FactoryCard, FactoryPurchaseModal) necesitarán
-// también una refactorización de texto y estilo en los próximos pasos.
 import MinerCard from '../components/miners/MinerCard';
-import FactoryPurchaseModal from '../components/miners/MinerPurchaseModal';
+// --- INICIO DE CORRECCIÓN CRÍTICA ---
+// Se importa el modal con su nombre correcto.
+import MinerPurchaseModal from '../components/miners/MinerPurchaseModal';
+// --- FIN DE CORRECCIÓN CRÍTICA ---
 import DirectDepositModal from '../components/modals/DirectDepositModal';
 import Loader from '../components/common/Loader';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.07 } } };
 const itemVariants = { hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } };
 
-// Se cambia el nombre del componente de FactoriesPage a MinersPage para coherencia
 const MinersPage = () => {
   const { t } = useTranslation();
   const [miners, setMiners] = useState([]);
@@ -46,7 +46,6 @@ const MinersPage = () => {
     const fetchMiners = async () => {
         try {
             setLoading(true);
-            // La ruta API sigue siendo '/factories' hasta que refactoricemos el backend.
             const response = await api.get('/miners');
             setMiners(response.data);
             setError(null);
@@ -62,7 +61,6 @@ const MinersPage = () => {
   }, [t]);
 
   const ownedMinerIds = useMemo(() => {
-    // La estructura del objeto 'user' en el store ahora usa 'purchasedMiners'.
     if (!user || !user.purchasedMiners) return new Set();
     return new Set(user.purchasedMiners.map(pm => pm.miner?._id).filter(Boolean));
   }, [user]);
@@ -107,7 +105,7 @@ const MinersPage = () => {
                     variants={itemVariants} 
                   >
                     <MinerCard 
-                      miner={miner}// Se sigue pasando la prop 'factory' por compatibilidad con el componente hijo por ahora.
+                      miner={miner}
                       onBuyClick={handleBuyClick}
                       isOwned={ownedMinerIds.has(miner._id)}
                     />
@@ -123,11 +121,15 @@ const MinersPage = () => {
 
       <AnimatePresence>
         {selectedMiner && (
-          <FactoryPurchaseModal 
-            factory={selectedMiner} // Se pasa la prop 'factory' por compatibilidad con el modal por ahora.
+          // --- INICIO DE CORRECCIÓN CRÍTICA ---
+          // Se usa el nombre correcto del componente.
+          // Se pasa la prop con el nombre correcto: 'miner'.
+          <MinerPurchaseModal 
+            miner={selectedMiner}
             onClose={handleCloseModal} 
             onGoToDeposit={handleGoToDeposit}
           />
+          // --- FIN DE CORRECCIÓN CRÍTICA ---
         )}
         {isDepositModalOpen && (
           <DirectDepositModal 
@@ -140,4 +142,4 @@ const MinersPage = () => {
   );
 };
 
-export default MinersPage; // Exportamos el componente con el nuevo nombre
+export default MinersPage;

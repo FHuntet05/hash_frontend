@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/factories/FactoryPurchaseModal.jsx (v4.0 - SEMÁNTICA "MINER" Y NUEVO TEMA)
+// RUTA: frontend/src/components/modals/MinerPurchaseModal.jsx (v4.1 - SEMÁNTICA "MINER" COMPLETA)
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -8,7 +8,6 @@ import useUserStore from '../../store/userStore';
 import toast from 'react-hot-toast';
 import api from '../../api/axiosConfig';
 
-// El componente ahora espera la prop 'miner'.
 const MinerPurchaseModal = ({ miner, onClose, onGoToDeposit }) => {
   const { user, setUser } = useUserStore();
   const { t } = useTranslation();
@@ -21,7 +20,15 @@ const MinerPurchaseModal = ({ miner, onClose, onGoToDeposit }) => {
   const handleIncrease = () => setQuantity(q => Math.min(q + 1, MAX_QUANTITY));
   const handleDecrease = () => setQuantity(q => Math.max(q - 1, 1));
 
-  const totalCost = (miner?.price || 0) * quantity;
+  // --- INICIO DE CORRECCIÓN CRÍTICA ---
+  // Se añade una guarda para el caso de que la prop 'miner' sea nula
+  // y así evitar un crash si el componente se renderiza incorrectamente.
+  if (!miner) {
+    return null;
+  }
+  // --- FIN DE CORRECCIÓN CRÍTICA ---
+
+  const totalCost = (miner.price || 0) * quantity;
   const userBalance = user?.balance?.usdt || 0;
   const canPayWithBalance = userBalance >= totalCost;
 
@@ -31,14 +38,14 @@ const MinerPurchaseModal = ({ miner, onClose, onGoToDeposit }) => {
     toast.loading(t('minerPurchaseModal.toasts.purchasing', 'Procesando compra...'), { id: purchaseToastId });
     
     try {
-      // --- INICIO DE MODIFICACIÓN CRÍTICA ---
-      // 1. Se apunta al nuevo endpoint del backend.
-      // 2. Se envía 'minerId' en lugar de 'factoryId'.
+      // --- INICIO DE CORRECCIÓN DE ENDPOINT Y PAYLOAD ---
+      // Se apunta al nuevo endpoint del backend que ya fue refactorizado.
+      // Se envía 'factoryId' porque el backend (walletController) aún lo espera con ese nombre.
       const response = await api.post('/wallet/purchase-miner', {
-        factoryId: miner._id, // Mantenemos el nombre 'factoryId' porque el controller espera ese campo del body por retrocompatibilidad temporal.
+        factoryId: miner._id,
         quantity: quantity,
       });
-      // --- FIN DE MODIFICACIÓN CRÍTICA ---
+      // --- FIN DE CORRECCIÓN ---
       
       setUser(response.data.user);
       toast.success(t('minerPurchaseModal.toasts.purchaseSuccess', '¡Compra exitosa!'), { id: purchaseToastId });
@@ -53,7 +60,6 @@ const MinerPurchaseModal = ({ miner, onClose, onGoToDeposit }) => {
           }, 1500);
       } else {
           toast.error(errorMessage, { id: purchaseToastId });
-          // Habilitar el botón si la compra falla por otra razón que no sea saldo.
           setIsProcessing(false);
       }
     }
@@ -120,5 +126,5 @@ const MinerPurchaseModal = ({ miner, onClose, onGoToDeposit }) => {
   )
 }
 
-// Mantenemos el nombre de exportación por compatibilidad temporal
+// Se exporta con el nombre correcto.
 export default MinerPurchaseModal;
