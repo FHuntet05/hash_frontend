@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 import BottomNavBar from './BottomNavBar';
-import FloatingSupportButton from '../common/FloatingSupportButton';
+//import FloatingSupportButton from '../common/FloatingSupportButton';
 import useUserStore from '../../store/userStore';
 import Loader from '../common/Loader';
 
@@ -45,7 +45,7 @@ const Layout = () => {
         </main>
         
         <BottomNavBar />
-        <FloatingSupportButton dragRef={dragContainerRef} />
+       {/* <FloatingSupportButton dragRef={dragContainerRef} /> */}
         
         <Toaster
           position="top-center"
