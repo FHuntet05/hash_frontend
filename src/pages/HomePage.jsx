@@ -23,7 +23,7 @@ const MinerAnimation = () => {
             )}
             {/* Se mantiene la animación existente por ahora. Puede ser reemplazada por una nueva de "mineros". */}
             <video
-                src="/animations/factory-animation.mp4"
+                src="/animations/mineranimated.mp4"
                 autoPlay
                 loop
                 muted

@@ -72,7 +72,7 @@ const SetWithdrawalAddressModal = ({ onClose }) => {
         <main className="flex-grow p-6 pt-2 overflow-y-auto no-scrollbar">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm text-text-secondary mb-1 block" htmlFor="walletAddress">{t('setWithdrawalAddressModal.addressLabel', 'Dirección de Billetera (USDT BEP20/TRC20)')}</label>
+              <label className="text-sm text-text-secondary mb-1 block" htmlFor="walletAddress">{t('setWithdrawalAddressModal.addressLabel', 'Dirección de Billetera (USDT BEP20)')}</label>
               <div className="relative">
                 <HiOutlineWallet className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
                 <input 
