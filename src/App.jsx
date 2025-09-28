@@ -13,7 +13,7 @@ import Loader from './components/common/Loader';
 import MaintenanceScreen from './components/MaintenanceScreen';
 // --- INICIO DE REFACTORIZACIÓN DE PÁGINAS ---
 import HomePage from './pages/HomePage';
-import RankingPage from './pages/RankingPage';
+//import RankingPage from './pages/RankingPage';
 import MinersPage from './pages/MinersPage'; // CAMBIO: Importa la nueva MinersPage
 import TeamPage from './pages/TeamPage';
 import ProfilePage from './pages/ProfilePage';
@@ -121,7 +121,7 @@ function App() {
                   <Route path="/team" element={<TeamPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/history" element={<FinancialHistoryPage />} />
-                   <Route path="/ranking" element={<RankingPage />} />
+                   //<Route path="/ranking" element={<RankingPage />} />
                 </Route>
                 <Route path="/language" element={<LanguagePage />} />
                 <Route path="/faq" element={<FaqPage />} />
