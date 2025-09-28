@@ -13,7 +13,7 @@ import Loader from './components/common/Loader';
 import MaintenanceScreen from './components/MaintenanceScreen';
 // --- INICIO DE REFACTORIZACIÓN DE PÁGINAS ---
 import HomePage from './pages/HomePage';
-//import RankingPage from './pages/RankingPage';
+import RankingPage from './pages/RankingPage';
 import MinersPage from './pages/MinersPage'; // CAMBIO: Importa la nueva MinersPage
 import TeamPage from './pages/TeamPage';
 import ProfilePage from './pages/ProfilePage';
@@ -33,7 +33,7 @@ import AdminUserDetailPage from './pages/admin/AdminUserDetailPage';
 import AdminTransactionsPage from './pages/admin/AdminTransactionsPage';
 import AdminWithdrawalsPage from './pages/admin/AdminWithdrawalsPage';
 // Renombrar la página de admin en el siguiente paso para consistencia
-import AdminFactoriesPage from './pages/admin/AdminFactoriesPage'; 
+import AdminFactoriesPage from './pages/admin/AdminMinersPage'; 
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import AdminSecurityPage from './pages/admin/AdminSecurityPage';
 import AdminTreasuryPage from './pages/admin/AdminTreasuryPage';
@@ -93,7 +93,7 @@ function App() {
             <Route path="/admin/transactions" element={<AdminTransactionsPage />} />
             <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
             {/* CAMBIO: Se actualiza la ruta de admin para la nueva semántica */}
-            <Route path="/admin/miners" element={<AdminFactoriesPage />} /> 
+            <Route path="/admin/miners" element={<AdminAdminMinersPage />} /> 
             <Route path="/admin/security" element={<AdminSecurityPage />} />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
             <Route path="/admin/treasury" element={<AdminTreasuryPage />} />
@@ -121,7 +121,7 @@ function App() {
                   <Route path="/team" element={<TeamPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/history" element={<FinancialHistoryPage />} />
-                   {/* <Route path="/ranking" element={<RankingPage />} /> */}
+                   <Route path="/ranking" element={<RankingPage />} /> 
                 </Route>
                 <Route path="/language" element={<LanguagePage />} />
                 <Route path="/faq" element={<FaqPage />} />

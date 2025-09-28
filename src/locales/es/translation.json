@@ -89,7 +89,7 @@
     "claim": "RECLAMAR",
     "producing": "TRABAJANDO"
   },
-  "factoryCard": {
+  "minerCard": {
     "price": "Precio",
     "dailyProduction": "Producción Diaria",
     "daily": "Producción Diaria",

@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import useUserStore from '../store/userStore';
 // NOTA: Los siguientes componentes (FactoryCard, FactoryPurchaseModal) necesitarán
 // también una refactorización de texto y estilo en los próximos pasos.
-import FactoryCard from '../components/miners/FactoryCard';
+import MinerCard from '../components/miners/MinerCard';
 import FactoryPurchaseModal from '../components/miners/MinerPurchaseModal';
 import DirectDepositModal from '../components/modals/DirectDepositModal';
 import Loader from '../components/common/Loader';
@@ -47,7 +47,7 @@ const MinersPage = () => {
         try {
             setLoading(true);
             // La ruta API sigue siendo '/factories' hasta que refactoricemos el backend.
-            const response = await api.get('/factories');
+            const response = await api.get('/miners');
             setMiners(response.data);
             setError(null);
         } catch (err) {
@@ -106,8 +106,8 @@ const MinersPage = () => {
                     key={miner._id} 
                     variants={itemVariants} 
                   >
-                    <FactoryCard 
-                      factory={miner} // Se sigue pasando la prop 'factory' por compatibilidad con el componente hijo por ahora.
+                    <MinerCard 
+                      miner={miner}// Se sigue pasando la prop 'factory' por compatibilidad con el componente hijo por ahora.
                       onBuyClick={handleBuyClick}
                       isOwned={ownedMinerIds.has(miner._id)}
                     />

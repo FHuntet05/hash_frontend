@@ -67,4 +67,4 @@ const MinerCard = ({ miner, onBuyClick, isOwned }) => { // Componente renombrado
 };
 
 // Se mantiene el nombre de exportación original por compatibilidad con los archivos que lo importan.
-export default FactoryCard;
+export default MinerCard;

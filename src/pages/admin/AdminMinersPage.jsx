@@ -117,4 +117,4 @@ const AdminFactoriesPage = () => {
     </>
   );
 };
-export default AdminFactoriesPage;
+export default AdminMinersPage;
