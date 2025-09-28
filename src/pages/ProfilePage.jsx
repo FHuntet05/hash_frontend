@@ -1,4 +1,4 @@
-// RUTA: frontend/src/pages/ProfilePage.jsx (v3.3 - LÓGICA OPTIMIZADA)
+// RUTA: frontend/src/pages/ProfilePage.jsx (v3.4 - FEATURE-001: LÓGICA DE WALLET DE RETIRO)
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +16,8 @@ import {
 import WithdrawalModal from '../components/modals/WithdrawalModal';
 import SetWithdrawalPasswordModal from '../components/modals/SetWithdrawalPasswordModal';
 import Loader from '../components/common/Loader';
-import SaveWalletModal from '../components/modals/SaveWalletModal'; 
+// CAMBIO CRÍTICO: Se importa el nuevo modal que crearemos.
+import SetWithdrawalAddressModal from '../components/modals/SetWithdrawalAddressModal'; 
 import SelectNetworkModal from '../components/modals/SelectNetworkModal';
 
 const StatCard = ({ label, value }) => ( <div className="flex-1 text-center"> <p className="text-2xl font-bold text-text-primary">{value.toFixed(2)}</p> <p className="text-xs text-text-secondary uppercase tracking-wider mt-1">{label}</p> </div> );
@@ -28,19 +29,21 @@ const ProfilePage = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
+    // CAMBIO CRÍTICO: El estado del modal ahora usa el nuevo nombre 'setAddress'.
     const [modalState, setModalState] = React.useState({
         withdrawal: false,
         setPassword: false,
         selectNetwork: false,
-        saveWallet: false,
+        setAddress: false,
     });
 
     const openModal = (modalName) => setModalState(prev => ({ ...prev, [modalName]: true }));
     const closeModal = (modalName) => setModalState(prev => ({ ...prev, [modalName]: false }));
 
     const handleWithdrawClick = () => {
+        // CAMBIO CRÍTICO: La validación ahora comprueba el nuevo objeto 'withdrawalAddress'.
         if (!user?.isWithdrawalPasswordSet) { toast.error(t('profilePage.toasts.passwordNotSet')); openModal('setPassword'); return; }
-        if (!user?.withdrawalWallet?.isSet) { toast.error(t('profilePage.toasts.walletNotSet')); openModal('saveWallet'); return; }
+        if (!user?.withdrawalAddress?.isSet) { toast.error(t('profilePage.toasts.walletNotSet')); openModal('setAddress'); return; }
         if ((user?.balance?.usdt || 0) < 0.1) { toast.error(t('profilePage.toasts.insufficientBalance', { min: "0.1" })); return; }
         openModal('withdrawal');
     };
@@ -53,11 +56,13 @@ const ProfilePage = () => {
     if (!user) { return <div className="h-full w-full flex items-center justify-center pt-16"><Loader /></div>; }
 
     const isPasswordSet = user?.isWithdrawalPasswordSet || false;
+    const isWalletSet = user?.withdrawalAddress?.isSet || false;
 
     const mainActions = [
         { label: t('profile.recharge'), icon: HiOutlineArrowDownOnSquare, onClick: () => openModal('selectNetwork') },
         { label: t('profile.withdraw'), icon: HiOutlineArrowUpOnSquare, onClick: handleWithdrawClick },
-        { label: t('profile.saveWallet'), icon: HiOutlineWallet, onClick: () => openModal('saveWallet') },
+        // CAMBIO CRÍTICO: El botón de "Guardar Billetera" ahora abre el modal 'setAddress'.
+        { label: isWalletSet ? t('profile.editWallet', 'Editar Billetera') : t('profile.saveWallet', 'Guardar Billetera'), icon: HiOutlineWallet, onClick: () => openModal('setAddress') },
         { label: t('profile.records'), icon: HiOutlineRectangleStack, onClick: () => navigate('/history') },
     ];
     
@@ -104,7 +109,8 @@ const ProfilePage = () => {
                 {modalState.selectNetwork && <SelectNetworkModal onClose={() => closeModal('selectNetwork')} />}
                 {modalState.withdrawal && <WithdrawalModal onClose={() => closeModal('withdrawal')} onGoToSetPassword={handleNavigateToSetPassword} />}
                 {modalState.setPassword && <SetWithdrawalPasswordModal onClose={() => closeModal('setPassword')} />}
-                {modalState.saveWallet && <SaveWalletModal onClose={() => closeModal('saveWallet')} />}
+                {/* CAMBIO CRÍTICO: Se renderiza el nuevo modal y se le pasa la función de cierre. */}
+                {modalState.setAddress && <SetWithdrawalAddressModal onClose={() => closeModal('setAddress')} />}
             </AnimatePresence>
         </>
     );

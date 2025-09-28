@@ -1,4 +1,4 @@
-// RUTA: frontend/src/components/modals/WithdrawalModal.jsx (v3.2 - BUG DE MÍNIMO CORREGIDO)
+// RUTA: frontend/src/components/modals/WithdrawalModal.jsx (v4.0 - FEATURE-001: MODO DE SOLO LECTURA)
 
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
@@ -13,18 +13,12 @@ const WithdrawalModal = ({ onClose, onGoToSetPassword }) => {
   const { user, settings, setUser } = useUserStore();
   
   const userBalance = user?.balance?.usdt || 0;
-  
-  // --- INICIO DE LA CORRECCIÓN CRÍTICA (BUG-022) ---
-  // Se ha corregido el nombre de la propiedad de 'minimumWithdrawal' a 'minWithdrawal'.
-  // Esto asegura que se lea el valor correcto desde el objeto 'settings' del store,
-  // en lugar de usar siempre el valor de respaldo de 1.0.
   const minWithdrawal = settings?.minWithdrawal || 1.0;
-  // --- FIN DE LA CORRECCIÓN CRÍTICA ---
-
   const withdrawalFee = settings?.withdrawalFeePercent || 0;
-  
   const isWithdrawalPasswordSet = user?.isWithdrawalPasswordSet || false;
-  const savedWalletAddress = user?.withdrawalWallet?.address;
+  
+  // CAMBIO CRÍTICO: Se obtiene la dirección de retiro del nuevo campo en el estado del usuario.
+  const savedWalletAddress = user?.withdrawalAddress?.address;
 
   const [amount, setAmount] = useState('');
   const [withdrawalPassword, setWithdrawalPassword] = useState('');
@@ -46,6 +40,7 @@ const WithdrawalModal = ({ onClose, onGoToSetPassword }) => {
     if (numericAmount > userBalance) return toast.error(t('withdrawalModal.toasts.insufficientBalance'));
     
     setIsProcessing(true);
+    // CAMBIO CRÍTICO: La petición a la API ya no envía 'walletAddress'. El backend la obtiene del usuario.
     const withdrawalPromise = api.post('/wallet/request-withdrawal', {
       amount: numericAmount,
       withdrawalPassword,
@@ -75,11 +70,11 @@ const WithdrawalModal = ({ onClose, onGoToSetPassword }) => {
       variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" onClick={onClose}
     >
       <motion.div
-        className="relative bg-card/80 backdrop-blur-lg rounded-2xl w-full max-w-sm text-text-primary border border-border shadow-medium flex flex-col max-h-[90vh]"
+        className="relative bg-surface/80 backdrop-blur-lg rounded-2xl w-full max-w-sm text-text-primary border border-border shadow-medium flex flex-col max-h-[90vh]"
         variants={modalVariants} onClick={(e) => e.stopPropagation()}
       >
         <header className="flex-shrink-0 p-6 pb-4">
-            <button className="absolute top-4 right-4 text-text-tertiary hover:text-text-primary" onClick={onClose}><HiXMark className="w-6 h-6" /></button>
+            <button className="absolute top-4 right-4 text-text-secondary hover:text-text-primary" onClick={onClose}><HiXMark className="w-6 h-6" /></button>
             <h2 className="text-xl font-bold text-center">{t('withdrawalModal.title')}</h2>
             <p className="text-sm text-center text-text-secondary mt-1">{t('withdrawalModal.balance')} <span className="font-semibold text-text-primary">{userBalance.toFixed(2)} USDT</span></p>
         </header>
@@ -87,26 +82,20 @@ const WithdrawalModal = ({ onClose, onGoToSetPassword }) => {
         <main className="flex-grow p-6 pt-2 overflow-y-auto no-scrollbar">
           {isWithdrawalPasswordSet ? (
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* CAMBIO CRÍTICO: El input de dirección ha sido reemplazado por un display de solo lectura. */}
               <div>
-                <label className="text-sm text-text-secondary mb-1 block">{t('withdrawalModal.addressLabelSaved')}</label>
+                <label className="text-sm text-text-secondary mb-1 block">{t('withdrawalModal.addressLabelSaved', 'Se enviará a la billetera:')}</label>
                 <div className="flex items-center bg-background/50 p-3 rounded-lg border border-border text-sm">
-                  <HiOutlineWallet className="w-5 h-5 text-text-tertiary mr-3 flex-shrink-0" />
-                  <p className="font-mono break-all text-text-secondary">{savedWalletAddress}</p>
+                  <HiOutlineWallet className="w-5 h-5 text-text-secondary mr-3 flex-shrink-0" />
+                  <p className="font-mono break-all text-text-primary">{savedWalletAddress}</p>
                 </div>
               </div>
               
               <div>
                 <label className="text-sm text-text-secondary mb-1 block">{t('withdrawalModal.amountLabel')}</label>
                 <div className="flex items-center bg-background/50 rounded-lg border border-border">
-                  <input 
-                    type="number" 
-                    step="0.01" 
-                    placeholder={t('withdrawalModal.minPlaceholder', { minWithdrawal })}
-                    value={amount} 
-                    onChange={(e) => setAmount(e.target.value)} 
-                    className="w-full bg-transparent p-3 focus:outline-none" 
-                  />
-                  <button type="button" onClick={() => setAmount(userBalance.toString())} className="font-bold text-accent-primary pr-4 flex-shrink-0">{t('common.max')}</button>
+                  <input type="number" step="0.01" placeholder={t('withdrawalModal.minPlaceholder', { minWithdrawal })} value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full bg-transparent p-3 focus:outline-none" />
+                  <button type="button" onClick={() => setAmount(userBalance.toString())} className="font-bold text-accent pr-4 flex-shrink-0">{t('common.max')}</button>
                 </div>
               </div>
 
@@ -116,22 +105,16 @@ const WithdrawalModal = ({ onClose, onGoToSetPassword }) => {
               </div>
 
               <div className="text-sm space-y-1 bg-background/50 p-3 rounded-lg border border-border">
-                <div className="flex justify-between text-text-secondary">
-                  <span>{t('withdrawalModal.fee', { fee: withdrawalFee })}</span>
-                  <span>- {feeAmount.toFixed(4)} USDT</span>
-                </div>
-                <div className="flex justify-between font-bold">
-                  <span>{t('withdrawalModal.youReceive')}</span>
-                  <span>{netAmount > 0 ? netAmount.toFixed(4) : '0.0000'} USDT</span>
-                </div>
+                <div className="flex justify-between text-text-secondary"><span>{t('withdrawalModal.fee', { fee: withdrawalFee })}</span><span>- {feeAmount.toFixed(4)} USDT</span></div>
+                <div className="flex justify-between font-bold"><span>{t('withdrawalModal.youReceive')}</span><span>{netAmount > 0 ? netAmount.toFixed(4) : '0.0000'} USDT</span></div>
               </div>
 
-              <button type="submit" disabled={isProcessing} className="w-full mt-2 py-3 bg-accent-primary text-white font-bold rounded-full disabled:opacity-50 hover:bg-accent-primary-hover active:scale-95 transition-all">
+              <button type="submit" disabled={isProcessing} className="w-full mt-2 py-3 bg-accent text-white font-bold rounded-full disabled:opacity-50 hover:bg-accent-hover active:scale-95 transition-all">
                 {isProcessing ? t('common.processing') : t('withdrawalModal.confirmButton')}
               </button>
             </form>
           ) : (
-            <div className="text-center bg-accent-tertiary/10 p-4 rounded-lg border border-accent-tertiary/20">
+             <div className="text-center bg-accent-tertiary/10 p-4 rounded-lg border border-accent-tertiary/20">
               <HiLockClosed className="w-10 h-10 mx-auto text-accent-tertiary mb-2" />
               <h3 className="font-bold text-text-primary">{t('withdrawalModal.passwordNotSetTitle')}</h3>
               <p className="text-sm text-text-secondary mt-2 mb-4">{t('withdrawalModal.passwordNotSetBody')}</p>
