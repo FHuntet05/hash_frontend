@@ -9,11 +9,8 @@ import api from '../api/axiosConfig';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// --- INICIO DE NUEVAS IMPORTACIONES ---
-import HomeBalanceOverview from '../components/home/HomeBalanceOverview'; // Componente de saldo
-import WithdrawalModal from '../components/modals/WithdrawalModal'; // Modal de retiro
-// --- FIN DE NUEVAS IMPORTACIONES ---
-
+import HomeBalanceOverview from '../components/home/HomeBalanceOverview';
+import WithdrawalModal from '../components/modals/WithdrawalModal';
 import PurchasedMinerItem from '../components/miners/PurchasedMinerItem';
 import TaskCenter from '../components/home/TaskCenter';
 import Loader from '../components/common/Loader';
@@ -46,9 +43,7 @@ const HomePage = () => {
     const user = useUserStore(state => state.user);
     const setUser = useUserStore(state => state.setUser);
     
-    // --- INICIO DE NUEVO ESTADO PARA MODAL ---
     const [isWithdrawalModalOpen, setWithdrawalModalOpen] = useState(false);
-    // --- FIN DE NUEVO ESTADO PARA MODAL ---
 
     const handleClaim = async (purchasedMinerId) => {
         toast.loading(t('homePage.toasts.claiming', 'Reclamando...'), { id: 'claim_request' });
@@ -77,9 +72,7 @@ const HomePage = () => {
             >
                 <MinerAnimation />
                 
-                {/* --- INICIO DE INTEGRACIÓN DEL NUEVO COMPONENTE --- */}
                 <HomeBalanceOverview onWithdrawClick={() => setWithdrawalModalOpen(true)} />
-                {/* --- FIN DE INTEGRACIÓN --- */}
 
                 <div>
                     <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.myMiners', 'Mis Mineros')}</h2>
@@ -107,13 +100,11 @@ const HomePage = () => {
                 </div>
             </motion.div>
             
-            {/* --- INICIO DE RENDERIZADO CONDICIONAL DEL MODAL --- */}
             <AnimatePresence>
                 {isWithdrawalModalOpen && (
                     <WithdrawalModal onClose={() => setWithdrawalModalOpen(false)} />
                 )}
             </AnimatePresence>
-            {/* --- FIN DE RENDERIZADO CONDICIONAL --- */}
         </>
     );
 };

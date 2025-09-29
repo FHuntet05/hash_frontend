@@ -1,76 +1,85 @@
-// RUTA: frontend/src/components/factories/PurchasedFactoryItem.jsx (v6.0 - REDISEÑO "MINER" CON TIEMPO RESTANTE)
+// --- START OF FILE PurchasedMinerItem.jsx ---
+
+// RUTA: frontend/src/components/miners/PurchasedMinerItem.jsx (v7.0 - "QUANTUM LEAP": REDISEÑO CIRCULAR)
 
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFactoryCycle } from '../../hooks/useFactoryCycle'; // Este hook se puede renombrar a useMinerCycle después
+import { useFactoryCycle } from '../../hooks/useFactoryCycle'; // Mantener el hook por ahora, su lógica es válida
 
-const ProgressBar = ({ progress, bgColorClass }) => (
-  <div className="w-full bg-black/30 rounded-full h-1.5 overflow-hidden">
-    <div
-      className={`${bgColorClass} h-1.5 rounded-full transition-all duration-500`}
-      style={{ width: `${progress}%` }}
-    />
-  </div>
-);
+// --- Componente interno para el anillo de progreso ---
+const CircularProgress = ({ progress, size = 40, strokeWidth = 4, colorClass }) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (progress / 100) * circumference;
 
-// El componente ahora espera `purchasedMiner`
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
+      <circle
+        className="text-black/20"
+        strokeWidth={strokeWidth}
+        stroke="currentColor"
+        fill="transparent"
+        r={radius}
+        cx={size / 2}
+        cy={size / 2}
+      />
+      <circle
+        className={colorClass}
+        strokeWidth={strokeWidth}
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+        stroke="currentColor"
+        fill="transparent"
+        r={radius}
+        cx={size / 2}
+        cy={size / 2}
+      />
+    </svg>
+  );
+};
+
 const PurchasedMinerItem = ({ purchasedMiner, onClaim }) => {
   const { t } = useTranslation();
   
-  // Verificación de robustez: Si el miner anidado no existe, no renderizar nada.
   if (!purchasedMiner || typeof purchasedMiner.miner !== 'object') {
-    console.warn("PurchasedMinerItem renderizado sin un objeto 'miner' válido.", purchasedMiner);
     return null;
   }
   
-  // Desestructuración con los nuevos nombres de campos del userModel
   const { miner, expiryDate, _id: purchasedMinerId, lastClaim } = purchasedMiner;
   const { countdown, progress: cycleProgress, isClaimable } = useFactoryCycle(lastClaim);
 
-  // --- INICIO DE NUEVA LÓGICA: Cálculo del tiempo restante ---
   const { timeLeftText, lifetimeProgress } = useMemo(() => {
     const end = new Date(expiryDate).getTime();
     const now = Date.now();
     const totalDuration = end - new Date(purchasedMiner.purchaseDate).getTime();
-    const elapsed = now - new Date(purchasedMiner.purchaseDate).getTime();
+    const elapsed = Math.max(0, now - new Date(purchasedMiner.purchaseDate).getTime());
     const progress = Math.min(100, (elapsed / totalDuration) * 100);
 
     const remainingMs = Math.max(0, end - now);
     const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-
-    let text;
-    if (days > 0) {
-      text = t('time.daysHours', '{{days}}d {{hours}}h', { days, hours });
-    } else if (hours > 0) {
-      text = t('time.hoursMinutes', '{{hours}}h {{minutes}}m', { hours, minutes });
-    } else {
-      text = t('time.minutes', '{{minutes}}m', { minutes });
-    }
     
-    if (remainingMs === 0) {
-      text = t('time.expired', 'Expirado');
-    }
+    let text = t('time.days', '{{count}}d', { count: days });
+    if (remainingMs === 0) text = t('time.expired', 'Expirado');
 
     return { timeLeftText: text, lifetimeProgress: progress };
   }, [expiryDate, purchasedMiner.purchaseDate, t]);
-  // --- FIN DE NUEVA LÓGICA ---
-
+  
   const lifetimeBarColor = useMemo(() => {
-    if (lifetimeProgress < 75) return 'bg-status-success';
-    if (lifetimeProgress < 95) return 'bg-status-warning';
-    return 'bg-status-danger';
+    if (lifetimeProgress > 25) return 'text-status-warning';
+    if (lifetimeProgress > 0) return 'text-status-success';
+    return 'text-status-danger';
   }, [lifetimeProgress]);
 
   return (
     <div className="bg-surface rounded-2xl p-4 border border-border flex flex-col gap-4 shadow-subtle">
-      <div className="flex justify-between items-center">
+      {/* --- SECCIÓN SUPERIOR: Información y botón --- */}
+      <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
             <div className="w-14 h-14 bg-background rounded-lg flex items-center justify-center flex-shrink-0 border border-border">
                 <img src={miner.imageUrl} alt={miner.name} className="w-10 h-10 object-contain" />
             </div>
-            <div className="flex flex-col">
+            <div>
                 <h3 className="text-md font-bold text-text-primary leading-tight">{miner.name}</h3>
                 <span className="text-xs font-semibold text-status-success mt-1">
                     +{miner.dailyProduction.toFixed(2)} USDT / 24h
@@ -86,28 +95,35 @@ const PurchasedMinerItem = ({ purchasedMiner, onClaim }) => {
               : 'bg-text-terciary/50 text-text-secondary cursor-not-allowed'
             }`}
         >
-          {isClaimable ? t('purchasedMiner.claim', 'Reclamar') : t('purchasedMiner.producing', 'Minando...')}
+          {isClaimable ? t('purchasedMiner.claim', 'Reclamar') : countdown}
         </button>
       </div>
 
-      <div className="flex-grow flex flex-col justify-between gap-3 text-xs">
-          <div>
-              <div className="flex justify-between text-text-secondary mb-1">
-                  <span>{t('purchasedMiner.nextClaim', 'Próximo Reclamo')}</span>
-                  <span className="font-mono">{countdown}</span>
+      {/* --- SECCIÓN INFERIOR: Indicadores de progreso --- */}
+      <div className="flex justify-around items-center pt-2 border-t border-border">
+          <div className="flex flex-col items-center gap-1.5 text-center">
+              <span className="text-xs text-text-secondary">{t('purchasedMiner.nextClaim', 'Próximo Reclamo')}</span>
+              <div className="relative">
+                  <CircularProgress progress={cycleProgress} colorClass="text-accent" />
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-mono">
+                      {Math.floor(cycleProgress)}%
+                  </span>
               </div>
-              <ProgressBar progress={cycleProgress} bgColorClass="bg-accent" />
           </div>
-           <div>
-              <div className="flex justify-between text-text-secondary mb-1">
-                  <span>{t('purchasedMiner.lifespan', 'Vida Útil Restante')}</span>
-                  <span className="font-mono font-semibold text-text-primary">{timeLeftText}</span>
+           <div className="flex flex-col items-center gap-1.5 text-center">
+              <span className="text-xs text-text-secondary">{t('purchasedMiner.lifespan', 'Vida Útil')}</span>
+              <div className="relative">
+                  <CircularProgress progress={100 - lifetimeProgress} colorClass={lifetimeBarColor} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold">
+                    {timeLeftText}
+                  </span>
               </div>
-              <ProgressBar progress={lifetimeProgress} bgColorClass={lifetimeBarColor} />
-          </div>
+           </div>
       </div>
     </div>
   );
 };
 
 export default PurchasedMinerItem;
+
+// --- END OF FILE PurchasedMinerItem.jsx ---
