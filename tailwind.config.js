@@ -1,41 +1,43 @@
 // --- START OF FILE tailwind.config.js ---
 
-// RUTA: frontend/tailwind.config.js (v6.0 - "QUANTUM LEAP": PALETA COSMIC BLUE)
+// RUTA: frontend/tailwind.config.js (v6.1 - CORRECCIÓN DE CLASE DE FONDO)
 
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        // --- INICIO: NUEVA PALETA DE COLORES ---
-        // Se definen los colores base para el degradado y los componentes.
+        // --- INICIO: CORRECCIÓN CRÍTICA ---
+        // Se añade una clave 'DEFAULT' para que la clase 'bg-background' sea válida.
+        // Se mantiene la estructura 'start' y 'end' para el degradado del body.
         background: {
-          start: '#0D1117', // Un azul muy oscuro, casi negro, para la parte superior
-          end: '#121b2e',   // Un azul cósmico profundo para la parte inferior
+          DEFAULT: '#121212', // Un gris oscuro como color de fondo base para elementos
+          start: '#0D1117',   // Azul muy oscuro para el inicio del degradado del body
+          end: '#121b2e',     // Azul cósmico profundo para el final del degradado del body
         },
-        surface: '#1A1C20', // Un gris cósmico para las tarjetas, como en la referencia
+        // --- FIN: CORRECCIÓN CRÍTICA ---
+
+        surface: '#1A1C20',
         
         text: {
-          primary: '#E6EDF3', // Un blanco ligeramente más suave
+          primary: '#E6EDF3',
           secondary: '#8B949E',
           terciary: '#484F58',
         },
         
-        // El azul del botón de la referencia es brillante y llamativo
         accent: {
-          DEFAULT: '#3B82F6', // azul-500
-          hover: '#2563EB',   // azul-600
+          DEFAULT: '#3B82F6',
+          hover: '#2563EB',
         },
 
         status: {
-            success: '#22C55E', // verde-500
-            warning: '#F59E0B', // ambar-500
-            danger: '#EF4444', // rojo-500
-            danger_hover: '#DC2626' // rojo-600
+            success: '#22C55E',
+            warning: '#F59E0B',
+            danger: '#EF4444',
+            danger_hover: '#DC2626'
         },
 
         border: '#30363D',
-        // --- FIN: NUEVA PALETA ---
       },
       
       boxShadow: {
