@@ -20,7 +20,7 @@ const MinerCard = ({ miner, onBuyClick, isOwned }) => {
 
       {/* --- Panel glass inferior --- */}
       <div 
-        className="absolute bottom-0 left-0 right-0 h-[72%] px-5 py-4 flex flex-col justify-between 
+        className="absolute bottom-0 left-0 right-0 h-[65%] px-5 py-4 flex flex-col justify-between 
                    bg-black/50 backdrop-blur-md rounded-t-xl border-t border-white/10"
       >
         {/* --- Información del minero --- */}
