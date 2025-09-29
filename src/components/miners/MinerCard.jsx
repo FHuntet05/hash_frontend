@@ -1,4 +1,6 @@
-// RUTA: frontend/src/components/factories/MinerCard.jsx
+
+
+// RUTA: frontend/src/components/factories/MinerCard.jsx (v4.6 - "QUANTUM LEAP": TÍTULO RESPONSIVE CON ETIQUETA ADYACENTE)
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,13 +27,20 @@ const MinerCard = ({ miner, onBuyClick, isOwned }) => {
       >
         {/* --- Información del minero --- */}
         <div>
-          <h3 className="text-xl font-bold text-white shadow-text truncate">{miner.name}</h3> 
 
-          {isOwned && (
-            <span className="text-xs font-semibold text-blue-300 bg-blue-500/20 px-2.5 py-1 rounded-full mt-2 inline-block border border-blue-400/30">  {t('minerCard.owned', 'Adquirida')}
-            
-            </span>
-          )}
+          {/* --- INICIO DE MODIFICACIÓN CRÍTICA: Título y Etiqueta en un contenedor Flex --- */}
+          <div className="flex items-center gap-2">
+            <h3 className="text-xl font-bold text-white shadow-text flex-1 min-w-0 truncate">
+              {miner.name}
+            </h3> 
+
+            {isOwned && (
+              <span className="text-xs font-semibold text-blue-300 bg-blue-500/20 px-2.5 py-1 rounded-full inline-block border border-blue-400/30 flex-shrink-0">
+                {t('minerCard.owned', 'Adquirida')}
+              </span>
+            )}
+          </div>
+          {/* --- FIN DE MODIFICACIÓN CRÍTICA --- */}
 
           <hr className="border-white/10 my-3" />
 
@@ -76,3 +85,4 @@ const MinerCard = ({ miner, onBuyClick, isOwned }) => {
 };
 
 export default MinerCard;
+
