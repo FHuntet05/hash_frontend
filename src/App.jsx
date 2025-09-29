@@ -70,7 +70,7 @@ function App() {
   }, [i18n.language]);
 
   return (
-    // --- INICIO DE SOLUCIÓN DE FONDO AGRESIVA ---
+    // --- INICIO DE SOLUCIÓN DE FONDO AGESIVA ---
     // Se aplica el degradado y el color de texto por defecto directamente al contenedor raíz.
     // Esto garantiza que el estilo se aplique correctamente sin conflictos.
    <div className="bg-gradient-to-b from-background-start via-background-mid to-background-end text-text-primary min-h-screen">
