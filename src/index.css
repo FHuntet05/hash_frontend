@@ -1,42 +1,17 @@
 /* --- START OF FILE index.css --- */
-
-/* RUTA: frontend/src/index.css (v2.1 - CORRECCIÓN DEFINITIVA DE FONDO DEGRADADO) */
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* --- INICIO DE CORRECCIÓN CRÍTICA --- */
-/* Todas las reglas para el 'body' se han consolidado aquí para evitar conflictos. */
 @layer base {
   body {
-    /* 1. Se aplica el fondo degradado como la única regla de fondo. */
     @apply bg-gradient-to-b from-background-start to-background-end text-text-primary;
-    
-    /* 2. Se mantienen las reglas de tipografía y suavizado de fuentes. */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 }
-/* --- FIN DE CORRECCIÓN CRÍTICA --- */
-
-
-/* --- La utilidad para la barra de desplazamiento se mantiene sin cambios --- */
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
-
-/* 
-  Se ha eliminado la clase .fan-blades y su animación 'spin' para
-  cumplir con el requerimiento de cambiar las animaciones.
-  Las animaciones futuras se definirán según sea necesario.
-*/
-
 /* --- END OF FILE index.css --- */
