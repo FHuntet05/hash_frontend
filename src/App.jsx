@@ -1,4 +1,6 @@
-// RUTA: frontend/src/App.jsx (v3.1 - CORRECCIÓN DE BUCLE DE REDIRECCIÓN ADMIN)
+// --- START OF FILE App.jsx ---
+
+// RUTA: frontend/src/App.jsx (v3.2 - "QUANTUM LEAP": RUTA DE TAREAS Y SOLUCIÓN DE FONDO - VERSIÓN COMPLETA)
 
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -6,14 +8,15 @@ import useUserStore from './store/userStore';
 import { useTranslation } from 'react-i18next';
 import { useTelegram } from './hooks/useTelegram';
 
-// --- IMPORTS (SIN CAMBIOS) ---
+// --- IMPORTS (CON CAMBIOS) ---
 import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminProtectedRoute from './components/layout/AdminProtectedRoute';
 import Loader from './components/common/Loader';
 import MaintenanceScreen from './components/MaintenanceScreen';
 import HomePage from './pages/HomePage';
-import RankingPage from './pages/RankingPage';
+// import RankingPage from './pages/RankingPage'; // COMENTADO: Se reemplaza por TasksPage
+import TasksPage from './pages/TasksPage'; // NUEVA IMPORTACIÓN: La página de tareas
 import MinersPage from './pages/MinersPage';
 import TeamPage from './pages/TeamPage';
 import ProfilePage from './pages/ProfilePage';
@@ -52,8 +55,8 @@ const AppInitializer = () => {
 const UserGatekeeper = ({ children }) => { 
   const { isAuthenticated, isLoadingAuth, isMaintenanceMode, maintenanceMessage } = useUserStore();
   if (isMaintenanceMode) return <MaintenanceScreen message={maintenanceMessage} />;
-  if (isLoadingAuth) return ( <div className="w-full h-screen flex items-center justify-center bg-background"><Loader text="Autenticando..." /></div> ); 
-  if (!isAuthenticated) return ( <div className="w-full h-screen flex items-center justify-center p-4 bg-background text-text-secondary text-center">Error de autenticación.<br/>Por favor, reinicia la app desde Telegram.</div> ); 
+  if (isLoadingAuth) return ( <div className="w-full h-screen flex items-center justify-center"><Loader text="Autenticando..." /></div> ); 
+  if (!isAuthenticated) return ( <div className="w-full h-screen flex items-center justify-center p-4 text-center">Error de autenticación.<br/>Por favor, reinicia la app desde Telegram.</div> ); 
   return children; 
 };
 
@@ -67,67 +70,71 @@ function App() {
   }, [i18n.language]);
 
   return (
-    <Router>
-      <Routes>
-        {isTelegramWebApp ? (
-          <Route path="/*" element={
+    // --- INICIO DE SOLUCIÓN DE FONDO AGRESIVA ---
+    // Se aplica el degradado y el color de texto por defecto directamente al contenedor raíz.
+    // Esto garantiza que el estilo se aplique correctamente sin conflictos.
+    <div className="bg-gradient-to-b from-background-start to-background-end text-text-primary min-h-screen">
+      <Router>
+        <Routes>
+          {isTelegramWebApp ? (
+            <Route path="/*" element={
+              <>
+                <AppInitializer />
+                <UserGatekeeper>
+                  <Routes>
+                    <Route path="/" element={<Navigate to="/home" replace />} />
+                    <Route element={<Layout />}>
+                      <Route path="/home" element={<HomePage />} />
+                      <Route path="/market" element={<MinersPage />} />
+                      <Route path="/team" element={<TeamPage />} />
+                      <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/history" element={<FinancialHistoryPage />} />
+                      {/* --- INICIO DE ACTUALIZACIÓN DE RUTA --- */}
+                      {/* <Route path="/ranking" element={<RankingPage />} /> */}
+                      {/* La ruta /ranking ahora renderiza el nuevo componente TasksPage */}
+                      <Route path="/ranking" element={<TasksPage />} />
+                      {/* --- FIN DE ACTUALIZACIÓN DE RUTA --- */}
+                    </Route>
+                    <Route path="/language" element={<LanguagePage />} />
+                    <Route path="/faq" element={<FaqPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/support" element={<SupportPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Routes>
+                </UserGatekeeper>
+              </>
+            } />
+          ) : (
             <>
-              <AppInitializer />
-              <UserGatekeeper>
-                <Routes>
-                  <Route path="/" element={<Navigate to="/home" replace />} />
-                  <Route element={<Layout />}>
-                    <Route path="/home" element={<HomePage />} />
-                    <Route path="/market" element={<MinersPage />} />
-                    <Route path="/team" element={<TeamPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/history" element={<FinancialHistoryPage />} />
-                    <Route path="/ranking" element={<RankingPage />} /> 
-                  </Route>
-                  <Route path="/language" element={<LanguagePage />} />
-                  <Route path="/faq" element={<FaqPage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/support" element={<SupportPage />} />
-                  <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-              </UserGatekeeper>
-            </>
-          } />
-        ) : (
-          <>
-            {/* --- INICIO DE LA CORRECCIÓN CRÍTICA --- */}
-            {/* La ruta de Login ahora está fuera y es la primera en ser evaluada. */}
-            <Route path="/admin/login" element={<AdminLoginPage />} />
-            
-            {/* AdminProtectedRoute ahora envuelve un grupo específico de rutas. */}
-            <Route element={<AdminProtectedRoute />}>
-              <Route element={<AdminLayout />}>
-                <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-                <Route path="/admin/users" element={<AdminUsersPage />} />
-                <Route path="/admin/users/:id/details" element={<AdminUserDetailPage />} />
-                <Route path="/admin/transactions" element={<AdminTransactionsPage />} />
-                <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
-                <Route path="/admin/miners" element={<AdminMinersPage />} /> 
-                <Route path="/admin/security" element={<AdminSecurityPage />} />
-                <Route path="/admin/settings" element={<AdminSettingsPage />} />
-                <Route path="/admin/treasury" element={<AdminTreasuryPage />} />
-                <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
-                <Route path="/admin/sweep-control" element={<SweepControlPage />} />
-                <Route path="/admin/gas-dispenser" element={<GasDispenserPage />} />
-                <Route path="/admin/blockchain-monitor" element={<AdminBlockchainMonitorPage />} />
-                 {/* Una redirección para la raíz de /admin */}
-                <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route element={<AdminProtectedRoute />}>
+                <Route element={<AdminLayout />}>
+                  <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+                  <Route path="/admin/users" element={<AdminUsersPage />} />
+                  <Route path="/admin/users/:id/details" element={<AdminUserDetailPage />} />
+                  <Route path="/admin/transactions" element={<AdminTransactionsPage />} />
+                  <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
+                  <Route path="/admin/miners" element={<AdminMinersPage />} /> 
+                  <Route path="/admin/security" element={<AdminSecurityPage />} />
+                  <Route path="/admin/settings" element={<AdminSettingsPage />} />
+                  <Route path="/admin/treasury" element={<AdminTreasuryPage />} />
+                  <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
+                  <Route path="/admin/sweep-control" element={<SweepControlPage />} />
+                  <Route path="/admin/gas-dispenser" element={<GasDispenserPage />} />
+                  <Route path="/admin/blockchain-monitor" element={<AdminBlockchainMonitorPage />} />
+                  <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+                </Route>
               </Route>
-            </Route>
-
-            {/* Redirección por defecto: si no es una ruta de admin válida, va al login */}
-            <Route path="*" element={<Navigate to="/admin/login" replace />} />
-            {/* --- FIN DE LA CORRECCIÓN CRÍTICA --- */}
-          </>
-        )}
-      </Routes>
-    </Router>
+              <Route path="*" element={<Navigate to="/admin/login" replace />} />
+            </>
+          )}
+        </Routes>
+      </Router>
+    </div>
+    // --- FIN DE SOLUCIÓN DE FONDO AGRESIVA ---
   );
 }
 
 export default App;
+
+// --- END OF FILE App.jsx ---

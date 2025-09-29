@@ -1,6 +1,6 @@
 // --- START OF FILE HomePage.jsx ---
 
-// RUTA: frontend/src/pages/HomePage.jsx (v4.1 - "QUANTUM LEAP": INTEGRACIÓN DE BALANCE OVERVIEW)
+// RUTA: frontend/src/pages/HomePage.jsx (v4.2 - "QUANTUM LEAP": TASK CENTER ELIMINADO)
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import HomeBalanceOverview from '../components/home/HomeBalanceOverview';
 import WithdrawalModal from '../components/modals/WithdrawalModal';
 import PurchasedMinerItem from '../components/miners/PurchasedMinerItem';
-import TaskCenter from '../components/home/TaskCenter';
 import Loader from '../components/common/Loader';
 
 const MinerAnimation = () => {
@@ -20,20 +19,8 @@ const MinerAnimation = () => {
     const [isVideoLoading, setVideoLoading] = React.useState(true);
     return (
         <div className="relative w-full max-w-sm mx-auto aspect-square rounded-3xl overflow-hidden bg-black/20 border border-border shadow-medium">
-            {isVideoLoading && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <Loader text={t('homePage.loadingAnimation', 'Cargando animación...')} />
-                </div>
-            )}
-            <video
-                src="/animations/mineranimated.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                onLoadedData={() => setVideoLoading(false)}
-                className={`w-full h-full object-cover transition-opacity duration-500 ${isVideoLoading ? 'opacity-0' : 'opacity-100'}`}
-            />
+            {isVideoLoading && <div className="absolute inset-0 flex items-center justify-center"><Loader text={t('homePage.loadingAnimation', 'Cargando animación...')} /></div>}
+            <video src="/animations/mineranimated.mp4" autoPlay loop muted playsInline onLoadedData={() => setVideoLoading(false)} className={`w-full h-full object-cover transition-opacity duration-500 ${isVideoLoading ? 'opacity-0' : 'opacity-100'}`} />
         </div>
     );
 };
@@ -42,7 +29,6 @@ const HomePage = () => {
     const { t } = useTranslation();
     const user = useUserStore(state => state.user);
     const setUser = useUserStore(state => state.setUser);
-    
     const [isWithdrawalModalOpen, setWithdrawalModalOpen] = useState(false);
 
     const handleClaim = async (purchasedMinerId) => {
@@ -64,27 +50,14 @@ const HomePage = () => {
     
     return (
         <>
-            <motion.div 
-                className="flex flex-col gap-6 p-4 pt-6 pb-28"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-            >
+            <motion.div className="flex flex-col gap-6 p-4 pt-6 pb-28" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                 <MinerAnimation />
-                
                 <HomeBalanceOverview onWithdrawClick={() => setWithdrawalModalOpen(true)} />
-
                 <div>
                     <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.myMiners', 'Mis Mineros')}</h2>
                     {purchasedMiners.length > 0 ? (
                         <div className="space-y-4">
-                            {purchasedMiners.map(pm => (
-                                <PurchasedMinerItem 
-                                    key={pm._id} 
-                                    purchasedMiner={pm}
-                                    onClaim={handleClaim}
-                                />
-                            ))}
+                            {purchasedMiners.map(pm => <PurchasedMinerItem key={pm._id} purchasedMiner={pm} onClaim={handleClaim} />)}
                         </div>
                     ) : (
                         <div className="bg-surface/50 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-border shadow-medium">
@@ -93,17 +66,10 @@ const HomePage = () => {
                         </div>
                     )}
                 </div>
-
-                 <div>
-                    <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.tasks', 'Tareas')}</h2>
-                    <TaskCenter />
-                </div>
+                {/* --- SECCIÓN DE TAREAS ELIMINADA DE AQUÍ --- */}
             </motion.div>
-            
             <AnimatePresence>
-                {isWithdrawalModalOpen && (
-                    <WithdrawalModal onClose={() => setWithdrawalModalOpen(false)} />
-                )}
+                {isWithdrawalModalOpen && <WithdrawalModal onClose={() => setWithdrawalModalOpen(false)} />}
             </AnimatePresence>
         </>
     );

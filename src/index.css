@@ -1,17 +1,22 @@
 /* --- START OF FILE index.css --- */
+
+/* RUTA: frontend/src/index.css (v2.2 - SOLUCIÓN DE FONDO AGRESIVA: SIMPLIFICADO) */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@layer base {
-  body {
-    @apply bg-gradient-to-b from-background-start to-background-end text-text-primary;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+
+/* Se elimina la declaración @layer base para 'body'. El fondo se aplicará directamente en App.jsx */
+body {
+  /* Se mantienen solo las reglas de tipografía y suavizado. */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
+
 /* --- END OF FILE index.css --- */

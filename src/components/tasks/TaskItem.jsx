@@ -1,88 +1,64 @@
-// RUTA: frontend/src/components/tasks/TaskItem.jsx (v2.0 - Backend-Driven)
+// --- START OF FILE TaskItem.jsx ---
+
+// RUTA: frontend/src/components/tasks/TaskItem.jsx (v3.0 - "QUANTUM LEAP": REDISEÑO COMPLETO)
 
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { HiCheckCircle, HiGift, HiUsers, HiWrenchScrewdriver, HiArrowTopRightOnSquare, HiPaperAirplane } from 'react-icons/hi2';
+import { HiCheckCircle, HiGift, HiUsers, HiLockClosed } from 'react-icons/hi2';
 
-const ICONS = {
-    FIRST_PURCHASE: <HiWrenchScrewdriver />,
-    INVITE_3: <HiUsers />,
-    INVITE_5: <HiUsers />,
-    INVITE_10: <HiUsers />,
-    INVITE_20: <HiUsers />,
-    TELEGRAM_VISIT: <HiPaperAirplane />,
-};
-
-const TaskItem = ({ task, onGoToTask, onClaim }) => {
+const TaskItem = ({ task, onClaim }) => {
     const { t } = useTranslation();
     const { taskId, title, description, reward, status, progress, target } = task;
+
+    const isInviteTask = taskId.startsWith('INVITE_');
+    const percentage = target > 0 ? Math.min(100, (progress / target) * 100) : 0;
 
     const renderButton = () => {
         switch (status) {
             case 'CLAIMED':
-                return (
-                    <div className="bg-status-success/10 text-status-success text-sm font-semibold px-3 py-1.5 rounded-lg flex items-center gap-2">
-                        <HiCheckCircle /> {t('tasks.claimed', 'Reclamado')}
-                    </div>
-                );
+                return <div className="bg-status-success/10 text-status-success text-sm font-semibold px-3 py-1.5 rounded-lg flex items-center gap-2"><HiCheckCircle /> {t('tasks.claimed', 'Reclamado')}</div>;
             case 'COMPLETED_NOT_CLAIMED':
-                // Para Telegram, el botón "Ir" se encarga de todo. Para otros, es "Reclamar".
-                if (taskId === 'TELEGRAM_VISIT') {
-                     return (
-                        <motion.button
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => onGoToTask(task)}
-                            className="bg-accent-primary text-white text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-accent-primary-hover flex items-center gap-2"
-                        >
-                            {t('tasks.go', 'Ir')} <HiArrowTopRightOnSquare/>
-                        </motion.button>
-                    );
-                }
-                return (
-                    <motion.button
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => onClaim(taskId)}
-                        className="bg-accent-secondary text-white text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-accent-secondary-hover animate-pulse"
-                    >
-                        {t('tasks.claim', 'Reclamar')}
-                    </motion.button>
-                );
+                return <motion.button whileTap={{ scale: 0.95 }} onClick={() => onClaim(taskId)} className="bg-accent text-white text-sm font-bold px-4 py-1.5 rounded-lg hover:bg-accent-hover animate-pulse shadow-lg shadow-accent/20">{t('tasks.claim', 'Reclamar')}</motion.button>;
+            case 'LOCKED':
+                return <div className="bg-background-start text-text-secondary text-sm font-semibold px-3 py-1.5 rounded-lg flex items-center gap-2 border border-border"><HiLockClosed /> {t('tasks.locked', 'Bloqueado')}</div>;
             case 'PENDING':
             default:
-                const progressText = (typeof progress === 'number' && typeof target === 'number') 
-                    ? `(${progress}/${target})` 
-                    : '';
-                return (
-                    <button disabled className="bg-black/10 text-text-secondary text-sm font-semibold px-4 py-1.5 rounded-lg cursor-not-allowed">
-                        {t('tasks.pending', 'Pendiente')} {progressText}
-                    </button>
-                );
+                return <button disabled className="bg-surface text-text-secondary text-sm font-semibold px-4 py-1.5 rounded-lg cursor-not-allowed border border-border">{t('tasks.pending', 'En Progreso')}</button>;
         }
     };
 
     return (
-        <motion.div 
-            className="bg-card/70 backdrop-blur-md rounded-2xl p-3 border border-white/20 shadow-subtle flex flex-col space-y-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-        >
-            <div className="flex justify-between items-start">
-                <div className="flex items-center gap-3">
-                  <div className="bg-background/50 p-2.5 rounded-full text-accent-primary text-lg">
-                    {ICONS[taskId] || <HiGift />}
-                  </div>
+        <motion.div className="bg-surface rounded-2xl p-4 border border-border flex flex-col space-y-4 shadow-subtle" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="flex justify-between items-start gap-3">
+                <div className="flex items-center gap-4">
+                  <div className="bg-background-start p-3 rounded-full text-accent text-2xl border border-border"><HiUsers /></div>
                   <div>
-                    <h3 className="font-semibold text-text-primary pr-4">{title}</h3>
+                    <h3 className="font-bold text-text-primary">{title}</h3>
                     <p className="text-xs text-text-secondary">{description}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 text-amber-500 font-bold flex-shrink-0">
+                <div className="flex items-center gap-1.5 text-amber-400 font-bold flex-shrink-0 bg-amber-500/10 px-2 py-1 rounded-full border border-amber-500/20">
                     <HiGift />
-                    <span>+{reward.toFixed(2)}</span>
+                    {/* --- INICIO DE MODIFICACIÓN CRÍTICA: Formato de 3 decimales --- */}
+                    <span>+{reward.toFixed(3)}</span>
+                    {/* --- FIN DE MODIFICACIÓN CRÍTICA --- */}
                 </div>
             </div>
-            <div className="flex justify-end items-center pt-2 border-t border-border/50">
+            
+            {isInviteTask && status !== 'CLAIMED' && (
+                <div className="space-y-1.5">
+                    <div className="flex justify-between text-xs font-mono">
+                        <span className="text-text-secondary">{t('tasks.progress', 'Progreso')}</span>
+                        <span className="text-text-primary">{progress} / {target}</span>
+                    </div>
+                    <div className="w-full bg-background-start rounded-full h-2 border border-border overflow-hidden">
+                        <div className="bg-accent h-full rounded-full transition-all duration-500" style={{ width: `${percentage}%` }} />
+                    </div>
+                </div>
+            )}
+            
+            <div className="flex justify-end items-center pt-3 border-t border-border/50">
                 {renderButton()}
             </div>
         </motion.div>
@@ -90,3 +66,5 @@ const TaskItem = ({ task, onGoToTask, onClaim }) => {
 };
 
 export default TaskItem;
+
+// --- END OF FILE TaskItem.jsx ---
