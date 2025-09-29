@@ -30,7 +30,8 @@ const Layout = () => {
   }
 
   return (
-    <div className="h-screen w-screen flex justify-center bg-black">
+   <div className="h-screen w-screen flex justify-center bg-gradient-to-b from-background-start via-background-mid to-background-end">
+
       <div 
         ref={dragContainerRef} 
         className="h-full w-full max-w-lg relative font-sans bg-background text-text-primary"
