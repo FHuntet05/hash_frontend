@@ -28,8 +28,8 @@ const MinerCard = ({ miner, onBuyClick, isOwned }) => {
           <h3 className="text-xl font-bold text-white shadow-text truncate">{miner.name}</h3> 
 
           {isOwned && (
-            <span className="text-xs font-semibold text-blue-300 bg-blue-500/20 px-2.5 py-1 rounded-full mt-2 inline-block border border-blue-400/30">
-              {t('minerCard.owned', 'Adquirida')}
+            <span className="text-xs font-semibold text-blue-300 bg-blue-500/20 px-2.5 py-1 rounded-full mt-2 inline-block border border-blue-400/30">  {t('minerCard.owned', 'Adquirida')}
+            
             </span>
           )}
 
