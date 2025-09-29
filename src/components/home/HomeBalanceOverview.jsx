@@ -1,11 +1,14 @@
 // --- START OF FILE HomeBalanceOverview.jsx ---
 
-// RUTA: frontend/src/components/home/HomeBalanceOverview.jsx (v2.0 - DISEÑO DE REFERENCIA FINAL)
+// RUTA: frontend/src/components/home/HomeBalanceOverview.jsx (v2.1 - CORRECCIÓN DE IMPORTACIÓN)
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import useUserStore from '../../store/userStore';
-import { HiOutlineArrowUpOnSquare } from 'react-iicons/hi2';
+// --- INICIO DE CORRECCIÓN CRÍTICA ---
+// Se corrige el error de tipeo en la importación de 'react-icons'.
+import { HiOutlineArrowUpOnSquare } from 'react-icons/hi2'; 
+// --- FIN DE CORRECCIÓN CRÍTICA ---
 import toast from 'react-hot-toast';
 
 const HomeBalanceOverview = ({ onWithdrawClick }) => {
@@ -27,7 +30,6 @@ const HomeBalanceOverview = ({ onWithdrawClick }) => {
   };
 
   return (
-    // Se utiliza el color 'surface' para la tarjeta, que ahora es un gris oscuro.
     <div className="bg-surface rounded-2xl p-5 border border-border flex flex-col gap-4 shadow-medium">
       <div className="text-center">
         <span className="text-sm text-text-secondary">{t('homePage.balanceOverview.currentBalance', 'Saldo Actual')}</span>
