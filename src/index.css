@@ -13,7 +13,12 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+@layer base {
+  body {
+    /* Aplicamos el degradado de fondo usando los colores que definimos en Tailwind */
+    @apply bg-gradient-to-b from-background-start to-background-end text-text-primary;
+  }
+  }
 /* --- La utilidad para la barra de desplazamiento se mantiene --- */
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
