@@ -1,6 +1,6 @@
 // --- START OF FILE App.jsx ---
 
-// RUTA: frontend/src/App.jsx (v3.2 - "QUANTUM LEAP": RUTA DE TAREAS Y SOLUCIÓN DE FONDO - VERSIÓN COMPLETA)
+// RUTA: frontend/src/App.jsx (v3.3 - SOLUCIÓN DE FONDO SÓLIDO DEFINITIVA - VERSIÓN COMPLETA)
 
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -8,15 +8,13 @@ import useUserStore from './store/userStore';
 import { useTranslation } from 'react-i18next';
 import { useTelegram } from './hooks/useTelegram';
 
-// --- IMPORTS (CON CAMBIOS) ---
 import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminProtectedRoute from './components/layout/AdminProtectedRoute';
 import Loader from './components/common/Loader';
 import MaintenanceScreen from './components/MaintenanceScreen';
 import HomePage from './pages/HomePage';
-// import RankingPage from './pages/RankingPage'; // COMENTADO: Se reemplaza por TasksPage
-import TasksPage from './pages/TasksPage'; // NUEVA IMPORTACIÓN: La página de tareas
+import TasksPage from './pages/TasksPage';
 import MinersPage from './pages/MinersPage';
 import TeamPage from './pages/TeamPage';
 import ProfilePage from './pages/ProfilePage';
@@ -40,7 +38,6 @@ import SweepControlPage from './pages/admin/SweepControlPage';
 import GasDispenserPage from './pages/admin/GasDispenserPage';
 import AdminNotificationsPage from './pages/admin/AdminNotificationsPage';
 import AdminBlockchainMonitorPage from './pages/admin/AdminBlockchainMonitorPage';
-
 
 const AppInitializer = () => {
     const { isAuthenticated, syncUserWithBackend } = useUserStore();
@@ -70,11 +67,7 @@ function App() {
   }, [i18n.language]);
 
   return (
-    // --- INICIO DE SOLUCIÓN DE FONDO AGESIVA ---
-    // Se aplica el degradado y el color de texto por defecto directamente al contenedor raíz.
-    // Esto garantiza que el estilo se aplique correctamente sin conflictos.
-   <div className="bg-gradient-to-b from-background-start via-background-mid to-background-end text-text-primary min-h-screen">
-
+    <div className="bg-background text-text-primary min-h-screen">
       <Router>
         <Routes>
           {isTelegramWebApp ? (
@@ -90,11 +83,7 @@ function App() {
                       <Route path="/team" element={<TeamPage />} />
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/history" element={<FinancialHistoryPage />} />
-                      {/* --- INICIO DE ACTUALIZACIÓN DE RUTA --- */}
-                      {/* <Route path="/ranking" element={<RankingPage />} /> */}
-                      {/* La ruta /ranking ahora renderiza el nuevo componente TasksPage */}
                       <Route path="/ranking" element={<TasksPage />} />
-                      {/* --- FIN DE ACTUALIZACIÓN DE RUTA --- */}
                     </Route>
                     <Route path="/language" element={<LanguagePage />} />
                     <Route path="/faq" element={<FaqPage />} />
@@ -132,7 +121,6 @@ function App() {
         </Routes>
       </Router>
     </div>
-    // --- FIN DE SOLUCIÓN DE FONDO AGRESIVA ---
   );
 }
 
