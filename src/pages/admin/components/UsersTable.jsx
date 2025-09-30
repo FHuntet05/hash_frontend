@@ -26,7 +26,7 @@ const UsersTable = ({ users, onEdit, onStatusChange, onAdjustBalance }) => {
             <tr key={user._id} className={`hover:bg-dark-tertiary ${user.status === 'banned' ? 'bg-red-900/20' : ''}`}>
               <th scope="row" className="px-6 py-4 font-medium text-white whitespace-nowrap">
                 <Link to={`/admin/users/${user._id}/details`} className="flex items-center gap-3 group">
-                  <img className={`w-8 h-8 rounded-full object-cover ${user.status === 'banned' ? 'grayscale' : ''}`} src={user.photoUrl || '/assets/images/user-avatar-placeholder.png'} alt={`${user.username} avatar`} />
+                  <img className={`w-8 h-8 rounded-full object-cover ${user.status === 'banned' ? 'grayscale' : ''}`} src={user.photoUrl || '/assets/images/placeholder.png'} alt={`${user.username} avatar`} />
                   <div>
                     <div className="group-hover:text-accent-start transition-colors">{user.username || 'N/A'}</div>
                     <div className="text-xs text-text-secondary">ID: {user.telegramId}</div>

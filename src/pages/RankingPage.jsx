@@ -22,7 +22,7 @@ const RankingItem = ({ rank, user, score }) => {
                 #{rank}
             </div>
             <img 
-                src={user.photoUrl || '/assets/images/user-avatar-placeholder.png'} 
+                src={user.photoUrl || '/assets/images/placeholder.png'} 
                 alt={user.username} 
                 className="w-10 h-10 rounded-full object-cover mx-2 border-2 border-card"
             />

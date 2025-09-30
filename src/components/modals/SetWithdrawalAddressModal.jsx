@@ -105,7 +105,7 @@ const SetWithdrawalAddressModal = ({ onClose }) => {
         
         <footer className="flex-shrink-0 p-6 pt-0">
             <div className="text-xs text-center text-text-secondary">
-              <p>{t('setWithdrawalAddressModal.notice', 'Asegúrate de que la dirección sea correcta y pertenezca a la red BEP20 o TRC20.')}</p>
+              <p>{t('setWithdrawalAddressModal.notice', 'Asegúrate de que la dirección sea correcta y pertenezca a la red BEP20.')}</p>
             </div>
         </footer>
       </motion.div>

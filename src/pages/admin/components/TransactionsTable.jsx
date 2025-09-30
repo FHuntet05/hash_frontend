@@ -48,7 +48,7 @@ const TransactionsTable = ({ transactions }) => {
               <td className="px-6 py-4">
                 {tx.user ? (
                   <div className="flex items-center gap-3">
-                    <img className="w-8 h-8 rounded-full object-cover" src={tx.user.photoUrl || '/assets/images/user-avatar-placeholder.png'} alt={`${tx.user.username} avatar`} />
+                    <img className="w-8 h-8 rounded-full object-cover" src={tx.user.photoUrl || '/assets/images/placeholder.png'} alt={`${tx.user.username} avatar`} />
                     <span>{tx.user.username}</span>
                   </div>
                 ) : (

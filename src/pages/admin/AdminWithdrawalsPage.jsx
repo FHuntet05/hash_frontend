@@ -55,7 +55,7 @@ const WithdrawalsTable = ({ withdrawals, onProcess, processingId }) => {
             <tr key={tx._id} className="border-b border-dark-primary hover:bg-white/5">
               <td className="px-6 py-4">
                 <div className="flex items-center gap-3">
-                  <img className="w-8 h-8 rounded-full" src={tx.user?.photoUrl || '/assets/images/user-avatar-placeholder.png'} alt="avatar" />
+                  <img className="w-8 h-8 rounded-full" src={tx.user?.photoUrl || '/assets/images/placeholder.png'} alt="avatar" />
                   <span>{tx.user?.username || 'Usuario no encontrado'}</span>
                 </div>
               </td>
