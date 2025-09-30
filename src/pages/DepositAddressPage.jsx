@@ -1,13 +1,13 @@
 // --- START OF FILE DepositAddressPage.jsx ---
 
-// RUTA: frontend/src/pages/DepositAddressPage.jsx (NUEVA PÁGINA)
+// RUTA: frontend/src/pages/DepositAddressPage.jsx (v2.0 - LÓGICA COMPLETA Y MENSAJES CONTEXTUALES)
 
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { QRCodeSVG } from 'qrcode.react';
 import toast from 'react-hot-toast';
-import { HiArrowLeft, HiOutlineClipboardDocument } from 'react-icons/hi2';
+import { HiArrowLeft, HiOutlineClipboardDocument, HiOutlineInformationCircle } from 'react-icons/hi2';
 
 import api from '../api/axiosConfig';
 import Loader from '../components/common/Loader';
@@ -31,16 +31,20 @@ const DepositAddressPage = () => {
 
     const generateAddress = async () => {
       try {
-        // Lógica adaptada del modal original
-        const isDynamic = network.network.includes('BEP20') && network.name === 'USDT';
-        if (isDynamic) {
+        if (network.type === 'dynamic') { // Solo USDT BEP20 es dinámico
           const response = await api.post('/wallet/create-deposit-address');
           setPaymentInfo(response.data);
-        } else {
-          const addressKey = 'USDT-TRC20'; // Simplificado, asumiendo TRC20 por ahora
+        } else { // El resto son estáticos
+          const addressKey = `${network.name.toUpperCase()}-${network.network.split(' ')[0]}`; // Crea claves como 'USDT-TRC20', 'BNB-BEP20'
           const staticAddress = STATIC_DEPOSIT_ADDRESSES[addressKey];
+          
           if (staticAddress) {
-            setPaymentInfo({ paymentAddress: staticAddress, currency: network.name, network: network.network });
+            setPaymentInfo({ 
+              paymentAddress: staticAddress, 
+              currency: network.name, 
+              network: network.network,
+              isStatic: true // Añadimos una bandera para mostrar el aviso
+            });
           } else {
             throw new Error(t('deposit.address.notConfigured', 'Dirección no configurada.'));
           }
@@ -62,20 +66,18 @@ const DepositAddressPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full">
-        <header className="flex-shrink-0 p-4 flex items-center">
+      <div className="flex flex-col h-full p-4 pt-6">
+        <header className="flex-shrink-0 flex items-center">
           <button onClick={() => navigate(-1)} className="p-2 mr-2"><HiArrowLeft className="w-6 h-6" /></button>
           <h1 className="text-xl font-bold">{t('deposit.address.generating', 'Generando Dirección...')}</h1>
         </header>
-        <div className="flex-grow flex items-center justify-center">
-          <Loader />
-        </div>
+        <div className="flex-grow flex items-center justify-center"><Loader /></div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full p-4 gap-6">
+    <div className="flex flex-col h-full p-4 pt-6 gap-6">
       <header className="flex-shrink-0 flex items-center">
         <button onClick={() => navigate(-1)} className="p-2 mr-2"><HiArrowLeft className="w-6 h-6" /></button>
         <h1 className="text-xl font-bold">{t('deposit.address.title', 'Depositar {{currency}}', { currency: paymentInfo.currency })}</h1>
@@ -87,12 +89,21 @@ const DepositAddressPage = () => {
         </div>
 
         <div className="w-full">
-          <p className="text-sm text-text-secondary mb-2">{t('deposit.address.sendOnly', 'Enviar solo {{currency}} ({{network}})', { currency: paymentInfo.currency, network: paymentInfo.network })}</p>
+          <p className="text-sm text-text-secondary mb-2">{t('deposit.address.sendOnly', 'Enviar solo {{currency}} a través de la red {{network}}', { currency: paymentInfo.currency, network: paymentInfo.network })}</p>
           <div className="bg-surface p-3 rounded-xl border border-border flex items-center justify-between gap-2">
             <p className="font-mono text-sm text-text-primary break-all flex-1 text-left">{paymentInfo.paymentAddress}</p>
             <button onClick={handleCopy} className="p-2 text-accent flex-shrink-0"><HiOutlineClipboardDocument className="w-6 h-6" /></button>
           </div>
         </div>
+
+        {/* --- INICIO DE MENSAJE CONDICIONAL --- */}
+        {paymentInfo.isStatic && (
+            <div className="w-full bg-amber-500/10 text-amber-400 text-xs rounded-lg p-3 flex items-start gap-2 border border-amber-500/20">
+                <HiOutlineInformationCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <p>{t('deposit.address.staticNotice', 'Las transferencias en esta red pueden tardar de 5 a 10 minutos en acreditarse después de ser confirmadas.')}</p>
+            </div>
+        )}
+        {/* --- FIN DE MENSAJE CONDICIONAL --- */}
       </main>
 
       <footer className="text-center text-xs text-text-secondary">
