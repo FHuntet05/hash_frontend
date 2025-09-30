@@ -1,19 +1,19 @@
 // --- START OF FILE tailwind.config.js ---
 
-// RUTA: frontend/tailwind.config.js (v7.1 - PRUEBA DE FONDO ROJO)
+// RUTA: frontend/tailwind.config.js (v7.2 - TEMA AZUL MARINO DEFINITIVO)
 
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        // --- INICIO DE CAMBIO DRÁSTICO PARA PRUEBA ---
-        // Se establece un rojo muy oscuro como fondo para verificar el cambio.
-        background: '#450a0a', // Esto es equivalente a 'red-950' en Tailwind
+        // --- INICIO DE PALETA AZUL MARINO DEFINITIVA ---
+        // Se establece el azul marino oscuro como color de fondo definitivo.
+        background: '#0D1117',
         
-        // El color 'surface' se mantiene oscuro para que los componentes resalten.
-        surface: '#1A1C20',
-        // --- FIN DE CAMBIO DRÁSTICO ---
+        // El color 'surface' para las tarjetas será un azul ligeramente más claro para crear contraste.
+        surface: '#161B22',
+        // --- FIN DE PALETA AZUL MARINO ---
 
         accent: {
           DEFAULT: '#3B82F6',

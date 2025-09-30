@@ -1,6 +1,6 @@
 // --- START OF FILE App.jsx ---
 
-// RUTA: frontend/src/App.jsx (v3.3 - SOLUCIÓN DE FONDO SÓLIDO DEFINITIVA - VERSIÓN COMPLETA)
+// RUTA: frontend/src/App.jsx (v3.3 - VERSIÓN COMPLETA PARA APLICAR EL NUEVO FONDO)
 
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -67,6 +67,7 @@ function App() {
   }, [i18n.language]);
 
   return (
+    // Esta clase ahora aplicará el nuevo color azul oscuro '#0D1117'
     <div className="bg-background text-text-primary min-h-screen">
       <Router>
         <Routes>
