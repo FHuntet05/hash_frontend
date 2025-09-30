@@ -1,49 +1,40 @@
+// --- START OF FILE ar.json ---
 {
   "nav": {
     "home": "الرئيسية",
-    "history": "السجل",
-    "factories": "المتجر",
+    "tasks": "المهام",
+    "market": "المتجر",
     "team": "الفريق",
     "profile": "ملفي"
   },
   "common": {
     "error": "حدث خطأ",
     "copied": "تم النسخ!",
-    "copyError": "تعذر النسخ",
     "continue": "متابعة",
     "loading": "جاري التحميل...",
     "close": "إغلاق",
-    "day": "يوم",
-    "loadingUser": "جاري تحميل بيانات المستخدم...",
-    "max": "الكل",
-    "processing": "جاري المعالجة...",
-    "saving": "جاري الحفظ..."
+    "loadingUser": "جاري تحميل بيانات المستخدم..."
   },
   "homePage": {
-    "mainBalance": "الرصيد الرئيسي",
-    "myFactories": "رقاقاتي",
-    "noFactories": "ليس لديك رقاقات نشطة.",
-    "goToStore": "قم بزيارة المتجر للحصول على رقاقتك الأولى وبدء الإنتاج.",
+    "myMiners": "عمال التعدين الخاص بي",
+    "noMiners": "ليس لديك عمال تعدين نشطون.",
+    "goToMarket": "قم بزيارة المتجر للبدء في الإنتاج.",
     "tasks": "المهام",
-    "loadingAnimation": "جاري تحميل الرسوم المتحركة...",
     "toasts": {
       "claiming": "جاري المطالبة بالإنتاج...",
-      "claimSuccess": "تمت المطالبة بالإنتاج!"
+      "claimSuccess": "تمت المطالبة بالإنتاج بنجاح!"
+    },
+    "balanceOverview": {
+      "currentBalance": "الرصيد الحالي",
+      "withdraw": "سحب"
     }
-  },
-  "activityTicker": {
-    "hasWithdrawn": "قام بسحب"
   },
   "profilePage": {
     "balanceUsdtLabel": "الرصيد الإجمالي",
-    "totalRecharged": "إجمالي الشحن",
-    "totalWithdrawn": "إجمالي السحب",
     "toasts": {
-      "insufficientBalance": "رصيد غير كافٍ. الحد الأدنى للسحب هو {{min}} USDT.",
-      "generatingAddress": "جاري إنشاء عنوانك...",
-      "addressGenerated": "تم إنشاء العنوان.",
       "walletNotSet": "يرجى حفظ محفظة السحب الخاصة بك أولاً.",
-      "passwordNotSet": "يرجى تعيين كلمة مرور السحب الخاصة بك أولاً."
+      "passwordNotSet": "يرجى تعيين كلمة مرور السحب الخاصة بك أولاً.",
+      "insufficientBalance": "رصيد غير كافٍ. الحد الأدنى للسحب هو {{min}} USDT."
     }
   },
   "profile": {
@@ -51,6 +42,7 @@
     "withdraw": "سحب",
     "records": "السجل",
     "saveWallet": "حفظ المحفظة",
+    "editWallet": "تعديل المحفظة",
     "invite": "الفريق",
     "setWithdrawalPassword": "إعداد كلمة مرور السحب",
     "changeWithdrawalPassword": "تغيير كلمة مرور السحب",
@@ -59,227 +51,76 @@
     "about": "عنا",
     "support": "الدعم",
     "logout": "تسجيل الخروج",
-    "mainActionsTitle": "الإجراءات الرئيسية",
-    "settingsTitle": "الإعدادات والمزيد"
-  },
-  "depositHistory": {
-    "title": "سجل الإيداعات",
-    "subtitle": "نشاط الإيداعات الأخير في المنصة.",
-    "userDeposited": "قام {{username}} بالإيداع"
-  },
-  "time": {
-    "yearsAgo": "منذ {{count}} سنوات",
-    "monthsAgo": "منذ {{count}} أشهر",
-    "daysAgo": "منذ {{count}} أيام",
-    "hoursAgo": "منذ {{count}} ساعات",
-    "minutesAgo": "منذ {{count}} دقائق",
-    "justNow": "الآن"
-  },
-  "factoriesPage": {
-    "title": "متجر الرقاقات",
-    "subtitle": "احصل على رقاقات جديدة لزيادة إنتاجك.",
-    "error": "تعذر تحميل الرقاقات.",
-    "noFactoriesAvailable": "لا توجد رقاقات متاحة في المتجر حاليًا."
-  },
-  "purchasedFactory": {
-    "nextClaim": "المطالبة التالية",
-    "lifespan": "العمر الافتراضي",
-    "production": "الإنتاج",
-    "dayCounter": "يوم {{dayNumber}} من {{totalDays}}",
-    "claim": "مطالبة",
-    "producing": "قيد العمل"
+    "financialsTitle": "المالية",
+    "accountTitle": "الحساب",
+    "supportTitle": "الدعم"
   },
   "minerCard": {
     "price": "السعر",
     "dailyProduction": "الإنتاج اليومي",
-    "daily": "الإنتاج اليومي",
     "duration": "المدة",
-    "lifespanSimple": "المدة",
     "days": "{{count}} أيام",
-    "buyButton": "شراء",
-    "buyNow": "استثمر الآن",
-    "owned": "تم الشراء"
-  },
-  "factoryPurchaseModal": {
-    "quantity": "الكمية:",
-    "totalCost": "التكلفة الإجمالية",
-    "yourBalance": "رصيدك",
     "buyNow": "شراء الآن",
-    "rechargeNow": "اشحن للشراء",
-    "toasts": {
-      "purchasing": "جاري معالجة الشراء...",
-      "purchaseSuccess": "تم الشراء بنجاح!",
-      "purchaseError": "خطأ في معالجة الشراء.",
-      "insufficientFunds": "رصيد غير كافٍ. يتم توجيهك للإيداع..."
-    }
+    "owned": "تمتلكها"
   },
-  "directDepositModal": {
-    "titleV2": "عنوان الإيداع الخاص بك",
-    "instructionV2": "أودع أي مبلغ من USDT إلى عنوانك الشخصي. سيتم إضافة الأموال تلقائيًا.",
-    "addressLabel": "عنوانك الفريد لـ {{currency}}",
-    "warningV2": "تأكد من إرسال الأموال عبر الشبكة الصحيحة: {{network}}."
+  "purchasedMiner": {
+    "claim": "مطالبة",
+    "claimCycle": "دورة المطالبة",
+    "lifespan": "العمر المتبقي",
+    "totalProduction": "إجمالي الإنتاج",
+    "expiresOn": "تنتهي في"
   },
-  "setWithdrawalPasswordModal": {
-    "title_set": "إعداد كلمة مرور السحب",
-    "title_change": "تغيير كلمة مرور السحب",
-    "intro_set": "سيتم استخدام كلمة المرور هذه لتفويض جميع عمليات السحب. احتفظ بها في مكان آمن.",
-    "intro_change": "أدخل كلمة المرور الحالية لتعيين كلمة مرور جديدة.",
-    "currentPassword_label": "كلمة المرور الحالية",
-    "newPassword_label": "كلمة المرور الجديدة (6 أحرف على الأقل)",
-    "confirmPassword_label": "تأكيد كلمة المرور الجديدة",
-    "saveButton": "حفظ كلمة المرور",
-    "toasts": {
-      "passwordsDontMatch": "كلمتا المرور الجديدتان غير متطابقتين.",
-      "saving": "جاري الحفظ...",
-      "saveSuccess": "تم حفظ كلمة المرور بنجاح.",
-      "saveError": "خطأ في حفظ كلمة المرور.",
-      "currentRequired": "كلمة المرور الحالية مطلوبة.",
-      "minLength": "يجب أن تتكون كلمة المرور الجديدة من 6 أحرف على الأقل.",
-      "noMatch": "كلمتا المرور الجديدتان غير متطابقتين."
-    }
+  "status": {
+    "mining": "قيد التعدين",
+    "readyToClaim": "جاهز للمطالبة",
+    "expired": "منتهية الصلاحية"
   },
-  "saveWalletModal": {
-    "titleEdit": "تحديث محفظة السحب",
-    "titleSet": "حفظ محفظة السحب",
-    "subtitle": "سيتم استخدام هذا العنوان لجميع عمليات السحب.",
-    "addressLabel": "عنوان المحفظة (USDT BEP20)",
-    "addressPlaceholder": "الصق عنوانك 0x...",
-    "passwordLabel": "التأكيد بكلمة مرور السحب",
-    "saveButton": "حفظ المحفظة",
-    "notice": "لأسباب أمنية، يتطلب أي تغيير في محفظة السحب تأكيد كلمة المرور.",
-    "toasts": {
-      "allFieldsRequired": "جميع الحقول مطلوبة.",
-      "invalidAddress": "صيغة عنوان المحفظة غير صالحة.",
-      "processing": "جاري حفظ المحفظة...",
-      "error": "خطأ في حفظ المحفظة."
-    }
+  "time": {
+    "days": "{{count}}ي",
+    "expired": "انتهت"
   },
-  "selectNetworkModal": {
-    "title": "اختر شبكة",
-    "subtitle": "اختر العملة والشبكة للإيداع.",
-    "processing": "جاري المعالجة...",
-    "addressNotConfigured": "العنوان لهذه الشبكة غير مُعد."
-  },
-  "withdrawalModal": {
-    "title": "طلب سحب",
-    "balance": "الرصيد المتاح:",
-    "addressLabelSaved": "السحب إلى المحفظة المحفوظة",
-    "amountLabel": "المبلغ المراد سحبه (USDT)",
-    "minPlaceholder": "الحد الأدنى {{minWithdrawal}} USDT",
-    "passwordLabel": "كلمة مرور السحب",
-    "fee": "العمولة ({{fee}}%):",
-    "youReceive": "سوف تستلم:",
-    "confirmButton": "تأكيد الطلب",
-    "passwordNotSetTitle": "إجراء مطلوب",
-    "passwordNotSetBody": "لأمانك، يجب عليك تعيين كلمة مرور للسحب قبل طلب الدفع.",
-    "goToSettingsButton": "إعداد كلمة المرور",
-    "notice": "تتم مراجعة طلبات السحب. قد يستغرق هذا بضع ساعات. يتم تطبيق العمولة على المبلغ المسحوب.",
-    "toasts": {
-      "allFieldsRequired": "جميع الحقول مطلوبة.",
-      "minAmount": "الحد الأدنى لمبلغ السحب هو {{minWithdrawal}} USDT.",
-      "insufficientBalance": "لا يمكنك سحب أكثر من رصيدك المتاح.",
-      "invalidAddress": "عنوان المحفظة غير صالح.",
-      "processing": "جاري إرسال الطلب...",
-      "error": "خطأ في إرسال الطلب."
-    }
-  },
-  "teamPage": {
-    "title": "ادعُ أصدقاءك",
-    "description": "شارك رابطك واكسب عمولات عن كل عضو في فريقك.",
-    "generatingLink": "جاري إنشاء الرابط...",
-    "toasts": {
-      "fetchError": "خطأ في تحميل بيانات الفريق",
-      "linkCopied": "تم نسخ رابط الدعوة!",
-      "linkError": "تعذر إنشاء رابط الدعوة."
-    },
-    "stats": {
-      "members": "الأصدقاء",
-      "commission": "الأرباح"
-    },
-    "levelsTitle": "مستويات الفريق",
-    "levelLabel": "المستوى {{level}}",
-    "levels": {
-      "totalMembers": "الأصدقاء",
-      "commission": "الأرباح"
-    },
-    "noLevelsData": "ليس لديك أي أعضاء في فريقك بعد. ابدأ بالدعوة!"
-  },
-  "faqPage": {
-    "title": "الأسئلة الشائعة",
-    "q1": "ما هو Hash Power Bot؟",
-    "a1": "Hash Power Bot هي منصة محاكاة اقتصادية حيث يمكنك الحصول على رقاقات افتراضية تولد دخلاً سلبياً بعملة USDT تلقائياً.",
-    "q2": "كيف أبدأ في الكسب؟",
-    "a2": "ببساطة، احصل على رقاقة من متجرنا. بمجرد شرائها، ستبدأ في إنتاج USDT كل 24 ساعة، والتي يمكنك المطالبة بها مباشرة إلى رصيدك الرئيسي.",
-    "q3": "كيف يمكنني سحب أرباحي؟",
-    "a3": "يمكنك طلب السحب من ملفك الشخصي. تأكد من أنك قمت بإعداد كلمة مرور السحب الخاصة بك وتلبية الحد الأدنى للمبلغ المطلوب.",
-    "q4": "هل الاستثمار هنا آمن؟",
-    "a4": "نحن نستخدم بروتوكولات الأمان القياسية لحماية حسابك وأموالك. ومع ذلك، كما هو الحال مع أي منصة دخل، يرجى المشاركة بمسؤولية."
+  "tasksPage": {
+    "title": "مركز المهام",
+    "description": "أكمل المهام لكسب مكافآت إضافية وتسريع تقدمك."
   },
   "tasks": {
     "claimed": "تمت المطالبة",
     "claim": "مطالبة",
-    "go": "اذهب",
-    "pending": "قيد الإنجاز",
-    "locked": "مقفل",
+    "pending": "قيد التقدم",
+    "locked": "مغلق",
+    "progress": "التقدم",
     "noTasks": "لا توجد مهام متاحة حاليًا.",
     "toasts": {
       "claimSuccess": "تمت المطالبة بالمكافأة!"
     },
-    "PURCHASE_1": {
-      "title": "رائد الرقاقات",
-      "description": "اشترِ رقاقتك الأولى."
+    "INVITE_1": { "title": "الخطوات الأولى", "description": "ادعُ صديقًا واحدًا إلى فريقك." },
+    "INVITE_2": { "title": "باني الشبكة", "description": "ادعُ 3 أصدقاء إلى فريقك." },
+    "INVITE_3": { "title": "قائد المجتمع", "description": "ادعُ 5 أصدقاء إلى فريقك." },
+    "INVITE_4": { "title": "الموصل الاجتماعي", "description": "ادعُ 10 أصدقاء إلى فريقك." },
+    "INVITE_5": { "title": "المؤثر", "description": "ادعُ 20 صديقًا إلى فريقك." },
+    "INVITE_6": { "title": "السفير", "description": "ادعُ 50 صديقًا إلى فريقك." },
+    "INVITE_7": { "title": "الشريك الفضي", "description": "ادعُ 100 صديق إلى فريقك." },
+    "INVITE_8": { "title": "الشريك الذهبي", "description": "ادعُ 150 صديقًا إلى فريقك." },
+    "INVITE_9": { "title": "الشريك البلاتيني", "description": "ادعُ 200 صديق إلى فريقك." },
+    "INVITE_10": { "title": "قطب الشبكة", "description": "ادعُ 300 صديق إلى فريقك." },
+    "INVITE_11": { "title": "صاحب الرؤية العالمية", "description": "ادعُ 500 صديق إلى فريقك." },
+    "INVITE_12": { "title": "أسطورة الشبكة", "description": "ادعُ 1000 صديق إلى فريقك." }
+  },
+  "deposit": {
+    "selectNetwork": {
+      "title": "اختر الشبكة",
+      "warning": "اختر الشبكة الصحيحة لإيداع أصولك. الإرسال إلى شبكة خاطئة قد يؤدي إلى فقدان أموالك بشكل دائم."
     },
-    "PURCHASE_2": {
-      "title": "إنتاج مزدوج",
-      "description": "احصل على ما مجموعه 2 من الرقاقات."
-    },
-    "PURCHASE_3": {
-      "title": "ثلاثي صناعي",
-      "description": "احصل على ما مجموعه 3 من الرقاقات."
-    },
-    "PURCHASE_4": {
-      "title": "رباعي الحوسبة",
-      "description": "احصل على ما مجموعه 4 من الرقاقات."
-    },
-    "PURCHASE_5": {
-      "title": "خماسي النواة",
-      "description": "احصل على ما مجموعه 5 من الرقاقات."
-    },
-    "PURCHASE_6": {
-      "title": "مشرف السيليكون",
-      "description": "احصل على ما مجموعه 6 من الرقاقات."
-    },
-    "PURCHASE_7": {
-      "title": "قطب التصنيع",
-      "description": "احصل على ما مجموعه 7 من الرقاقات."
-    },
-    "PURCHASE_8": {
-      "title": "ثماني المعالجات",
-      "description": "احصل на ما مجموعه 8 من الرقاقات."
-    },
-    "PURCHASE_9": {
-      "title": "عقدة نونا",
-      "description": "احصل على ما مجموعه 9 من الرقاقات."
-    },
-    "PURCHASE_10": {
-      "title": "سيد العقد",
-      "description": "احصل على ما مجموعه 10 من الرقاقات."
-    },
-    "INVITE_3": {
-      "title": "باني الشبكة",
-      "description": "ادعُ 3 أصدقاء إلى فريقك."
-    },
-    "INVITE_5": {
-      "title": "قائد المجتمع",
-      "description": "ادعُ 5 أصدقاء إلى فريقك."
-    },
-    "INVITE_10": {
-      "title": "سفير المنصة",
-      "description": "ادعُ 10 أصدقاء إلى فريقك."
-    },
-    "TELEGRAM_VISIT": {
-      "title": "انضم إلى المجتمع",
-      "description": "قم بزيارة مجموعتنا الرسمية على تيليجرام."
+    "address": {
+      "generating": "جاري إنشاء العنوان...",
+      "title": "إيداع {{currency}}",
+      "sendOnly": "أرسل فقط {{currency}} عبر شبكة {{network}}",
+      "copied": "تم نسخ العنوان إلى الحافظة",
+      "staticNotice": "قد تستغرق التحويلات على هذه الشبكة من 5 إلى 10 دقائق لتتم إضافتها بعد التأكيد.",
+      "confirmationNotice": "ستتم إضافة الأموال بعد تأكيدات الشبكة.",
+      "noNetworkSelected": "لم يتم اختيار أي شبكة.",
+      "notConfigured": "العنوان غير مهيأ."
     }
   }
 }
+// --- END OF FILE ar.json ---

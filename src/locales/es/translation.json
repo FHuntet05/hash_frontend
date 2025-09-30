@@ -1,49 +1,40 @@
+// --- START OF FILE es.json ---
 {
   "nav": {
     "home": "Inicio",
-    "history": "Historial",
-    "factories": "Invertir",
+    "tasks": "Tareas",
+    "market": "Mineros",
     "team": "Equipo",
     "profile": "Perfil"
   },
   "common": {
     "error": "Ocurrió un error",
     "copied": "¡Copiado!",
-    "copyError": "No se pudo copiar",
     "continue": "Continuar",
     "loading": "Cargando...",
     "close": "Cerrar",
-    "day": "Día",
-    "loadingUser": "Cargando datos del usuario...",
-    "max": "MÁX",
-    "processing": "Procesando...",
-    "saving": "Guardando..."
+    "loadingUser": "Cargando datos del usuario..."
   },
   "homePage": {
-    "mainBalance": "Saldo Principal",
-    "myFactories": "Mis Chips",
-    "noFactories": "No tienes Chips activos.",
-    "goToStore": "Visita la tienda para adquirir tu primer Chip y empezar a producir.",
+    "myMiners": "Mis Mineros",
+    "noMiners": "No tienes mineros activos.",
+    "goToMarket": "Visita el mercado para empezar a producir.",
     "tasks": "Tareas",
-    "loadingAnimation": "Cargando animación...",
     "toasts": {
       "claiming": "Reclamando producción...",
       "claimSuccess": "¡Producción reclamada!"
+    },
+    "balanceOverview": {
+      "currentBalance": "Saldo Actual",
+      "withdraw": "Retirar"
     }
-  },
-  "activityTicker": {
-    "hasWithdrawn": "ha retirado"
   },
   "profilePage": {
     "balanceUsdtLabel": "Saldo Total",
-    "totalRecharged": "Total Recargado",
-    "totalWithdrawn": "Total Retirado",
     "toasts": {
-      "insufficientBalance": "Saldo insuficiente. El mínimo para retirar es {{min}} USDT.",
-      "generatingAddress": "Generando tu dirección...",
-      "addressGenerated": "Dirección generada.",
       "walletNotSet": "Por favor, guarda tu billetera de retiro primero.",
-      "passwordNotSet": "Por favor, configura tu contraseña de retiro primero."
+      "passwordNotSet": "Por favor, configura tu contraseña de retiro primero.",
+      "insufficientBalance": "Saldo insuficiente. El mínimo para retirar es {{min}} USDT."
     }
   },
   "profile": {
@@ -51,6 +42,7 @@
     "withdraw": "Retirar",
     "records": "Historial",
     "saveWallet": "Guardar Billetera",
+    "editWallet": "Editar Billetera",
     "invite": "Equipo",
     "setWithdrawalPassword": "Configurar Contraseña de Retiro",
     "changeWithdrawalPassword": "Cambiar Contraseña de Retiro",
@@ -59,227 +51,76 @@
     "about": "Sobre Nosotros",
     "support": "Soporte",
     "logout": "Cerrar Sesión",
-    "mainActionsTitle": "Acciones Principales",
-    "settingsTitle": "Ajustes y Más"
-  },
-  "depositHistory": {
-    "title": "Historial de Depósitos",
-    "subtitle": "Actividad de depósitos recientes en la plataforma.",
-    "userDeposited": "{{username}} ha depositado"
-  },
-  "time": {
-    "yearsAgo": "hace {{count}} años",
-    "monthsAgo": "hace {{count}} meses",
-    "daysAgo": "hace {{count}} días",
-    "hoursAgo": "hace {{count}} horas",
-    "minutesAgo": "hace {{count}} minutos",
-    "justNow": "Justo ahora"
-  },
-  "factoriesPage": {
-    "title": "Tienda de Chips",
-    "subtitle": "Adquiere nuevos Chips para aumentar tu producción.",
-    "error": "No se pudieron cargar los Chips.",
-    "noFactoriesAvailable": "No hay Chips disponibles en la tienda en este momento."
-  },
-  "purchasedFactory": {
-    "nextClaim": "Próximo Reclamo",
-    "lifespan": "Vida Útil",
-    "production": "Procesando",
-    "dayCounter": "Día {{dayNumber}} de {{totalDays}}",
-    "claim": "RECLAMAR",
-    "producing": "TRABAJANDO"
+    "financialsTitle": "Finanzas",
+    "accountTitle": "Cuenta",
+    "supportTitle": "Soporte"
   },
   "minerCard": {
     "price": "Precio",
     "dailyProduction": "Producción Diaria",
-    "daily": "Producción Diaria",
     "duration": "Duración",
-    "lifespanSimple": "Duración",
     "days": "{{count}} días",
-    "buyButton": "Comprar",
-    "buyNow": "INVERTIR",
-    "owned": "ADQUIRIDA"
+    "buyNow": "COMPRAR AHORA",
+    "owned": "Adquirida"
   },
-  "factoryPurchaseModal": {
-    "quantity": "Cantidad:",
-    "totalCost": "Costo Total",
-    "yourBalance": "Tu Saldo",
-    "buyNow": "Comprar Ya",
-    "rechargeNow": "Recargar para Comprar",
-    "toasts": {
-      "purchasing": "Procesando compra...",
-      "purchaseSuccess": "¡Compra exitosa!",
-      "purchaseError": "Error al procesar la compra.",
-      "insufficientFunds": "Saldo insuficiente. Redirigiendo a depósito..."
-    }
+  "purchasedMiner": {
+    "claim": "Reclamar",
+    "claimCycle": "Ciclo de Reclamo",
+    "lifespan": "Vida Útil Restante",
+    "totalProduction": "Producción Total",
+    "expiresOn": "Expira el"
   },
-  "directDepositModal": {
-    "titleV2": "Tu Dirección de Depósito",
-    "instructionV2": "Deposita cualquier cantidad de USDT en tu dirección personal. Los fondos se acreditarán automáticamente.",
-    "addressLabel": "Tu Dirección Única {{currency}}",
-    "warningV2": "Asegúrate de enviar fondos a través de la red correcta: {{network}}."
+  "status": {
+    "mining": "Minando",
+    "readyToClaim": "Listo para Reclamar",
+    "expired": "Expirado"
   },
-  "setWithdrawalPasswordModal": {
-    "title_set": "Configurar Contraseña de Retiro",
-    "title_change": "Cambiar Contraseña de Retiro",
-    "intro_set": "Esta contraseña se usará para autorizar todos tus retiros. Guárdala en un lugar seguro.",
-    "intro_change": "Introduce tu contraseña actual para establecer una nueva.",
-    "currentPassword_label": "Contraseña Actual",
-    "newPassword_label": "Nueva Contraseña (mín. 6 caracteres)",
-    "confirmPassword_label": "Confirmar Nueva Contraseña",
-    "saveButton": "Guardar Contraseña",
-    "toasts": {
-      "passwordsDontMatch": "Las nuevas contraseñas no coinciden.",
-      "saving": "Guardando...",
-      "saveSuccess": "Contraseña guardada con éxito.",
-      "saveError": "Error al guardar la contraseña.",
-      "currentRequired": "La contraseña actual es obligatoria.",
-      "minLength": "La nueva contraseña debe tener al menos 6 caracteres.",
-      "noMatch": "Las nuevas contraseñas no coinciden."
-    }
+  "time": {
+    "days": "{{count}}d",
+    "expired": "Expirado"
   },
-  "saveWalletModal": {
-    "titleEdit": "Actualizar Billetera de Retiro",
-    "titleSet": "Guardar Billetera de Retiro",
-    "subtitle": "Esta dirección se usará para todos tus retiros.",
-    "addressLabel": "Dirección de Billetera (USDT BEP20)",
-    "addressPlaceholder": "Pega tu dirección 0x...",
-    "passwordLabel": "Confirmar con Contraseña de Retiro",
-    "saveButton": "Guardar Billetera",
-    "notice": "Por seguridad, cualquier cambio en tu billetera de retiro requiere confirmar tu contraseña.",
-    "toasts": {
-      "allFieldsRequired": "Todos los campos son obligatorios.",
-      "invalidAddress": "El formato de la dirección de billetera no es válido.",
-      "processing": "Guardando billetera...",
-      "error": "Error al guardar la billetera."
-    }
-  },
-  "selectNetworkModal": {
-    "title": "Selecciona una Red",
-    "subtitle": "Elige la moneda y red para tu depósito.",
-    "processing": "Procesando...",
-    "addressNotConfigured": "La dirección para esta red no está configurada."
-  },
-  "withdrawalModal": {
-    "title": "Solicitar Retiro",
-    "balance": "Saldo disponible:",
-    "addressLabelSaved": "Retirar a Billetera Guardada",
-    "amountLabel": "Cantidad a Retirar (USDT)",
-    "minPlaceholder": "Mínimo {{minWithdrawal}} USDT",
-    "passwordLabel": "Contraseña de Retiro",
-    "fee": "Comisión ({{fee}}%):",
-    "youReceive": "Recibirás:",
-    "confirmButton": "Confirmar Solicitud",
-    "passwordNotSetTitle": "Acción Requerida",
-    "passwordNotSetBody": "Por tu seguridad, debes configurar una contraseña de retiro antes de poder solicitar un pago.",
-    "goToSettingsButton": "Configurar Contraseña",
-    "notice": "Las solicitudes de retiro son revisadas. Esto puede tomar algunas horas. La comisión se aplica sobre el monto retirado.",
-    "toasts": {
-      "allFieldsRequired": "Todos los campos son obligatorios.",
-      "minAmount": "La cantidad mínima para retirar es {{minWithdrawal}} USDT.",
-      "insufficientBalance": "No puedes retirar más de tu saldo disponible.",
-      "invalidAddress": "La dirección de billetera no es válida.",
-      "processing": "Enviando solicitud...",
-      "error": "Error al enviar la solicitud."
-    }
-  },
-  "teamPage": {
-    "title": "Invita a tus Amigos",
-    "description": "Comparte tu enlace y gana comisiones por cada miembro de tu equipo.",
-    "generatingLink": "Generando enlace...",
-    "toasts": {
-      "fetchError": "Error al cargar datos del equipo",
-      "linkCopied": "¡Enlace de invitación copiado!",
-      "linkError": "No se pudo generar el enlace de invitación."
-    },
-    "stats": {
-      "members": "Amigos",
-      "commission": "Ganancia"
-    },
-    "levelsTitle": "Niveles del Equipo",
-    "levelLabel": "Nivel {{level}}",
-    "levels": {
-      "totalMembers": "Amigos",
-      "commission": "Ganancia"
-    },
-    "noLevelsData": "Aún no tienes miembros en tu equipo. ¡Empieza a invitar!"
-  },
-  "faqPage": {
-    "title": "Preguntas Frecuentes",
-    "q1": "¿Qué es Hash Power Bot?",
-    "a1": "Hash Power Bot es una plataforma de simulación económica donde puedes adquirir Chips virtuales que generan ingresos pasivos en USDT de forma automática.",
-    "q2": "¿Cómo empiezo a ganar?",
-    "a2": "Simplemente adquiere un Chip en nuestra tienda. Una vez comprado, comenzará a producir USDT cada 24 horas, que podrás reclamar directamente a tu saldo principal.",
-    "q3": "¿Cómo puedo retirar mis ganancias?",
-    "a3": "Puedes solicitar un retiro desde tu perfil. Asegúrate de haber configurado tu contraseña de retiro y de cumplir con el monto mínimo requerido.",
-    "q4": "¿Es seguro invertir aquí?",
-    "a4": "Utilizamos protocolos de seguridad estándar para proteger tu cuenta y tus fondos. Sin embargo, como con cualquier plataforma de ingresos, participa de manera responsable."
+  "tasksPage": {
+    "title": "Centro de Tareas",
+    "description": "Completa tareas para ganar recompensas adicionales y acelerar tu progreso."
   },
   "tasks": {
     "claimed": "Reclamado",
     "claim": "Reclamar",
-    "go": "Ir",
-    "pending": "Pendiente",
+    "pending": "En Progreso",
     "locked": "Bloqueado",
+    "progress": "Progreso",
     "noTasks": "No hay tareas disponibles en este momento.",
     "toasts": {
       "claimSuccess": "¡Recompensa reclamada!"
     },
-    "PURCHASE_1": {
-      "title": "Pionero de Chips",
-      "description": "Compra tu primer Chip."
+    "INVITE_1": { "title": "Primeros Pasos", "description": "Invita a 1 amigo a tu equipo." },
+    "INVITE_2": { "title": "Constructor de Red", "description": "Invita a 3 amigos a tu equipo." },
+    "INVITE_3": { "title": "Líder de Comunidad", "description": "Invita a 5 amigos a tu equipo." },
+    "INVITE_4": { "title": "Conector Social", "description": "Invita a 10 amigos a tu equipo." },
+    "INVITE_5": { "title": "Influencer", "description": "Invita a 20 amigos a tu equipo." },
+    "INVITE_6": { "title": "Embajador", "description": "Invita a 50 amigos a tu equipo." },
+    "INVITE_7": { "title": "Socio Plata", "description": "Invita a 100 amigos a tu equipo." },
+    "INVITE_8": { "title": "Socio Oro", "description": "Invita a 150 amigos a tu equipo." },
+    "INVITE_9": { "title": "Socio Platino", "description": "Invita a 200 amigos a tu equipo." },
+    "INVITE_10": { "title": "Magnate de la Red", "description": "Invita a 300 amigos a tu equipo." },
+    "INVITE_11": { "title": "Visionario Global", "description": "Invita a 500 amigos a tu equipo." },
+    "INVITE_12": { "title": "Leyenda de la Red", "description": "Invita a 1000 amigos a tu equipo." }
+  },
+  "deposit": {
+    "selectNetwork": {
+      "title": "Seleccionar Red",
+      "warning": "Elija la red correcta para depositar sus activos. Enviar a una red incorrecta puede resultar en la pérdida de sus fondos."
     },
-    "PURCHASE_2": {
-      "title": "Doble Producción",
-      "description": "Adquiere un total de 2 Chips."
-    },
-    "PURCHASE_3": {
-      "title": "Trio Industrial",
-      "description": "Adquiere un total de 3 Chips."
-    },
-    "PURCHASE_4": {
-      "title": "Cuarteto de Cómputo",
-      "description": "Adquiere un total de 4 Chips."
-    },
-    "PURCHASE_5": {
-      "title": "Penta-Core",
-      "description": "Adquiere un total de 5 Chips."
-    },
-    "PURCHASE_6": {
-      "title": "Supervisor de Silicio",
-      "description": "Adquiere un total de 6 Chips."
-    },
-    "PURCHASE_7": {
-      "title": "Magnate de la Manufactura",
-      "description": "Adquiere un total de 7 Chips."
-    },
-    "PURCHASE_8": {
-      "title": "Octa-Procesador",
-      "description": "Adquiere un total de 8 Chips."
-    },
-    "PURCHASE_9": {
-      "title": "Nona-Nodo",
-      "description": "Adquiere un total de 9 Chips."
-    },
-    "PURCHASE_10": {
-      "title": "Maestro de la Década",
-      "description": "Adquiere un total de 10 Chips."
-    },
-    "INVITE_3": {
-      "title": "Constructor de Red",
-      "description": "Invita a 3 amigos a tu equipo."
-    },
-    "INVITE_5": {
-      "title": "Líder de Comunidad",
-      "description": "Invita a 5 amigos a tu equipo."
-    },
-    "INVITE_10": {
-      "title": "Embajador de la Plataforma",
-      "description": "Invita a 10 amigos a tu equipo."
-    },
-    "TELEGRAM_VISIT": {
-      "title": "Únete a la Comunidad",
-      "description": "Visita nuestro grupo oficial de Telegram."
+    "address": {
+      "generating": "Generando Dirección...",
+      "title": "Depositar {{currency}}",
+      "sendOnly": "Enviar solo {{currency}} a través de la red {{network}}",
+      "copied": "Dirección copiada al portapapeles",
+      "staticNotice": "Las transferencias en esta red pueden tardar de 5 a 10 minutos en acreditarse después de ser confirmadas.",
+      "confirmationNotice": "Los fondos serán acreditados tras las confirmaciones de la red.",
+      "noNetworkSelected": "No se ha seleccionado ninguna red.",
+      "notConfigured": "Dirección no configurada."
     }
   }
 }
+// --- END OF FILE es.json ---

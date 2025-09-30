@@ -1,49 +1,40 @@
+// --- START OF FILE en.json ---
 {
   "nav": {
     "home": "Home",
-    "history": "History",
-    "factories": "Shop",
+    "tasks": "Tasks",
+    "market": "Market",
     "team": "Team",
     "profile": "Profile"
   },
   "common": {
     "error": "An error occurred",
     "copied": "Copied!",
-    "copyError": "Could not copy",
     "continue": "Continue",
     "loading": "Loading...",
     "close": "Close",
-    "day": "Day",
-    "loadingUser": "Loading user data...",
-    "max": "MAX",
-    "processing": "Processing...",
-    "saving": "Saving..."
+    "loadingUser": "Loading user data..."
   },
   "homePage": {
-    "mainBalance": "Main Balance",
-    "myFactories": "My Chips",
-    "noFactories": "You have no active Chips.",
-    "goToStore": "Visit the shop to acquire your first Chip and start producing.",
+    "myMiners": "My Miners",
+    "noMiners": "You have no active miners.",
+    "goToMarket": "Visit the market to start producing.",
     "tasks": "Tasks",
-    "loadingAnimation": "Loading animation...",
     "toasts": {
       "claiming": "Claiming production...",
       "claimSuccess": "Production claimed!"
+    },
+    "balanceOverview": {
+      "currentBalance": "Current Balance",
+      "withdraw": "Withdraw"
     }
-  },
-  "activityTicker": {
-    "hasWithdrawn": "has withdrawn"
   },
   "profilePage": {
     "balanceUsdtLabel": "Total Balance",
-    "totalRecharged": "Total Recharged",
-    "totalWithdrawn": "Total Withdrawn",
     "toasts": {
-      "insufficientBalance": "Insufficient balance. The minimum to withdraw is {{min}} USDT.",
-      "generatingAddress": "Generating your address...",
-      "addressGenerated": "Address generated.",
       "walletNotSet": "Please save your withdrawal wallet first.",
-      "passwordNotSet": "Please set your withdrawal password first."
+      "passwordNotSet": "Please set your withdrawal password first.",
+      "insufficientBalance": "Insufficient balance. The minimum to withdraw is {{min}} USDT."
     }
   },
   "profile": {
@@ -51,6 +42,7 @@
     "withdraw": "Withdraw",
     "records": "History",
     "saveWallet": "Save Wallet",
+    "editWallet": "Edit Wallet",
     "invite": "Team",
     "setWithdrawalPassword": "Set Withdrawal Password",
     "changeWithdrawalPassword": "Change Withdrawal Password",
@@ -59,227 +51,76 @@
     "about": "About Us",
     "support": "Support",
     "logout": "Log Out",
-    "mainActionsTitle": "Main Actions",
-    "settingsTitle": "Settings & More"
-  },
-  "depositHistory": {
-    "title": "Deposit History",
-    "subtitle": "Recent deposit activity on the platform.",
-    "userDeposited": "{{username}} has deposited"
-  },
-  "time": {
-    "yearsAgo": "{{count}} years ago",
-    "monthsAgo": "{{count}} months ago",
-    "daysAgo": "{{count}} days ago",
-    "hoursAgo": "{{count}} hours ago",
-    "minutesAgo": "{{count}} minutes ago",
-    "justNow": "Just now"
-  },
-  "factoriesPage": {
-    "title": "Chip Shop",
-    "subtitle": "Acquire new Chips to increase your production.",
-    "error": "Could not load Chips.",
-    "noFactoriesAvailable": "There are no Chips available in the shop at the moment."
-  },
-  "purchasedFactory": {
-    "nextClaim": "Next Claim",
-    "lifespan": "Lifespan",
-    "production": "Production",
-    "dayCounter": "Day {{dayNumber}} of {{totalDays}}",
-    "claim": "CLAIM",
-    "producing": "WORKING"
+    "financialsTitle": "Finances",
+    "accountTitle": "Account",
+    "supportTitle": "Support"
   },
   "minerCard": {
     "price": "Price",
     "dailyProduction": "Daily Production",
-    "daily": "Daily Production",
     "duration": "Duration",
-    "lifespanSimple": "Duration",
     "days": "{{count}} days",
-    "buyButton": "Buy",
-    "buyNow": "INVEST",
-    "owned": "OWNED"
+    "buyNow": "BUY NOW",
+    "owned": "Owned"
   },
-  "factoryPurchaseModal": {
-    "quantity": "Quantity:",
-    "totalCost": "Total Cost",
-    "yourBalance": "Your Balance",
-    "buyNow": "Buy Now",
-    "rechargeNow": "Recharge to Buy",
-    "toasts": {
-      "purchasing": "Processing purchase...",
-      "purchaseSuccess": "Purchase successful!",
-      "purchaseError": "Error processing purchase.",
-      "insufficientFunds": "Insufficient balance. Redirecting to deposit..."
-    }
+  "purchasedMiner": {
+    "claim": "Claim",
+    "claimCycle": "Claim Cycle",
+    "lifespan": "Remaining Lifespan",
+    "totalProduction": "Total Production",
+    "expiresOn": "Expires on"
   },
-  "directDepositModal": {
-    "titleV2": "Your Deposit Address",
-    "instructionV2": "Deposit any amount of USDT to your personal address. Funds will be credited automatically.",
-    "addressLabel": "Your Unique {{currency}} Address",
-    "warningV2": "Make sure to send funds through the correct network: {{network}}."
+  "status": {
+    "mining": "Mining",
+    "readyToClaim": "Ready to Claim",
+    "expired": "Expired"
   },
-  "setWithdrawalPasswordModal": {
-    "title_set": "Set Withdrawal Password",
-    "title_change": "Change Withdrawal Password",
-    "intro_set": "This password will be used to authorize all your withdrawals. Keep it safe.",
-    "intro_change": "Enter your current password to set a new one.",
-    "currentPassword_label": "Current Password",
-    "newPassword_label": "New Password (min. 6 characters)",
-    "confirmPassword_label": "Confirm New Password",
-    "saveButton": "Save Password",
-    "toasts": {
-      "passwordsDontMatch": "The new passwords do not match.",
-      "saving": "Saving...",
-      "saveSuccess": "Password saved successfully.",
-      "saveError": "Error saving password.",
-      "currentRequired": "Current password is required.",
-      "minLength": "New password must be at least 6 characters.",
-      "noMatch": "The new passwords do not match."
-    }
+  "time": {
+    "days": "{{count}}d",
+    "expired": "Expired"
   },
-  "saveWalletModal": {
-    "titleEdit": "Update Withdrawal Wallet",
-    "titleSet": "Save Withdrawal Wallet",
-    "subtitle": "This address will be used for all your withdrawals.",
-    "addressLabel": "Wallet Address (USDT BEP20)",
-    "addressPlaceholder": "Paste your 0x... address",
-    "passwordLabel": "Confirm with Withdrawal Password",
-    "saveButton": "Save Wallet",
-    "notice": "For security, any change to your withdrawal wallet requires confirming your password.",
-    "toasts": {
-      "allFieldsRequired": "All fields are required.",
-      "invalidAddress": "The wallet address format is invalid.",
-      "processing": "Saving wallet...",
-      "error": "Error saving wallet."
-    }
-  },
-  "selectNetworkModal": {
-    "title": "Select a Network",
-    "subtitle": "Choose the currency and network for your deposit.",
-    "processing": "Processing...",
-    "addressNotConfigured": "The address for this network is not configured."
-  },
-  "withdrawalModal": {
-    "title": "Request Withdrawal",
-    "balance": "Available balance:",
-    "addressLabelSaved": "Withdraw to Saved Wallet",
-    "amountLabel": "Amount to Withdraw (USDT)",
-    "minPlaceholder": "Minimum {{minWithdrawal}} USDT",
-    "passwordLabel": "Withdrawal Password",
-    "fee": "Fee ({{fee}}%):",
-    "youReceive": "You will receive:",
-    "confirmButton": "Confirm Request",
-    "passwordNotSetTitle": "Action Required",
-    "passwordNotSetBody": "For your security, you must set a withdrawal password before requesting a payment.",
-    "goToSettingsButton": "Set Password",
-    "notice": "Withdrawal requests are reviewed. This may take a few hours. The fee is applied to the withdrawn amount.",
-    "toasts": {
-      "allFieldsRequired": "All fields are required.",
-      "minAmount": "The minimum withdrawal amount is {{minWithdrawal}} USDT.",
-      "insufficientBalance": "You cannot withdraw more than your available balance.",
-      "invalidAddress": "The wallet address is not valid.",
-      "processing": "Sending request...",
-      "error": "Error sending request."
-    }
-  },
-  "teamPage": {
-    "title": "Invite Your Friends",
-    "description": "Share your link and earn commissions for each member of your team.",
-    "generatingLink": "Generating link...",
-    "toasts": {
-      "fetchError": "Error loading team data",
-      "linkCopied": "Invitation link copied!",
-      "linkError": "Could not generate invitation link."
-    },
-    "stats": {
-      "members": "Friends",
-      "commission": "Earnings"
-    },
-    "levelsTitle": "Team Levels",
-    "levelLabel": "Level {{level}}",
-    "levels": {
-      "totalMembers": "Friends",
-      "commission": "Earnings"
-    },
-    "noLevelsData": "You don't have any team members yet. Start inviting!"
-  },
-  "faqPage": {
-    "title": "Frequently Asked Questions",
-    "q1": "What is Hash Power Bot?",
-    "a1": "Hash Power Bot is an economic simulation platform where you can acquire virtual Chips that automatically generate passive income in USDT.",
-    "q2": "How do I start earning?",
-    "a2": "Simply acquire a Chip from our shop. Once purchased, it will start producing USDT every 24 hours, which you can claim directly to your main balance.",
-    "q3": "How can I withdraw my earnings?",
-    "a3": "You can request a withdrawal from your profile. Make sure you have set up your withdrawal password and meet the minimum required amount.",
-    "q4": "Is it safe to invest here?",
-    "a4": "We use standard security protocols to protect your account and funds. However, as with any income platform, please participate responsibly."
+  "tasksPage": {
+    "title": "Task Center",
+    "description": "Complete tasks to earn additional rewards and accelerate your progress."
   },
   "tasks": {
     "claimed": "Claimed",
     "claim": "Claim",
-    "go": "Go",
-    "pending": "Pending",
+    "pending": "In Progress",
     "locked": "Locked",
+    "progress": "Progress",
     "noTasks": "No tasks available at the moment.",
     "toasts": {
       "claimSuccess": "Reward claimed!"
     },
-    "PURCHASE_1": {
-      "title": "Chip Pioneer",
-      "description": "Buy your first Chip."
+    "INVITE_1": { "title": "First Steps", "description": "Invite 1 friend to your team." },
+    "INVITE_2": { "title": "Network Builder", "description": "Invite 3 friends to your team." },
+    "INVITE_3": { "title": "Community Leader", "description": "Invite 5 friends to your team." },
+    "INVITE_4": { "title": "Social Connector", "description": "Invite 10 friends to your team." },
+    "INVITE_5": { "title": "Influencer", "description": "Invite 20 friends to your team." },
+    "INVITE_6": { "title": "Ambassador", "description": "Invite 50 friends to your team." },
+    "INVITE_7": { "title": "Silver Partner", "description": "Invite 100 friends to your team." },
+    "INVITE_8": { "title": "Gold Partner", "description": "Invite 150 friends to your team." },
+    "INVITE_9": { "title": "Platinum Partner", "description": "Invite 200 friends to your team." },
+    "INVITE_10": { "title": "Network Tycoon", "description": "Invite 300 friends to your team." },
+    "INVITE_11": { "title": "Global Visionary", "description": "Invite 500 friends to your team." },
+    "INVITE_12": { "title": "Network Legend", "description": "Invite 1000 friends to your team." }
+  },
+  "deposit": {
+    "selectNetwork": {
+      "title": "Select Network",
+      "warning": "Choose the correct network to deposit your assets. Sending to the wrong network can result in the permanent loss of your funds."
     },
-    "PURCHASE_2": {
-      "title": "Dual Production",
-      "description": "Acquire a total of 2 Chips."
-    },
-    "PURCHASE_3": {
-      "title": "Industrial Trio",
-      "description": "Acquire a total of 3 Chips."
-    },
-    "PURCHASE_4": {
-      "title": "Computing Quartet",
-      "description": "Acquire a total of 4 Chips."
-    },
-    "PURCHASE_5": {
-      "title": "Penta-Core",
-      "description": "Acquire a total of 5 Chips."
-    },
-    "PURCHASE_6": {
-      "title": "Silicon Supervisor",
-      "description": "Acquire a total of 6 Chips."
-    },
-    "PURCHASE_7": {
-      "title": "Manufacturing Magnate",
-      "description": "Acquire a total of 7 Chips."
-    },
-    "PURCHASE_8": {
-      "title": "Octa-Processor",
-      "description": "Acquire a total of 8 Chips."
-    },
-    "PURCHASE_9": {
-      "title": "Nona-Node",
-      "description": "Acquire a total of 9 Chips."
-    },
-    "PURCHASE_10": {
-      "title": "Master of the Decade",
-      "description": "Acquire a total of 10 Chips."
-    },
-    "INVITE_3": {
-      "title": "Network Builder",
-      "description": "Invite 3 friends to your team."
-    },
-    "INVITE_5": {
-      "title": "Community Leader",
-      "description": "Invite 5 friends to your team."
-    },
-    "INVITE_10": {
-      "title": "Platform Ambassador",
-      "description": "Invite 10 friends to your team."
-    },
-    "TELEGRAM_VISIT": {
-      "title": "Join the Community",
-      "description": "Visit our official Telegram group."
+    "address": {
+      "generating": "Generating Address...",
+      "title": "Deposit {{currency}}",
+      "sendOnly": "Send only {{currency}} via the {{network}} network",
+      "copied": "Address copied to clipboard",
+      "staticNotice": "Transfers on this network may take 5 to 10 minutes to be credited after confirmation.",
+      "confirmationNotice": "Funds will be credited after network confirmations.",
+      "noNetworkSelected": "No network selected.",
+      "notConfigured": "Address not configured."
     }
   }
 }
+// --- END OF FILE en.json ---
