@@ -1,6 +1,6 @@
 // --- START OF FILE ProfilePage.jsx ---
 
-// RUTA: frontend/src/pages/ProfilePage.jsx (v4.0 - "QUANTUM LEAP": REDISEÑO "CENTRO DE MANDO")
+// RUTA: frontend/src/pages/ProfilePage.jsx (v4.1 - "QUANTUM LEAP": REDISEÑO CON TARJETA DE PERFIL)
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -21,9 +21,8 @@ import Loader from '../components/common/Loader';
 import SetWithdrawalAddressModal from '../components/modals/SetWithdrawalAddressModal'; 
 import SelectNetworkModal from '../components/modals/SelectNetworkModal';
 
-// --- NUEVOS COMPONENTES DE UI ---
+// --- COMPONENTES DE UI REFINADOS ---
 
-// Componente para los elementos del menú, más visual y limpio
 const ProfileMenuItem = ({ icon: Icon, label, onClick }) => (
   <motion.button
     variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
@@ -38,15 +37,14 @@ const ProfileMenuItem = ({ icon: Icon, label, onClick }) => (
   </motion.button>
 );
 
-// Componente para las estadísticas en la cabecera
 const StatItem = ({ label, value }) => (
-  <div className="text-center">
+  <div className="text-center flex-1">
     <p className="text-xl font-bold text-text-primary">{value.toFixed(2)}</p>
     <p className="text-xs text-text-secondary uppercase tracking-wider mt-1">{label}</p>
   </div>
 );
 
-// --- COMPONENTE PRINCIPAL REDISEÑADO ---
+// --- COMPONENTE PRINCIPAL CON NUEVA ESTRUCTURA ---
 
 const ProfilePage = () => {
     const { user, logout } = useUserStore();
@@ -75,7 +73,6 @@ const ProfilePage = () => {
     const isPasswordSet = user.isWithdrawalPasswordSet;
     const isWalletSet = user.withdrawalAddress?.isSet;
 
-    // --- ACCIONES REORGANIZADAS POR GRUPOS LÓGICOS ---
     const financialActions = [
         { label: t('profile.recharge'), icon: HiOutlineArrowDownOnSquare, onClick: () => openModal('selectNetwork') },
         { label: t('profile.withdraw'), icon: HiOutlineArrowUpOnSquare, onClick: handleWithdrawClick },
@@ -108,23 +105,29 @@ const ProfilePage = () => {
               animate={{ opacity: 1 }} 
               transition={{ duration: 0.5 }}
             >
-                {/* --- CABECERA DE PERFIL INTEGRADA --- */}
-                <div className="flex flex-col items-center text-center gap-4">
-                    <img src={user.photoUrl || '/assets/images/user-avatar-placeholder.png'} alt="Avatar" className="w-28 h-28 rounded-full object-cover border-4 border-surface shadow-medium" />
-                    <div>
-                        <h1 className="text-2xl font-bold text-text-primary">{user.username || 'Usuario'}</h1>
-                        <span className="text-text-secondary text-sm">ID: {user.telegramId}</span>
+                {/* --- INICIO: TARJETA DE PERFIL (Business Card) --- */}
+                <div className="bg-surface rounded-2xl p-5 border border-border shadow-medium flex flex-col gap-4">
+                    {/* Sección de Identidad */}
+                    <div className="flex items-center gap-4">
+                        <img src={user.photoUrl || '/assets/images/user-avatar-placeholder.png'} alt="Avatar" className="w-20 h-20 rounded-full object-cover flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                            <h1 className="text-2xl font-bold text-text-primary truncate">{user.username || 'Usuario'}</h1>
+                            <span className="text-text-secondary text-sm">ID: {user.telegramId}</span>
+                        </div>
+                    </div>
+                    
+                    <hr className="border-border/50" />
+
+                    {/* Sección de Estadísticas */}
+                    <div className="flex items-center justify-around">
+                        <StatItem label={t('profilePage.balanceUsdtLabel')} value={user.balance?.usdt || 0} />
+                        <div className="w-px h-10 bg-border"></div>
+                        <StatItem label={t('profilePage.totalRecharged')} value={user.totalRecharge || 0} />
+                        <div className="w-px h-10 bg-border"></div>
+                        <StatItem label={t('profilePage.totalWithdrawn')} value={user.totalWithdrawal || 0} />
                     </div>
                 </div>
-
-                {/* --- ESTADÍSTICAS --- */}
-                <div className="flex items-center justify-around p-4 bg-surface rounded-2xl border border-border shadow-medium">
-                    <StatItem label={t('profilePage.balanceUsdtLabel')} value={user.balance?.usdt || 0} />
-                    <div className="w-px h-10 bg-border"></div>
-                    <StatItem label={t('profilePage.totalRecharged')} value={user.totalRecharge || 0} />
-                    <div className="w-px h-10 bg-border"></div>
-                    <StatItem label={t('profilePage.totalWithdrawn')} value={user.totalWithdrawal || 0} />
-                </div>
+                {/* --- FIN: TARJETA DE PERFIL --- */}
 
                 {/* --- SECCIONES DE MENÚ AGRUPADAS --- */}
                 <div className="space-y-6">
