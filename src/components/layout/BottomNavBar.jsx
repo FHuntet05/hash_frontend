@@ -23,14 +23,14 @@ const BottomNavBar = () => {
     const { t } = useTranslation();
 
     const navItems = [
-        { to: '/home', label: t('nav.home', 'Inicio'), emoji: '🏠' },
+        { to: '/home', label: t('nav.home', 'Inicio'), emoji: '🏣' },
         // --- INICIO DE MODIFICACIÓN CRÍTICA ---
         // El enlace de Ranking ahora apunta a la misma ruta (/ranking) pero con una nueva etiqueta y emoji.
-        { to: '/ranking', label: t('nav.tasks', 'Tareas'), emoji: '✅' },
+        { to: '/ranking', label: t('nav.tasks', 'Tareas'), emoji: '📱' },
         // --- FIN DE MODIFICACIÓN CRÍTICA ---
-        { to: '/market', label: t('nav.market', 'Mercado'), emoji: '⛏️' },
-        { to: '/team', label: t('nav.team', 'Equipo'), emoji: '👥' },
-        { to: '/profile', label: t('nav.profile', 'Perfil'), emoji: '👤' },
+        { to: '/market', label: t('nav.market', 'Mercado'), emoji: '🌐' },
+        { to: '/team', label: t('nav.team', 'Equipo'), emoji: '🧑‍🎓' },
+        { to: '/profile', label: t('nav.profile', 'Perfil'), emoji: '🎁' },
     ];
 
     return (
