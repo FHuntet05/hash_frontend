@@ -1,4 +1,7 @@
-// frontend/src/pages/admin/AdminWithdrawalsPage.jsx (v18.0 - TABLA FINANCIERA COMPLETA)
+// --- START OF FILE AdminWithdrawalsPage.jsx ---
+
+// frontend/src/pages/admin/AdminWithdrawalsPage.jsx (v18.1 - CORRECCIÓN DE ACCESO A METADATA)
+
 import React, { useState, useEffect, useCallback } from 'react';
 import useAdminStore from '../../store/adminStore';
 import api from '../../api/axiosConfig';
@@ -6,13 +9,8 @@ import toast from 'react-hot-toast';
 import Loader from '../../components/common/Loader';
 import { HiOutlineClipboardDocument, HiOutlineClipboardDocumentCheck } from 'react-icons/hi2';
 
-// --- INICIO DE LA REINGENIERÍA DE LA TABLA ---
-
-// Sub-componente para la celda de montos, que ahora muestra un desglose completo.
 const AmountCell = ({ withdrawal }) => {
   const { grossAmount, feeAmount, netAmount } = withdrawal;
-
-  // Se muestra el MONTO NETO como el valor principal y más importante.
   return (
     <div className="font-mono">
       <p className="font-bold text-lg text-green-400">{netAmount?.toFixed(2) || 'N/A'}</p>
@@ -43,7 +41,6 @@ const WithdrawalsTable = ({ withdrawals, onProcess, processingId }) => {
         <thead className="text-xs text-text-secondary uppercase bg-black/20">
           <tr>
             <th className="px-6 py-3">Usuario</th>
-            {/* El título de la columna ahora refleja el valor principal que se muestra. */}
             <th className="px-6 py-3">Monto a Pagar (USDT)</th>
             <th className="px-6 py-3">Dirección de Retiro</th>
             <th className="px-6 py-3">Fecha Solicitud</th>
@@ -59,7 +56,6 @@ const WithdrawalsTable = ({ withdrawals, onProcess, processingId }) => {
                   <span>{tx.user?.username || 'Usuario no encontrado'}</span>
                 </div>
               </td>
-              {/* Se utiliza el nuevo sub-componente para renderizar la celda de montos. */}
               <td className="px-6 py-4">
                 <AmountCell withdrawal={tx} />
               </td>
@@ -91,8 +87,6 @@ const WithdrawalsTable = ({ withdrawals, onProcess, processingId }) => {
     </div>
   );
 };
-// --- FIN DE LA REINGENIERÍA DE LA TABLA ---
-
 
 const AdminWithdrawalsPage = () => {
   const [withdrawals, setWithdrawals] = useState([]);
@@ -107,7 +101,19 @@ const AdminWithdrawalsPage = () => {
     setError(null);
     try {
       const { data } = await api.get(`/admin/withdrawals/pending?page=${targetPage}`);
-      setWithdrawals(data.withdrawals);
+      
+      // --- INICIO DE CORRECCIÓN CRÍTICA ---
+      // Se transforman los datos aquí para aplanar la estructura.
+      const transformedWithdrawals = data.withdrawals.map(tx => ({
+        ...tx,
+        netAmount: tx.metadata?.netAmount,
+        feeAmount: tx.metadata?.feeAmount,
+        grossAmount: Math.abs(tx.amount), // El monto solicitado es el 'amount' de la transacción
+        walletAddress: tx.metadata?.walletAddress
+      }));
+      // --- FIN DE CORRECCIÓN CRÍTICA ---
+
+      setWithdrawals(transformedWithdrawals);
       setPage(data.page);
       setPages(data.pages);
     } catch (err) {
@@ -195,3 +201,5 @@ const AdminWithdrawalsPage = () => {
 };
 
 export default AdminWithdrawalsPage;
+
+// --- END OF FILE AdminWithdrawalsPage.jsx ---
