@@ -116,7 +116,7 @@
       "title": "Depositar {{currency}}",
       "sendOnly": "Enviar solo {{currency}} a través de la red {{network}}",
       "copied": "Dirección copiada al portapapeles",
-      "staticNotice": "Las transferencias en esta red pueden tardar de 5 a 10 minutos en acreditarse después de ser confirmadas.",
+      "staticNotice": "Las transferencias en esta red pueden tardar de 3 a 5 minutos en acreditarse después de ser confirmadas.",
       "confirmationNotice": "Los fondos serán acreditados tras las confirmaciones de la red.",
       "noNetworkSelected": "No se ha seleccionado ninguna red.",
       "notConfigured": "Dirección no configurada."

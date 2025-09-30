@@ -118,7 +118,7 @@ const DepositAddressPage = () => {
         {paymentInfo.isStatic && (
             <div className="w-full bg-amber-500/10 text-amber-400 text-xs rounded-lg p-3 flex items-start gap-2 border border-amber-500/20">
                 <HiOutlineInformationCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                <p>{t('deposit.address.staticNotice', 'Las transferencias en esta red pueden tardar de 5 a 10 minutos en acreditarse después de ser confirmadas.')}</p>
+                <p>{t('deposit.address.staticNotice', 'Las transferencias en esta red pueden tardar de 3 a 5 minutos en acreditarse después de ser confirmadas.')}</p>
             </div>
         )}
       </main>
