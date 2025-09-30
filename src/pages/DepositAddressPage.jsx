@@ -1,6 +1,6 @@
 // --- START OF FILE DepositAddressPage.jsx ---
 
-// RUTA: frontend/src/pages/DepositAddressPage.jsx (v2.0 - LÓGICA COMPLETA Y MENSAJES CONTEXTUALES)
+// RUTA: frontend/src/pages/DepositAddressPage.jsx (v2.1 - SINCRONIZADO CON depositConfig.js)
 
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -34,8 +34,26 @@ const DepositAddressPage = () => {
         if (network.type === 'dynamic') { // Solo USDT BEP20 es dinámico
           const response = await api.post('/wallet/create-deposit-address');
           setPaymentInfo(response.data);
-        } else { // El resto son estáticos
-          const addressKey = `${network.name.toUpperCase()}-${network.network.split(' ')[0]}`; // Crea claves como 'USDT-TRC20', 'BNB-BEP20'
+        } else { // El resto son estáticos y usan la nueva configuración
+          
+          // --- INICIO DE MODIFICACIÓN CRÍTICA ---
+          // Se reemplaza la lógica de construcción de claves por un mapeo directo y robusto.
+          let addressKey;
+          switch (network.id) {
+            case 'usdt-trc20':
+              addressKey = 'USDT-TRC20';
+              break;
+            case 'bnb-bep20':
+              addressKey = 'BNB';
+              break;
+            case 'tron-trc20':
+              addressKey = 'TRON';
+              break;
+            default:
+              throw new Error(t('deposit.address.unknownNetwork', 'Red desconocida.'));
+          }
+          // --- FIN DE MODIFICACIÓN CRÍTICA ---
+
           const staticAddress = STATIC_DEPOSIT_ADDRESSES[addressKey];
           
           if (staticAddress) {
@@ -43,7 +61,7 @@ const DepositAddressPage = () => {
               paymentAddress: staticAddress, 
               currency: network.name, 
               network: network.network,
-              isStatic: true // Añadimos una bandera para mostrar el aviso
+              isStatic: true
             });
           } else {
             throw new Error(t('deposit.address.notConfigured', 'Dirección no configurada.'));
@@ -60,6 +78,7 @@ const DepositAddressPage = () => {
   }, [network, navigate, t]);
 
   const handleCopy = () => {
+    if (!paymentInfo?.paymentAddress) return;
     navigator.clipboard.writeText(paymentInfo.paymentAddress);
     toast.success(t('deposit.address.copied', 'Dirección copiada al portapapeles'));
   };
@@ -96,14 +115,12 @@ const DepositAddressPage = () => {
           </div>
         </div>
 
-        {/* --- INICIO DE MENSAJE CONDICIONAL --- */}
         {paymentInfo.isStatic && (
             <div className="w-full bg-amber-500/10 text-amber-400 text-xs rounded-lg p-3 flex items-start gap-2 border border-amber-500/20">
                 <HiOutlineInformationCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                 <p>{t('deposit.address.staticNotice', 'Las transferencias en esta red pueden tardar de 5 a 10 minutos en acreditarse después de ser confirmadas.')}</p>
             </div>
         )}
-        {/* --- FIN DE MENSAJE CONDICIONAL --- */}
       </main>
 
       <footer className="text-center text-xs text-text-secondary">

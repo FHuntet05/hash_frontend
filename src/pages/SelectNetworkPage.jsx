@@ -30,10 +30,10 @@ const SelectNetworkPage = () => {
 
   // Se restauran todas las redes del modal original
   const networks = [
-    { id: 'usdt-bep20', name: 'USDT', fullName: 'BNB Smart Chain', network: 'BEP20 (BSC)', icon: '/assets/images/networks/bnb.png', type: 'dynamic' },
+    { id: 'usdt-bep20', name: 'USDT', fullName: 'USDT', network: 'BEP20 (BSC)', icon: '/assets/images/networks/bep20-usdt.png', type: 'dynamic' },
     { id: 'usdt-trc20', name: 'USDT', fullName: 'TRON Network', network: 'TRC20', icon: '/assets/images/networks/tron.png', type: 'static' },
-    { id: 'bnb-bep20', name: 'BNB', fullName: 'BNB Coin', network: 'BEP20 (BSC)', icon: '/assets/images/networks/bnb.png', type: 'static' },
-    { id: 'tron-trc20', name: 'Tron', fullName: 'TRON Coin (TRX)', network: 'TRC20', icon: '/assets/images/networks/tron.png', type: 'static' },
+    { id: 'bnb-bep20', name: 'BNB', fullName: 'BNB', network: 'BEP20 (BSC)', icon: '/assets/images/networks/bnb.png', type: 'static' },
+    { id: 'tron-trc20', name: 'Tron', fullName: 'USDT', network: 'TRC20', icon: '/assets/images/networks/trc20-usdt.png', type: 'static' },
   ];
 
   const handleNetworkSelect = (network) => {
