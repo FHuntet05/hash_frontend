@@ -1,6 +1,6 @@
 // --- START OF FILE ProfilePage.jsx ---
 
-// RUTA: frontend/src/pages/ProfilePage.jsx (v4.1 - "QUANTUM LEAP": REDISEÑO CON TARJETA DE PERFIL)
+// RUTA: frontend/src/pages/ProfilePage.jsx (v4.2 - INTEGRACIÓN DE PÁGINA DE DEPÓSITO)
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -19,19 +19,11 @@ import WithdrawalModal from '../components/modals/WithdrawalModal';
 import SetWithdrawalPasswordModal from '../components/modals/SetWithdrawalPasswordModal';
 import Loader from '../components/common/Loader';
 import SetWithdrawalAddressModal from '../components/modals/SetWithdrawalAddressModal'; 
-import SelectNetworkModal from '../components/modals/SelectNetworkModal';
-
-// --- COMPONENTES DE UI REFINADOS ---
+// ELIMINADO: import SelectNetworkModal from '../components/modals/SelectNetworkModal';
 
 const ProfileMenuItem = ({ icon: Icon, label, onClick }) => (
-  <motion.button
-    variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
-    onClick={onClick}
-    className="w-full flex items-center p-3 bg-surface rounded-xl border border-border text-left hover:bg-surface/50 transition-colors duration-200"
-  >
-    <div className="bg-background p-2 rounded-full mr-4">
-      <Icon className="w-6 h-6 text-accent" />
-    </div>
+  <motion.button variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} onClick={onClick} className="w-full flex items-center p-3 bg-surface rounded-xl border border-border text-left hover:bg-surface/50 transition-colors duration-200">
+    <div className="bg-background p-2 rounded-full mr-4"><Icon className="w-6 h-6 text-accent" /></div>
     <span className="flex-grow text-base font-semibold text-text-primary">{label}</span>
     <HiChevronRight className="w-5 h-5 text-text-secondary" />
   </motion.button>
@@ -44,17 +36,15 @@ const StatItem = ({ label, value }) => (
   </div>
 );
 
-// --- COMPONENTE PRINCIPAL CON NUEVA ESTRUCTURA ---
-
 const ProfilePage = () => {
     const { user, logout } = useUserStore();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
+    // MODIFICADO: Se elimina 'selectNetwork' del estado de los modales
     const [modalState, setModalState] = React.useState({
         withdrawal: false,
         setPassword: false,
-        selectNetwork: false,
         setAddress: false,
     });
 
@@ -73,12 +63,15 @@ const ProfilePage = () => {
     const isPasswordSet = user.isWithdrawalPasswordSet;
     const isWalletSet = user.withdrawalAddress?.isSet;
 
+    // --- INICIO DE MODIFICACIÓN CRÍTICA ---
+    // La acción de recargar ahora navega a la nueva página
     const financialActions = [
-        { label: t('profile.recharge'), icon: HiOutlineArrowDownOnSquare, onClick: () => openModal('selectNetwork') },
+        { label: t('profile.recharge'), icon: HiOutlineArrowDownOnSquare, onClick: () => navigate('/deposit/select-network') },
         { label: t('profile.withdraw'), icon: HiOutlineArrowUpOnSquare, onClick: handleWithdrawClick },
         { label: isWalletSet ? t('profile.editWallet') : t('profile.saveWallet'), icon: HiOutlineWallet, onClick: () => openModal('setAddress') },
         { label: t('profile.records'), icon: HiOutlineRectangleStack, onClick: () => navigate('/history') },
     ];
+    // --- FIN DE MODIFICACIÓN CRÍTICA ---
     
     const accountActions = [
         { label: isPasswordSet ? t('profile.changeWithdrawalPassword') : t('profile.setWithdrawalPassword'), icon: HiOutlineKey, onClick: () => openModal('setPassword') },
@@ -92,22 +85,12 @@ const ProfilePage = () => {
         { label: t('profile.about'), icon: HiOutlineInformationCircle, onClick: () => navigate('/about') },
     ];
 
-    const listVariants = {
-        visible: { transition: { staggerChildren: 0.07 } },
-        hidden: {},
-    };
+    const listVariants = { visible: { transition: { staggerChildren: 0.07 } }, hidden: {} };
 
     return (
         <>
-            <motion.div 
-              className="flex flex-col h-full overflow-y-auto no-scrollbar p-4 pt-6 gap-8 pb-28" 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              transition={{ duration: 0.5 }}
-            >
-                {/* --- INICIO: TARJETA DE PERFIL (Business Card) --- */}
+            <motion.div className="flex flex-col h-full overflow-y-auto no-scrollbar p-4 pt-6 gap-8 pb-28" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                 <div className="bg-surface rounded-2xl p-5 border border-border shadow-medium flex flex-col gap-4">
-                    {/* Sección de Identidad */}
                     <div className="flex items-center gap-4">
                         <img src={user.photoUrl || '/assets/images/user-avatar-placeholder.png'} alt="Avatar" className="w-20 h-20 rounded-full object-cover flex-shrink-0" />
                         <div className="flex-1 min-w-0">
@@ -115,10 +98,7 @@ const ProfilePage = () => {
                             <span className="text-text-secondary text-sm">ID: {user.telegramId}</span>
                         </div>
                     </div>
-                    
                     <hr className="border-border/50" />
-
-                    {/* Sección de Estadísticas */}
                     <div className="flex items-center justify-around">
                         <StatItem label={t('profilePage.balanceUsdtLabel')} value={user.balance?.usdt || 0} />
                         <div className="w-px h-10 bg-border"></div>
@@ -127,9 +107,6 @@ const ProfilePage = () => {
                         <StatItem label={t('profilePage.totalWithdrawn')} value={user.totalWithdrawal || 0} />
                     </div>
                 </div>
-                {/* --- FIN: TARJETA DE PERFIL --- */}
-
-                {/* --- SECCIONES DE MENÚ AGRUPADAS --- */}
                 <div className="space-y-6">
                     <div>
                         <h3 className="font-bold text-text-secondary px-2 mb-3">{t('profile.financialsTitle', 'Finanzas')}</h3>
@@ -150,8 +127,6 @@ const ProfilePage = () => {
                         </motion.div>
                     </div>
                 </div>
-
-                {/* --- BOTÓN DE CERRAR SESIÓN --- */}
                 <div className="pt-4">
                     <button onClick={logout} className="w-full flex items-center justify-center gap-3 p-4 bg-status-danger/10 rounded-2xl border border-status-danger/30 text-status-danger hover:bg-status-danger/20 hover:border-status-danger/50 transition-colors duration-200 active:scale-[0.98]">
                         <HiOutlineArrowRightOnRectangle className="w-6 h-6" />
@@ -159,9 +134,8 @@ const ProfilePage = () => {
                     </button>
                 </div>
             </motion.div>
-
             <AnimatePresence>
-                {modalState.selectNetwork && <SelectNetworkModal onClose={() => closeModal('selectNetwork')} />}
+                {/* ELIMINADO: El modal de selección de red ya no se renderiza aquí */}
                 {modalState.withdrawal && <WithdrawalModal onClose={() => closeModal('withdrawal')} />}
                 {modalState.setPassword && <SetWithdrawalPasswordModal onClose={() => closeModal('setPassword')} />}
                 {modalState.setAddress && <SetWithdrawalAddressModal onClose={() => closeModal('setAddress')} />}

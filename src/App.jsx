@@ -24,6 +24,8 @@ import FaqPage from './pages/FaqPage';
 import AboutPage from './pages/AboutPage';
 import SupportPage from './pages/SupportPage';
 import FinancialHistoryPage from './pages/FinancialHistoryPage';
+import SelectNetworkPage from './pages/SelectNetworkPage';
+import DepositAddressPage from './pages/DepositAddressPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
@@ -82,6 +84,8 @@ function App() {
                       <Route path="/home" element={<HomePage />} />
                       <Route path="/market" element={<MinersPage />} />
                       <Route path="/team" element={<TeamPage />} />
+                      <Route path="/deposit/select-network" element={<SelectNetworkPage />} />
+                      <Route path="/deposit/address" element={<DepositAddressPage />} />
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/history" element={<FinancialHistoryPage />} />
                       <Route path="/ranking" element={<TasksPage />} />
