@@ -1,76 +1,95 @@
-// --- START OF FILE SelectNetworkPage.jsx ---
-
-// RUTA: frontend/src/pages/SelectNetworkPage.jsx (v2.0 - DISEÑO DE REFERENCIA FINAL)
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { HiArrowLeft, HiChevronRight } from 'react-icons/hi2';
+import { HiGlobeAlt, HiLightningBolt, HiShieldCheck, HiChevronRight } from 'react-icons/hi2';
 
-// Componente para cada tarjeta de red, ahora con navegación directa
-const NetworkCard = ({ networkInfo, onClick }) => (
+const NetworkCard = ({ name, protocol, fee, color, delay, onClick }) => (
   <motion.button
-    variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+    whileTap={{ scale: 0.98 }}
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay }}
     onClick={onClick}
-    className="w-full flex items-center p-4 rounded-2xl border border-border bg-surface hover:border-accent/50 transition-colors duration-200"
+    className="w-full bg-surface p-5 rounded-2xl border border-white/5 hover:border-accent/50 transition-all group relative overflow-hidden flex items-center justify-between mb-4"
   >
-    <img src={networkInfo.icon} alt={networkInfo.name} className="w-10 h-10 mr-4" />
-    <div className="flex-grow text-left">
-      <p className="font-bold text-text-primary text-lg">{networkInfo.fullName}</p>
-      <p className="text-sm text-text-secondary">{networkInfo.network}</p>
+    {/* Efecto Hover de Fondo */}
+    <div className={`absolute inset-0 bg-gradient-to-r ${color} opacity-0 group-hover:opacity-5 transition-opacity`} />
+
+    <div className="flex items-center gap-4 relative z-10">
+        <div className={`p-3 rounded-xl bg-background border border-white/10 ${color.replace('from-', 'text-').split(' ')[0]}`}>
+            <HiGlobeAlt className="w-6 h-6" />
+        </div>
+        <div className="text-left">
+            <h3 className="text-lg font-bold text-white">{name}</h3>
+            <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs font-mono text-text-secondary bg-white/5 px-1.5 py-0.5 rounded border border-white/5">
+                    {protocol}
+                </span>
+                <span className="text-[10px] text-green-400 flex items-center gap-1">
+                    <HiLightningBolt /> {fee}
+                </span>
+            </div>
+        </div>
     </div>
-    <HiChevronRight className="w-6 h-6 text-text-secondary flex-shrink-0" />
+
+    <div className="p-2 bg-background rounded-lg text-text-secondary group-hover:bg-accent group-hover:text-white transition-colors">
+        <HiChevronRight className="w-5 h-5" />
+    </div>
   </motion.button>
 );
 
 const SelectNetworkPage = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // Se restauran todas las redes del modal original
-  const networks = [
-    { id: 'usdt-bep20', name: 'USDT', fullName: 'USDT', network: 'BEP20 (BSC)', icon: '/assets/images/networks/bep20-usdt.png', type: 'dynamic' },
-    { id: 'usdt-trc20', name: 'USDT', fullName: 'TRON Network', network: 'TRC20', icon: '/assets/images/networks/tron.png', type: 'static' },
-    { id: 'bnb-bep20', name: 'BNB', fullName: 'BNB', network: 'BEP20 (BSC)', icon: '/assets/images/networks/bnb.png', type: 'static' },
-    { id: 'tron-trc20', name: 'Tron', fullName: 'USDT', network: 'TRC20', icon: '/assets/images/networks/trc20-usdt.png', type: 'static' },
-  ];
-
-  const handleNetworkSelect = (network) => {
-    // La selección navega directamente a la siguiente página
-    navigate('/deposit/address', { state: { network: network } });
+  const handleSelect = (networkId, protocol) => {
+    // Pasamos el protocolo como estado a la siguiente página
+    navigate('/deposit/address', { state: { networkId, protocol } });
   };
-  
-  const listVariants = { visible: { transition: { staggerChildren: 0.1 } }, hidden: {} };
 
   return (
-    <div className="flex flex-col h-full p-4 pt-6 pb-28">
-      <header className="flex-shrink-0 flex items-center mb-6">
-        <button onClick={() => navigate(-1)} className="p-2 mr-2"><HiArrowLeft className="w-6 h-6" /></button>
-        <h1 className="text-2xl font-bold">{t('deposit.selectNetwork.title', 'Seleccionar Red')}</h1>
-      </header>
-      
-      <main className="flex-grow flex flex-col gap-4 overflow-y-auto no-scrollbar">
-        <p className="text-text-secondary text-sm">
-          {t('deposit.selectNetwork.warning', 'Elija la red correcta para depositar sus activos. Enviar a una red incorrecta puede resultar en la pérdida de sus fondos.')}
-        </p>
+    <div className="flex flex-col h-full p-4 pt-10 pb-20 overflow-y-auto no-scrollbar">
+        
+        {/* Header */}
+        <div className="mb-8">
+            <h1 className="text-2xl font-bold text-white mb-2">Elegir Red</h1>
+            <p className="text-sm text-text-secondary">Selecciona la red blockchain para realizar tu depósito.</p>
+        </div>
 
-        <motion.div className="space-y-3" initial="hidden" animate="visible" variants={listVariants}>
-          {networks.map(net => (
+        {/* Lista de Redes */}
+        <div className="flex-1">
+            
+            {/* OPCIÓN 1: BNB Smart Chain (Dinámica) */}
             <NetworkCard 
-              key={net.id} 
-              networkInfo={net} 
-              onClick={() => handleNetworkSelect(net)}
+                name="USDT (Tether)"
+                protocol="BEP20 (BSC)"
+                fee="Gas Bajo"
+                color="from-yellow-500 to-orange-500"
+                delay={0.1}
+                onClick={() => handleSelect('usdt_bep20', 'BEP20')}
             />
-          ))}
-        </motion.div>
-      </main>
 
-      {/* El footer con el botón "Continuar" ha sido eliminado según sus instrucciones */}
+            {/* OPCIÓN 2: TRON (Hardcoded) */}
+            <NetworkCard 
+                name="USDT (Tether)"
+                protocol="TRC20 (Tron)"
+                fee="Rápido"
+                color="from-red-500 to-rose-600"
+                delay={0.2}
+                onClick={() => handleSelect('usdt_trc20', 'TRC20')}
+            />
+
+            {/* Más opciones si quisieras */}
+        </div>
+
+        {/* Footer Info */}
+        <div className="mt-auto p-4 bg-blue-500/10 rounded-xl border border-blue-500/20 flex gap-3">
+            <HiShieldCheck className="w-6 h-6 text-blue-400 shrink-0" />
+            <p className="text-xs text-blue-200/80 leading-relaxed">
+                Asegúrate de seleccionar la red correcta en tu billetera de origen. Los fondos enviados a redes incorrectas no se pueden recuperar.
+            </p>
+        </div>
     </div>
   );
 };
 
 export default SelectNetworkPage;
-
-// --- END OF FILE SelectNetworkPage.jsx ---

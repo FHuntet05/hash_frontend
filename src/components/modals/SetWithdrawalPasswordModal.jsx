@@ -1,114 +1,89 @@
-// RUTA: frontend/src/components/modals/SetWithdrawalPasswordModal.jsx (ENDPOINT CORREGIDO)
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { HiXMark, HiShieldCheck } from 'react-icons/hi2';
+import { HiXMark, HiLockClosed, HiKey } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
-import useUserStore from '../../store/userStore';
 import api from '../../api/axiosConfig';
-
-const backdropVariants = { visible: { opacity: 1 }, hidden: { opacity: 0 } };
-const modalVariants = {
-  hidden: { scale: 0.9, opacity: 0 },
-  visible: { scale: 1, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 30 } },
-  exit: { scale: 0.9, opacity: 0, transition: { duration: 0.2 } },
-};
+import useUserStore from '../../store/userStore';
 
 const SetWithdrawalPasswordModal = ({ onClose }) => {
-  const { t } = useTranslation();
-  const { user, setUser } = useUserStore();
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { setUser } = useUserStore();
 
-  const isPasswordSet = user?.isWithdrawalPasswordSet || false;
-
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validaciones (sin cambios)
-    if (isPasswordSet && !currentPassword) return toast.error(t('setWithdrawalPasswordModal.toasts.currentRequired', 'La contraseña actual es obligatoria.'));
-    if (newPassword.length < 6) return toast.error(t('setWithdrawalPasswordModal.toasts.minLength', 'La nueva contraseña debe tener al menos 6 caracteres.'));
-    if (newPassword !== confirmPassword) return toast.error(t('setWithdrawalPasswordModal.toasts.noMatch', 'Las nuevas contraseñas no coinciden.'));
-
-    setIsProcessing(true);
+  const handleSubmit = async () => {
+    if (password.length < 6) return toast.error('Mínimo 6 caracteres');
+    if (password !== confirm) return toast.error('Las contraseñas no coinciden');
     
-    const payload = { newPassword };
-    if (isPasswordSet) {
-      payload.currentPassword = currentPassword;
+    setLoading(true);
+    try {
+      // Ajusta la ruta según tu backend (users/withdrawal-password o similar)
+      const { data } = await api.put('/users/withdrawal-password', { withdrawalPassword: password });
+      setUser(data.user);
+      toast.success('Contraseña de seguridad establecida');
+      onClose();
+    } catch (error) {
+      toast.error('Error al guardar');
+    } finally {
+      setLoading(false);
     }
-
-    // --- INICIO DE CORRECCIÓN CRÍTICA ---
-    // Se ha corregido la ruta del endpoint para que coincida con la API del backend.
-    // Antes: '/users/set-withdrawal-password'
-    const setPasswordPromise = api.post('/users/withdrawal-password', payload);
-    // --- FIN DE CORRECCIÓN CRÍTICA ---
-
-    toast.promise(setPasswordPromise, {
-      loading: t('setWithdrawalPasswordModal.toasts.saving', 'Guardando contraseña...'),
-      success: (res) => {
-        setUser(res.data.user);
-        onClose();
-        return res.data.message || t('setWithdrawalPasswordModal.toasts.saveSuccess', 'Contraseña guardada con éxito.');
-      },
-      error: (err) => err.response?.data?.message || t('setWithdrawalPasswordModal.toasts.saveError', 'Error al guardar la contraseña.'),
-    }).finally(() => setIsProcessing(false));
   };
 
   return (
-    <motion.div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" onClick={onClose}
+    <motion.div 
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
     >
-      <motion.div
-        className="relative bg-card/80 backdrop-blur-lg rounded-2xl w-full max-w-sm text-text-primary border border-white/20 shadow-medium flex flex-col max-h-[90vh]"
-        variants={modalVariants} onClick={(e) => e.stopPropagation()}
+      <motion.div 
+        initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
+        className="bg-surface w-full max-w-xs rounded-3xl border border-white/10 shadow-2xl overflow-hidden"
       >
-        <header className="flex-shrink-0 p-6 pb-4">
-          <button className="absolute top-4 right-4 text-text-tertiary hover:text-text-primary" onClick={onClose}><HiXMark className="w-6 h-6" /></button>
-          <h2 className="text-xl font-bold text-center">
-            {isPasswordSet 
-              ? t('setWithdrawalPasswordModal.title_change', 'Cambiar Contraseña de Retiro') 
-              : t('setWithdrawalPasswordModal.title_set', 'Configurar Contraseña de Retiro')}
-          </h2>
-        </header>
+        <div className="bg-[#111827] p-6 text-center border-b border-white/5 relative">
+            <button onClick={onClose} className="absolute top-4 right-4 text-text-secondary hover:text-white"><HiXMark className="w-6 h-6" /></button>
+            <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-accent/20">
+                <HiLockClosed className="w-8 h-8 text-accent" />
+            </div>
+            <h2 className="text-lg font-bold text-white">Seguridad de Retiro</h2>
+            <p className="text-xs text-text-secondary mt-1">Crea un PIN único para autorizar salidas de dinero.</p>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <main className="flex-grow p-6 pt-2 overflow-y-auto no-scrollbar space-y-4">
-            <p className="text-sm text-center text-text-secondary">
-              {isPasswordSet
-                ? t('setWithdrawalPasswordModal.intro_change', 'Introduce tu contraseña actual para establecer una nueva.')
-                : t('setWithdrawalPasswordModal.intro_set', 'Esta contraseña se usará para autorizar todos tus retiros. Guárdala en un lugar seguro.')
-              }
-            </p>
-
-            {isPasswordSet && (
-              <div>
-                <label className="text-sm text-text-secondary mb-1 block">{t('setWithdrawalPasswordModal.currentPassword_label', 'Contraseña Actual')}</label>
-                <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="w-full bg-background/50 p-3 rounded-lg border border-border" />
-              </div>
-            )}
-            
-            <div>
-              <label className="text-sm text-text-secondary mb-1 block">{t('setWithdrawalPasswordModal.newPassword_label', 'Nueva Contraseña (mín. 6 caracteres)')}</label>
-              <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full bg-background/50 p-3 rounded-lg border border-border" />
+        <div className="p-6 space-y-4">
+            <div className="space-y-1">
+                <label className="text-[10px] font-bold text-text-secondary uppercase ml-1">Nueva Contraseña</label>
+                <div className="relative">
+                    <HiKey className="absolute left-3 top-3 text-text-secondary w-5 h-5" />
+                    <input 
+                        type="password" 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••"
+                        className="w-full bg-background border border-border rounded-xl py-2.5 pl-10 pr-4 text-white focus:border-accent outline-none transition-colors"
+                    />
+                </div>
             </div>
 
-            <div>
-              <label className="text-sm text-text-secondary mb-1 block">{t('setWithdrawalPasswordModal.confirmPassword_label', 'Confirmar Nueva Contraseña')}</label>
-              <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full bg-background/50 p-3 rounded-lg border border-border" />
+            <div className="space-y-1">
+                <label className="text-[10px] font-bold text-text-secondary uppercase ml-1">Confirmar Contraseña</label>
+                <div className="relative">
+                    <HiKey className="absolute left-3 top-3 text-text-secondary w-5 h-5" />
+                    <input 
+                        type="password" 
+                        value={confirm}
+                        onChange={(e) => setConfirm(e.target.value)}
+                        placeholder="••••••"
+                        className="w-full bg-background border border-border rounded-xl py-2.5 pl-10 pr-4 text-white focus:border-accent outline-none transition-colors"
+                    />
+                </div>
             </div>
-          </main>
 
-          <footer className="flex-shrink-0 p-6 pt-4 border-t border-border">
-            <button type="submit" disabled={isProcessing} className="w-full py-3 bg-accent-primary text-white text-lg font-bold rounded-full disabled:opacity-50 hover:bg-accent-primary-hover active:scale-95 transition-all">
-              {isProcessing ? t('common.saving', 'Guardando...') : t('setWithdrawalPasswordModal.saveButton', 'Guardar Contraseña')}
+            <button 
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-full py-3.5 mt-2 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl shadow-lg shadow-accent/20 transition-all active:scale-[0.98] disabled:opacity-50"
+            >
+                {loading ? 'Guardando...' : 'ESTABLECER SEGURIDAD'}
             </button>
-          </footer>
-        </form>
+        </div>
       </motion.div>
     </motion.div>
   );

@@ -1,104 +1,197 @@
-// RUTA: frontend/src/pages/admin/components/FactoryFormModal.jsx (CORREGIDO)
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { HiXMark } from 'react-icons/hi2';
+import { HiXMark, HiCpuChip, HiCurrencyDollar, HiClock, HiBolt, HiGift } from 'react-icons/hi2';
+import api from '../../../api/axiosConfig';
+import toast from 'react-hot-toast';
 
-const modalVariants = {
-    hidden: { y: -50, opacity: 0 },
-    visible: { y: 0, opacity: 1 },
-    exit: { y: 50, opacity: 0 }
-};
-
-const FactoryFormModal = ({ factory, onSave, onClose }) => {
+const MinerFormModal = ({ isOpen, onClose, miner, onSuccess }) => {
   const [formData, setFormData] = useState({
     name: '',
-    vipLevel: '', // <-- CAMBIO: Añadido al estado inicial
     price: '',
     dailyProduction: '',
     durationDays: '',
+    vipLevel: '',
     imageUrl: '',
-    isFree: false
+    isFree: false, // Nuevo campo para el switch
   });
-  const isEditing = !!factory;
 
   useEffect(() => {
-    if (factory) {
+    if (miner) {
       setFormData({
-        name: factory.name || '',
-        vipLevel: factory.vipLevel || '', // <-- CAMBIO: Se carga el valor al editar
-        price: factory.price || '',
-        dailyProduction: factory.dailyProduction || '',
-        durationDays: factory.durationDays || '',
-        imageUrl: factory.imageUrl || '',
-        isFree: factory.isFree || false
+        name: miner.name || '',
+        price: miner.price || '',
+        dailyProduction: miner.dailyProduction || '',
+        durationDays: miner.durationDays || '',
+        vipLevel: miner.vipLevel || '',
+        imageUrl: miner.imageUrl || '',
+        isFree: miner.isFree || false,
       });
+    } else {
+        // Resetear para nuevo
+        setFormData({ 
+            name: '', 
+            price: '', 
+            dailyProduction: '', 
+            durationDays: '', 
+            vipLevel: '', 
+            imageUrl: '', 
+            isFree: false 
+        });
     }
-  }, [factory]);
+  }, [miner]);
 
+  // Manejador inteligente para inputs de texto y checkbox
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+      const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+      setFormData({ ...formData, [e.target.name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const dataToSend = {
-        ...formData,
-        vipLevel: Number(formData.vipLevel), // <-- CAMBIO: Se convierte a número
-        price: Number(formData.price),
-        dailyProduction: Number(formData.dailyProduction),
-        durationDays: Number(formData.durationDays)
-    };
-    onSave(dataToSend, factory?._id);
+    
+    // Validación básica lógica
+    if (formData.isFree && Number(formData.price) > 0) {
+        if(!window.confirm("Has marcado este ítem como GRATIS pero tiene un PRECIO mayor a 0. \n\n¿Estás seguro? (Los usuarios nuevos lo recibirán sin pagar, pero en la tienda costará dinero).")) {
+            return;
+        }
+    }
+
+    try {
+      if (miner) {
+        await api.put(`/admin/miners/${miner._id}`, formData);
+        toast.success('Potenciador actualizado');
+      } else {
+        await api.post('/admin/miners', formData);
+        toast.success('Potenciador creado');
+      }
+      onSuccess();
+      onClose();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || 'Error al guardar');
+    }
   };
+
+  if (!isOpen) return null;
 
   return (
-    <motion.div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4" initial="hidden" animate="visible" exit="hidden" onClick={onClose}>
-      <motion.div variants={modalVariants} onClick={(e) => e.stopPropagation()} className="relative bg-dark-secondary rounded-2xl border border-white/10 w-full max-w-lg text-white">
-        <header className="flex justify-between items-center p-6 border-b border-white/10">
-          <h2 className="text-xl font-bold">{isEditing ? 'Editar Fábrica' : 'Crear Nueva Fábrica'}</h2>
-          <button onClick={onClose} className="p-1 rounded-full hover:bg-white/20"><HiXMark className="w-6 h-6" /></button>
-        </header>
-        <form onSubmit={handleSubmit}>
-          <main className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[70vh] overflow-y-auto">
-            <div className="md:col-span-2">
-              <label className="text-sm font-medium">Nombre de la Fábrica</label>
-              <input name="name" value={formData.name} onChange={handleChange} className="w-full mt-1 p-2 bg-black/20 rounded-md" required />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+        className="bg-surface w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
+      >
+        {/* Header */}
+        <div className="p-5 border-b border-white/10 flex justify-between items-center bg-[#111827]">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <HiCpuChip className="text-accent" /> 
+                {miner ? 'Editar Potenciador' : 'Nuevo Potenciador'}
+            </h2>
+            <button onClick={onClose}><HiXMark className="w-6 h-6 text-text-secondary hover:text-white" /></button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto no-scrollbar">
+            
+            {/* --- SWITCH DE GRATUIDAD --- */}
+            <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${formData.isFree ? 'bg-accent/10 border-accent/50' : 'bg-background border-border'}`}>
+                <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${formData.isFree ? 'bg-accent text-white' : 'bg-gray-700 text-gray-400'}`}>
+                        <HiGift className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <p className={`text-sm font-bold ${formData.isFree ? 'text-white' : 'text-text-secondary'}`}>
+                            Modo Bienvenida
+                        </p>
+                        <p className="text-[10px] text-text-secondary">Se asigna gratis al registrarse</p>
+                    </div>
+                </div>
+                
+                <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                        type="checkbox" 
+                        name="isFree" 
+                        checked={formData.isFree} 
+                        onChange={handleChange} 
+                        className="sr-only peer" 
+                    />
+                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
+                </label>
             </div>
+
+            {/* Nombre */}
             <div>
-              <label className="text-sm font-medium">Precio (USDT)</label>
-              <input type="number" name="price" value={formData.price} onChange={handleChange} className="w-full mt-1 p-2 bg-black/20 rounded-md" step="0.01" required />
+                <label className="text-xs font-bold text-text-secondary uppercase">Nombre del Modelo</label>
+                <input name="name" value={formData.name} onChange={handleChange} required className="w-full mt-1 bg-background border border-border rounded-lg p-3 text-white focus:border-accent outline-none" placeholder="Ej: Starter Rig v1" />
             </div>
+
+            {/* Precio y Prod */}
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <label className="text-xs font-bold text-text-secondary uppercase">Precio (USDT)</label>
+                    <div className="relative mt-1">
+                        <HiCurrencyDollar className="absolute left-3 top-3 text-text-secondary" />
+                        <input 
+                            type="number" 
+                            name="price" 
+                            value={formData.price} 
+                            onChange={handleChange} 
+                            required 
+                            className="w-full bg-background border border-border rounded-lg p-3 pl-9 text-white focus:border-accent outline-none" 
+                            placeholder="0.00"
+                        />
+                    </div>
+                </div>
+                <div>
+                    <label className="text-xs font-bold text-text-secondary uppercase">Prod. Diaria</label>
+                    <div className="relative mt-1">
+                        <HiBolt className="absolute left-3 top-3 text-green-500" />
+                        <input 
+                            type="number" 
+                            step="0.000001" 
+                            name="dailyProduction" 
+                            value={formData.dailyProduction} 
+                            onChange={handleChange} 
+                            required 
+                            className="w-full bg-background border border-border rounded-lg p-3 pl-9 text-white focus:border-accent outline-none" 
+                            placeholder="0.00"
+                        />
+                    </div>
+                    {/* Preview de GH/s */}
+                    {formData.dailyProduction > 0 && (
+                        <p className="text-[10px] text-accent text-right mt-1">
+                            ≈ {(formData.dailyProduction * 100).toFixed(1)} GH/s
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            {/* Duración y Nivel */}
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <label className="text-xs font-bold text-text-secondary uppercase">Duración (Días)</label>
+                    <div className="relative mt-1">
+                        <HiClock className="absolute left-3 top-3 text-text-secondary" />
+                        <input type="number" name="durationDays" value={formData.durationDays} onChange={handleChange} required className="w-full bg-background border border-border rounded-lg p-3 pl-9 text-white focus:border-accent outline-none" />
+                    </div>
+                </div>
+                <div>
+                    <label className="text-xs font-bold text-text-secondary uppercase">Nivel VIP</label>
+                    <input type="number" name="vipLevel" value={formData.vipLevel} onChange={handleChange} required className="w-full mt-1 bg-background border border-border rounded-lg p-3 text-white focus:border-accent outline-none" placeholder="0-5" />
+                </div>
+            </div>
+
+            {/* Imagen */}
             <div>
-              <label className="text-sm font-medium">Producción Diaria (USDT/Día)</label>
-              <input type="number" name="dailyProduction" value={formData.dailyProduction} onChange={handleChange} className="w-full mt-1 p-2 bg-black/20 rounded-md" step="0.01" required />
+                <label className="text-xs font-bold text-text-secondary uppercase">URL Imagen (Opcional)</label>
+                <input name="imageUrl" value={formData.imageUrl} onChange={handleChange} className="w-full mt-1 bg-background border border-border rounded-lg p-3 text-white focus:border-accent outline-none text-sm" placeholder="https://..." />
             </div>
-            <div>
-              <label className="text-sm font-medium">Duración (Días)</label>
-              <input type="number" name="durationDays" value={formData.durationDays} onChange={handleChange} className="w-full mt-1 p-2 bg-black/20 rounded-md" required />
-            </div>
-            {/* --- INICIO DE NUEVO CAMPO --- */}
-            <div>
-              <label className="text-sm font-medium">Nivel VIP</label>
-              <input type="number" name="vipLevel" value={formData.vipLevel} onChange={handleChange} className="w-full mt-1 p-2 bg-black/20 rounded-md" required />
-            </div>
-            {/* --- FIN DE NUEVO CAMPO --- */}
-             <div className="md:col-span-2 flex items-center justify-start gap-4 pt-2">
-              <label htmlFor="isFree" className="text-sm font-medium">¿Es Gratuita?</label>
-              <input type="checkbox" id="isFree" name="isFree" checked={formData.isFree} onChange={handleChange} className="h-5 w-5 rounded bg-black/20 text-accent-start focus:ring-accent-start border-gray-500" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="text-sm font-medium">URL de Imagen</label>
-              <input name="imageUrl" value={formData.imageUrl} onChange={handleChange} className="w-full mt-1 p-2 bg-black/20 rounded-md" required />
-            </div>
-          </main>
-          <footer className="p-6 border-t border-white/10 text-right">
-            <button type="submit" className="px-6 py-2 bg-gradient-to-r from-accent-start to-accent-end text-white font-bold rounded-lg hover:opacity-90 transition-opacity">Guardar Cambios</button>
-          </footer>
+
+            <button type="submit" className="w-full py-3 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl shadow-lg mt-4 transition-transform active:scale-[0.98]">
+                GUARDAR CONFIGURACIÓN
+            </button>
         </form>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
-export default FactoryFormModal;
+
+export default MinerFormModal;
