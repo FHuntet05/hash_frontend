@@ -272,33 +272,40 @@ const MinersPage = () => {
                 <div className="flex items-center justify-center h-full text-text-secondary">Seleccione un módulo</div>
             )}
 
-            {/* --- FOOTER: ACCIÓN FIJA --- */}
+            {/* --- FOOTER: ACCIÓN FIJA (LAYOUT HORIZONTAL COMPACTO) --- */}
             {selectedMiner && (
-                <div className="absolute bottom-0 left-0 right-0 p-5 bg-[#161B22]/95 backdrop-blur-2xl border-t border-white/5 pb-24 shadow-[0_-10px_30px_rgba(0,0,0,0.3)]">
-                    <div className="flex items-end justify-between mb-4 px-1">
-                        <div>
-                            <span className="text-gray-400 text-xs font-bold uppercase tracking-wider block mb-0.5">Inversión Total</span>
-                            <span className="text-3xl font-black text-white">{selectedMiner.price} <span className="text-base font-medium text-gray-500">USDT</span></span>
-                        </div>
-                    </div>
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-[#161B22]/95 backdrop-blur-2xl border-t border-white/5 pb-24 shadow-[0_-10px_30px_rgba(0,0,0,0.3)]">
                     
-                    <button
-                        onClick={() => setPurchaseModalOpen(true)}
-                        disabled={isOwned(selectedMiner._id)}
-                        className={`
-                            w-full py-4 rounded-xl font-black text-lg flex items-center justify-center gap-2 transition-all active:scale-[0.97] uppercase tracking-wide shadow-lg
-                            ${isOwned(selectedMiner._id)
-                                ? 'bg-gray-700/50 border border-gray-600 text-gray-400 cursor-not-allowed'
-                                : 'bg-accent hover:bg-accent-hover text-white shadow-orange-500/20'
-                            }
-                        `}
-                    >
-                        {isOwned(selectedMiner._id) ? (
-                            <>Instalado <HiCheckBadge className="w-6 h-6" /></>
-                        ) : (
-                            <>Adquirir Potencia <HiBolt className="w-5 h-5 animate-pulse" /></>
-                        )}
-                    </button>
+                    {/* Contenedor Flex para alinear Lado a Lado */}
+                    <div className="flex items-center justify-between gap-4">
+                        
+                        {/* IZQUIERDA: PRECIO */}
+                        <div className="flex-shrink-0">
+                            <span className="text-gray-400 text-[10px] font-bold uppercase tracking-wider block mb-0.5">Inversión</span>
+                            <span className="text-2xl font-black text-white leading-none">
+                                {selectedMiner.price} <span className="text-sm font-medium text-gray-500">USDT</span>
+                            </span>
+                        </div>
+                        
+                        {/* DERECHA: BOTÓN (Ocupa el espacio restante) */}
+                        <button
+                            onClick={() => setPurchaseModalOpen(true)}
+                            disabled={isOwned(selectedMiner._id)}
+                            className={`
+                                flex-1 py-3.5 px-4 rounded-xl font-black text-base flex items-center justify-center gap-2 transition-all active:scale-[0.97] uppercase tracking-wide shadow-lg
+                                ${isOwned(selectedMiner._id)
+                                    ? 'bg-gray-700/50 border border-gray-600 text-gray-400 cursor-not-allowed'
+                                    : 'bg-accent hover:bg-accent-hover text-white shadow-orange-500/20'
+                                }
+                            `}
+                        >
+                            {isOwned(selectedMiner._id) ? (
+                                <>Instalado <HiCheckBadge className="w-5 h-5" /></>
+                            ) : (
+                                <>Adquirir <HiBolt className="w-5 h-5 animate-pulse" /></>
+                            )}
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
