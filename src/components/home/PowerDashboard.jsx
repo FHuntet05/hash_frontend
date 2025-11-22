@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Importar hook de navegación
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { HiBolt, HiCpuChip, HiSignal } from 'react-icons/hi2';
 
 const PowerDashboard = ({ user }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate(); // 2. Instanciar hook
+  const navigate = useNavigate();
   const cardRef = useRef(null);
 
   // --- 1. CÁLCULOS DE POTENCIA ---
@@ -41,11 +41,8 @@ const PowerDashboard = ({ user }) => {
             if (elapsedSeconds > 0) {
                 const minerDaily = pm.miner?.dailyProduction || 0;
                 const minerPerSecond = minerDaily / 86400;
-                
-                // Límite de seguridad visual (Máximo 12h)
                 const maxCycleReward = minerDaily / 2;
                 const calculated = elapsedSeconds * minerPerSecond;
-                
                 totalPending += Math.min(calculated, maxCycleReward);
             }
         });
@@ -114,8 +111,13 @@ const PowerDashboard = ({ user }) => {
 
   return (
     <div className="relative w-full" ref={cardRef}>
-      <svg className="absolute inset-0 w-full h-full pointer-events-none z-20 rounded-3xl overflow-visible">
-        <rect x="0" y="0" width="100%" height="100%" rx="24" ry="24" fill="none" stroke="#374151" strokeWidth="2" />
+      
+      {/* CAPA 1: FONDO (Z-0) */}
+      <div className="absolute inset-0 bg-surface rounded-3xl z-0 shadow-2xl border border-border"></div>
+
+      {/* CAPA 2: BORDE SVG (Z-10) - Ahora está DETRÁS del contenido interactivo */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 rounded-3xl overflow-visible">
+        <rect x="0" y="0" width="100%" height="100%" rx="24" ry="24" fill="none" stroke="transparent" strokeWidth="0" />
         <rect
           x="0" y="0" width="100%" height="100%" rx="24" ry="24" fill="none"
           stroke="#F97316" strokeWidth="3"
@@ -126,17 +128,21 @@ const PowerDashboard = ({ user }) => {
         />
       </svg>
 
-      <div className="bg-surface rounded-3xl p-6 shadow-2xl overflow-hidden relative z-10">
-        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#F97316 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+      {/* CAPA 3: CONTENIDO INTERACTIVO (Z-20) - Click garantizado */}
+      <div className="relative z-20 p-6 overflow-hidden rounded-3xl">
+        
+        {/* Decoración interna */}
+        <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F97316 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
 
+        {/* Header */}
         <div className="flex justify-between items-start mb-6 relative">
           <div>
             <p className="text-[10px] font-mono text-accent uppercase tracking-widest mb-1 flex items-center gap-1">
-              <HiSignal className="animate-pulse"/> Live Mining
+              <HiSignal className="animate-pulse"/> Live Network
             </p>
             <div className="flex items-end gap-2">
                 <h2 className="text-3xl font-bold text-white font-mono tracking-tight">{timeLeft}</h2>
-                <span className="text-[10px] text-text-secondary mb-1.5">para liberar</span>
+                <span className="text-[10px] text-text-secondary mb-1.5">hasta liberación</span>
             </div>
           </div>
           <div className="bg-background/60 backdrop-blur-sm p-2 rounded-lg border border-white/5 text-center min-w-[80px]">
@@ -145,14 +151,16 @@ const PowerDashboard = ({ user }) => {
           </div>
         </div>
 
+        {/* Contador */}
         <div className="text-center py-4 relative">
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-accent/10 rounded-full blur-3xl"></div>
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
              <p className="text-text-secondary text-[10px] uppercase mb-1 tracking-widest">Generado en este ciclo</p>
              <div className="text-4xl md:text-5xl font-mono font-bold text-white tracking-tighter drop-shadow-lg">
                 {minedAmount.toFixed(7)} <span className="text-lg text-text-secondary font-sans">USDT</span>
              </div>
         </div>
 
+        {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 mt-6 relative">
             <div className="bg-background/40 border border-white/5 p-3 rounded-xl flex flex-col">
                 <div className="flex items-center gap-2 text-text-secondary text-[10px] uppercase mb-1">
@@ -173,10 +181,13 @@ const PowerDashboard = ({ user }) => {
             </div>
         </div>
 
-        {/* --- BOTÓN DE ACCIÓN CON NAVEGACIÓN --- */}
+        {/* BOTÓN DE ACCIÓN (Z-30 explícito por seguridad) */}
         <button 
-            onClick={() => navigate('/market')} // <--- ESTA ES LA LÍNEA CLAVE
-            className="w-full mt-6 py-3.5 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl shadow-lg shadow-accent/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-sm uppercase tracking-wide"
+            onClick={() => {
+                console.log("Navegando al mercado..."); // Log para depuración
+                navigate('/market');
+            }}
+            className="w-full mt-6 py-3.5 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl shadow-lg shadow-accent/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-sm uppercase tracking-wide relative z-30 cursor-pointer"
         >
             <HiBolt className="w-5 h-5" />
             AUMENTAR POTENCIA
