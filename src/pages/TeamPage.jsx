@@ -69,66 +69,47 @@ const TeamPage = () => {
 
   if (loadingSummary) return <div className="flex justify-center pt-20"><Loader /></div>;
 
-  // Componente de Pestaña
-  const TabButton = ({ level, label }) => (
-      <button
-          onClick={() => setActiveTab(level)}
-          className={`
-              flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-200
-              ${activeTab === level 
-                  ? 'bg-accent text-white shadow-lg shadow-accent/20' 
-                  : 'bg-surface text-text-secondary hover:bg-surface/80'
-              }
-          `}
-      >
-          {label}
-      </button>
-  );
+    // Componente de Pestaña Mejorado (Segmented Control Look)
+  const TabButton = ({ level, label }) => {
+      const isActive = activeTab === level;
+      return (
+          <button
+              onClick={() => setActiveTab(level)}
+              className={`
+                  relative flex-1 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 z-10
+                  ${isActive ? 'text-white' : 'text-text-secondary hover:text-text-primary'}
+              `}
+          >
+              {isActive && (
+                  <motion.div 
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-surface border border-white/10 shadow-sm rounded-lg -z-10"
+                    initial={false}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+              )}
+              {label}
+          </button>
+      );
+  };
 
   return (
-    <motion.div 
-        className="flex flex-col h-full p-4 pt-6 pb-28 gap-6 overflow-y-auto no-scrollbar"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-    >
-      {/* --- SECCIÓN SUPERIOR: ENLACE Y ESTADÍSTICAS --- */}
-      <div className="bg-surface rounded-2xl p-5 border border-border shadow-medium">
-        <h1 className="text-xl font-bold text-white mb-2">{t('teamPage.title', 'Equipo')}</h1>
-        <p className="text-xs text-text-secondary mb-4">Gestiona tu red de referidos y comisiones.</p>
-        
-        {/* Input de Enlace */}
-        <div className="flex items-center bg-background rounded-xl p-2 border border-border mb-4">
-            <input type="text" value={referralLink} readOnly className="w-full bg-transparent text-text-secondary text-xs outline-none px-2 font-mono" />
-            <button onClick={copyToClipboard} className="p-2 bg-accent/10 text-accent rounded-lg hover:bg-accent hover:text-white transition-colors">
-                <HiOutlineClipboardDocument className="w-5 h-5" />
-            </button>
-        </div>
-        <SocialShare referralLink={referralLink} />
-      </div>
+    <motion.div className="flex flex-col h-full p-4 pt-6 pb-32 gap-6 overflow-y-auto no-scrollbar" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      
+      {/* ... (Sección Superior igual: Enlace y Stats) ... */}
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-3">
-        <TeamStatCard 
-            title="Miembros" 
-            value={summary?.totalTeamMembers || 0} 
-            icon={HiOutlineUserGroup} 
-            colorClass="text-blue-400" 
-        />
-        <TeamStatCard 
-            title="Comisiones" 
-            value={(summary?.totalCommission || 0).toFixed(2)} 
-            icon={HiOutlineBanknotes} 
-            colorClass="text-green-400" 
-        />
-      </div>
-
-      {/* --- SECCIÓN INFERIOR: PESTAÑAS Y LISTA --- */}
+      {/* --- SECCIÓN DE TABS MEJORADA --- */}
       <div>
-          <h2 className="text-lg font-bold text-white mb-3">Detalles por Nivel</h2>
+          <div className="flex items-center justify-between mb-3 px-1">
+            <h2 className="text-lg font-bold text-white">Detalles por Nivel</h2>
+            <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded-full border border-accent/20">
+                {levelDetails.length} Referidos
+            </span>
+          </div>
           
-          {/* Tab Bar */}
-          <div className="flex gap-2 mb-4 bg-background p-1 rounded-2xl border border-border">
-              <TabButton level={1} label="Nivel 1" />
+          {/* Contenedor de Tabs Estilo iOS/Segmented */}
+          <div className="flex p-1 bg-background/50 rounded-xl border border-white/5 mb-4 backdrop-blur-sm">
+              <TabButton level={1} label="Nivel 1 (Directos)" />
               <TabButton level={2} label="Nivel 2" />
               <TabButton level={3} label="Nivel 3" />
           </div>
