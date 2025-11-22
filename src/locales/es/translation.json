@@ -1,9 +1,8 @@
-
 {
   "nav": {
     "home": "Inicio",
-    "tasks": "Tareas",
-    "market": "Mineros",
+    "tasks": "Misiones",
+    "market": "Potencia",
     "team": "Equipo",
     "profile": "Perfil"
   },
@@ -11,126 +10,136 @@
     "error": "Ocurrió un error",
     "copied": "¡Copiado!",
     "continue": "Continuar",
-    "loading": "Cargando...",
+    "loading": "Cargando sistemas...",
     "close": "Cerrar",
-    "loadingUser": "Cargando datos del usuario..."
+    "loadingUser": "Sincronizando datos..."
   },
   "homePage": {
-    "myMiners": "Mis Mineros",
-    "noMiners": "No tienes mineros activos.",
-    "goToMarket": "Visita el mercado para empezar a producir.",
-    "tasks": "Tareas",
-    "toasts": {
-      "claiming": "Reclamando producción...",
-      "claimSuccess": "¡Producción reclamada!"
-    },
-    "balanceOverview": {
-      "currentBalance": "Saldo Actual",
-      "withdraw": "Retirar"
-    }
+    "liveNetwork": "RED EN VIVO",
+    "cycle": "Ciclo",
+    "toRelease": "para liberación",
+    "generatedCycle": "Generado en este ciclo",
+    "hashPower": "Potencia Hash",
+    "yield": "Rendimiento",
+    "recentActivity": "Actividad Reciente",
+    "noActivity": "Sin movimientos recientes.",
+    "augmentPower": "AUMENTAR POTENCIA"
   },
   "profilePage": {
     "balanceUsdtLabel": "Saldo Total",
+    "verified": "VERIFICADO",
+    "active": "Activo",
+    "financialOps": "Operaciones Financieras",
+    "appSettings": "Aplicación",
     "toasts": {
-      "walletNotSet": "Por favor, guarda tu billetera de retiro primero.",
-      "passwordNotSet": "Por favor, configura tu contraseña de retiro primero.",
-      "insufficientBalance": "Saldo insuficiente. El mínimo para retirar es {{min}} USDT."
+      "walletNotSet": "Vincula tu billetera antes de retirar.",
+      "passwordNotSet": "Establece tu PIN de seguridad primero.",
+      "addressGenerated": "Dirección generada exitosamente.",
+      "insufficientBalance": "Saldo insuficiente. Mínimo: {{min}} USDT."
     }
   },
   "profile": {
-    "recharge": "Depositar",
+    "deposit": "Depositar",
     "withdraw": "Retirar",
-    "records": "Historial",
-    "saveWallet": "Guardar Billetera",
-    "editWallet": "Editar Billetera",
-    "invite": "Equipo",
-    "setWithdrawalPassword": "Configurar Contraseña de Retiro",
-    "changeWithdrawalPassword": "Cambiar Contraseña de Retiro",
+    "wallet": "Billetera",
+    "security": "Seguridad",
+    "rechargeSub": "Recargar Saldo",
+    "withdrawSub": "Transferir Fondos",
+    "walletSub": "Configurar",
+    "walletSet": "Vinculada",
+    "securitySub": "PIN de Retiro",
+    "invite": "Mi Equipo",
     "language": "Idioma",
     "faq": "FAQ",
-    "about": "Sobre Nosotros",
-    "support": "Soporte",
-    "logout": "Cerrar Sesión",
-    "financialsTitle": "Finanzas",
-    "accountTitle": "Cuenta",
-    "supportTitle": "Soporte"
+    "about": "Sobre NovMining",
+    "support": "Soporte Técnico"
+  },
+  "teamPage": {
+    "title": "Invita a tus Amigos",
+    "description": "Expande tu red y gana comisiones.",
+    "stats": {
+      "members": "Miembros",
+      "commission": "Comisiones"
+    },
+    "levels": {
+      "totalMembers": "Miembros",
+      "commission": "Ganancia"
+    },
+    "levelLabel": "Nivel {{level}}",
+    "noLevelsData": "Aún no hay datos en este nivel.",
+    "toasts": {
+      "linkCopied": "¡Enlace de invitación copiado!",
+      "fetchError": "Error al cargar datos del equipo."
+    }
+  },
+  "minerPurchaseModal": {
+    "quantity": "Cantidad",
+    "totalCost": "Costo Total",
+    "yourBalance": "Tu Saldo",
+    "buyNow": "CONFIRMAR INSTALACIÓN",
+    "recharge": "RECARGAR SALDO",
+    "toasts": {
+      "purchasing": "Procesando...",
+      "purchaseSuccess": "¡Potencia adquirida correctamente!",
+      "insufficientFunds": "Saldo insuficiente. Redirigiendo..."
+    }
   },
   "minerCard": {
-    "price": "Precio",
-    "dailyProduction": "Producción Diaria",
+    "dailyProduction": "Ganancia Diaria",
     "duration": "Duración",
-    "days": "{{count}} días",
-    "buyNow": "COMPRAR AHORA",
-    "owned": "Adquirida"
+    "price": "Inversión",
+    "days": "{{count}} Días",
+    "buyNow": "AUMENTAR POTENCIA",
+    "alreadyOwned": "INSTALADO",
+    "owned": "Activo"
   },
-  "purchasedMiner": {
-    "claim": "Reclamar",
-    "claimCycle": "Ciclo de Reclamo",
-    "lifespan": "Vida Útil Restante",
-    "totalProduction": "Producción Total",
-    "expiresOn": "Expira el"
-  },
-  "status": {
-    "mining": "Minando",
-    "readyToClaim": "Listo para Reclamar",
-    "expired": "Expirado"
-  },
-  "time": {
-    "days": "{{count}}d",
-    "expired": "Expirado"
+  "minersPage": {
+    "title": "Centro de Potencia",
+    "subtitle": "Adquiere módulos para aumentar tu GH/s.",
+    "noMinersAvailable": "No hay módulos disponibles.",
+    "error": "Error cargando el mercado."
   },
   "tasksPage": {
-    "title": "Centro de Tareas",
-    "description": "Completa tareas para ganar recompensas adicionales y acelerar tu progreso."
+    "title": "Misiones",
+    "description": "Completa objetivos estratégicos y desbloquea recompensas en USDT."
   },
   "tasks": {
-    "claimed": "Reclamado",
-    "claim": "Reclamar",
-    "pending": "En Progreso",
-    "locked": "Bloqueado",
-    "progress": "Progreso",
-    "noTasks": "No hay tareas disponibles en este momento.",
+    "noTasks": "No hay misiones disponibles por ahora.",
     "toasts": {
       "claimSuccess": "¡Recompensa reclamada!"
     },
-    "INVITE_1": { "title": "Primeros Pasos", "description": "Invita a 1 amigo a tu equipo." },
-    "INVITE_2": { "title": "Constructor de Red", "description": "Invita a 3 amigos a tu equipo." },
-    "INVITE_3": { "title": "Líder de Comunidad", "description": "Invita a 5 amigos a tu equipo." },
-    "INVITE_4": { "title": "Conector Social", "description": "Invita a 10 amigos a tu equipo." },
-    "INVITE_5": { "title": "Influencer", "description": "Invita a 20 amigos a tu equipo." },
-    "INVITE_6": { "title": "Embajador", "description": "Invita a 50 amigos a tu equipo." },
-    "INVITE_7": { "title": "Socio Plata", "description": "Invita a 100 amigos a tu equipo." },
-    "INVITE_8": { "title": "Socio Oro", "description": "Invita a 150 amigos a tu equipo." },
-    "INVITE_9": { "title": "Socio Platino", "description": "Invita a 200 amigos a tu equipo." },
-    "INVITE_10": { "title": "Magnate de la Red", "description": "Invita a 300 amigos a tu equipo." },
-    "INVITE_11": { "title": "Visionario Global", "description": "Invita a 500 amigos a tu equipo." },
-    "INVITE_12": { "title": "Leyenda de la Red", "description": "Invita a 1000 amigos a tu equipo." }
+    "REF_DEP_50": { "title": "Iniciador de Red", "description": "Invita a un amigo que deposite 50 USDT." },
+    "REF_DEP_100": { "title": "Mentor de Negocios", "description": "Invita a un amigo que deposite 100 USDT." },
+    "REF_DEP_200": { "title": "Líder de Expansión", "description": "Invita a un amigo que deposite 200 USDT." },
+    "REF_DEP_500": { "title": "Socio Estratégico", "description": "Invita a un amigo que deposite 500 USDT." },
+    "OWN_DEP_10": { "title": "Activación de Cuenta", "description": "Realiza tu primer depósito de 10 USDT." },
+    "INVITE_10": { "title": "Conector Social", "description": "Invita a 10 usuarios a la plataforma." },
+    "INVITE_50": { "title": "Influencer", "description": "Invita a 50 usuarios a la plataforma." },
+    "INVITE_100": { "title": "Embajador", "description": "Invita a 100 usuarios a la plataforma." },
+    "INVITE_200": { "title": "Leyenda NovMining", "description": "Invita a 200 usuarios a la plataforma." }
   },
   "deposit": {
-    "selectNetwork": {
-      "title": "Seleccionar Red",
-      "warning": "Elija la red correcta para depositar sus activos. Enviar a una red incorrecta puede resultar en la pérdida de sus fondos."
-    },
     "address": {
-      "generating": "Generando Dirección...",
-      "title": "Depositar {{currency}}",
-      "sendOnly": "Enviar solo {{currency}} a través de la red {{network}}",
-      "copied": "Dirección copiada al portapapeles",
-      "staticNotice": "Las transferencias en esta red pueden tardar de 3 a 5 minutos en acreditarse después de ser confirmadas.",
-      "confirmationNotice": "Los fondos serán acreditados tras las confirmaciones de la red.",
-      "noNetworkSelected": "No se ha seleccionado ninguna red.",
-      "notConfigured": "Dirección no configurada."
+      "title": "Depósito {{currency}}",
+      "sendOnly": "Envía únicamente {{currency}} a través de la red {{network}}.",
+      "copied": "¡Dirección copiada!",
+      "warningTitle": "¡Importante!",
+      "warningBody": "Asegúrate de que la red coincida. Los errores son irreversibles.",
+      "autoTitle": "Sistema Automático",
+      "autoBody": "Acreditación rápida tras confirmación de red.",
+      "manualTitle": "Validación de Red",
+      "manualBody": "Depósito monitoreado. Puede tardar 5-15 min."
     }
   },
   "faqPage": {
-  "title": "Preguntas Frecuentes",
-  "q1": "¿Qué es Hash Power Bot?",
-  "a1": "Hash Power Bot es una plataforma de simulación económica donde puedes adquirir Chips virtuales que generan ingresos pasivos en USDT de forma automática.",
-  "q2": "¿Cómo empiezo a ganar?",
-  "a2": "Simplemente adquiere un Chip en nuestra tienda. Una vez comprado, comenzará a producir USDT cada 24 horas, que podrás reclamar directamente a tu saldo principal.",
-  "q3": "¿Cómo puedo retirar mis ganancias?",
-  "a3": "Puedes solicitar un retiro desde tu perfil. Asegúrate de haber configurado tu contraseña de retiro y de cumplir con el monto mínimo requerido.",
-  "q4": "¿Es seguro invertir aquí?",
-  "a4": "Utilizamos protocolos de seguridad estándar para proteger tu cuenta y tus fondos. Sin embargo, como con cualquier plataforma de ingresos, participa de manera responsable."
-}
+    "title": "Preguntas Frecuentes",
+    "q1": "¿Qué es NovMining?",
+    "a1": "NovMining es una plataforma de minería en la nube de última generación que permite alquilar potencia de hash (GH/s) para generar USDT diariamente.",
+    "q2": "¿Cómo funciona el Ciclo de 12H?",
+    "a2": "Tus ganancias se acumulan en tiempo real. Cada 12 horas, el sistema libera lo generado y lo suma a tu saldo retirable en el Perfil.",
+    "q3": "¿Cómo retiro mis ganancias?",
+    "a3": "Ve a Perfil > Retirar. Debes configurar tu billetera y tu PIN de seguridad antes de realizar la solicitud.",
+    "q4": "¿Qué red debo usar?",
+    "a4": "Recomendamos USDT en la red BEP20 (BSC) por sus bajas comisiones y acreditación automática. También soportamos TRC20."
+  }
 }

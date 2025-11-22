@@ -1,9 +1,8 @@
-
 {
   "nav": {
     "home": "Home",
-    "tasks": "Tasks",
-    "market": "Market",
+    "tasks": "Missions",
+    "market": "Power",
     "team": "Team",
     "profile": "Profile"
   },
@@ -11,126 +10,136 @@
     "error": "An error occurred",
     "copied": "Copied!",
     "continue": "Continue",
-    "loading": "Loading...",
+    "loading": "Loading systems...",
     "close": "Close",
-    "loadingUser": "Loading user data..."
+    "loadingUser": "Syncing data..."
   },
   "homePage": {
-    "myMiners": "My Miners",
-    "noMiners": "You have no active miners.",
-    "goToMarket": "Visit the market to start producing.",
-    "tasks": "Tasks",
-    "toasts": {
-      "claiming": "Claiming production...",
-      "claimSuccess": "Production claimed!"
-    },
-    "balanceOverview": {
-      "currentBalance": "Current Balance",
-      "withdraw": "Withdraw"
-    }
+    "liveNetwork": "LIVE NETWORK",
+    "cycle": "Cycle",
+    "toRelease": "to release",
+    "generatedCycle": "Generated this cycle",
+    "hashPower": "Hash Power",
+    "yield": "Yield",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No recent movements.",
+    "augmentPower": "BOOST POWER"
   },
   "profilePage": {
     "balanceUsdtLabel": "Total Balance",
+    "verified": "VERIFIED",
+    "active": "Active",
+    "financialOps": "Financial Operations",
+    "appSettings": "Application",
     "toasts": {
-      "walletNotSet": "Please save your withdrawal wallet first.",
-      "passwordNotSet": "Please set your withdrawal password first.",
-      "insufficientBalance": "Insufficient balance. The minimum to withdraw is {{min}} USDT."
+      "walletNotSet": "Please link your wallet before withdrawing.",
+      "passwordNotSet": "Please set your security PIN first.",
+      "addressGenerated": "Address generated successfully.",
+      "insufficientBalance": "Insufficient balance. Minimum: {{min}} USDT."
     }
   },
   "profile": {
-    "recharge": "Deposit",
+    "deposit": "Deposit",
     "withdraw": "Withdraw",
-    "records": "History",
-    "saveWallet": "Save Wallet",
-    "editWallet": "Edit Wallet",
-    "invite": "Team",
-    "setWithdrawalPassword": "Set Withdrawal Password",
-    "changeWithdrawalPassword": "Change Withdrawal Password",
+    "wallet": "Wallet",
+    "security": "Security",
+    "rechargeSub": "Top up Balance",
+    "withdrawSub": "Transfer Funds",
+    "walletSub": "Configure",
+    "walletSet": "Linked",
+    "securitySub": "Withdrawal PIN",
+    "invite": "My Team",
     "language": "Language",
     "faq": "FAQ",
-    "about": "About Us",
-    "support": "Support",
-    "logout": "Log Out",
-    "financialsTitle": "Finances",
-    "accountTitle": "Account",
-    "supportTitle": "Support"
+    "about": "About NovMining",
+    "support": "Support"
+  },
+  "teamPage": {
+    "title": "Invite Friends",
+    "description": "Expand your network and earn commissions.",
+    "stats": {
+      "members": "Members",
+      "commission": "Commissions"
+    },
+    "levels": {
+      "totalMembers": "Members",
+      "commission": "Earnings"
+    },
+    "levelLabel": "Level {{level}}",
+    "noLevelsData": "No data for this level yet.",
+    "toasts": {
+      "linkCopied": "Invite link copied!",
+      "fetchError": "Error loading team data."
+    }
+  },
+  "minerPurchaseModal": {
+    "quantity": "Quantity",
+    "totalCost": "Total Cost",
+    "yourBalance": "Your Balance",
+    "buyNow": "CONFIRM INSTALLATION",
+    "recharge": "TOP UP BALANCE",
+    "toasts": {
+      "purchasing": "Processing...",
+      "purchaseSuccess": "Power acquired successfully!",
+      "insufficientFunds": "Insufficient funds. Redirecting..."
+    }
   },
   "minerCard": {
-    "price": "Price",
-    "dailyProduction": "Daily Production",
+    "dailyProduction": "Daily Yield",
     "duration": "Duration",
-    "days": "{{count}} days",
-    "buyNow": "BUY NOW",
-    "owned": "Owned"
+    "price": "Investment",
+    "days": "{{count}} Days",
+    "buyNow": "BOOST POWER",
+    "alreadyOwned": "INSTALLED",
+    "owned": "Active"
   },
-  "purchasedMiner": {
-    "claim": "Claim",
-    "claimCycle": "Claim Cycle",
-    "lifespan": "Remaining Lifespan",
-    "totalProduction": "Total Production",
-    "expiresOn": "Expires on"
-  },
-  "status": {
-    "mining": "Mining",
-    "readyToClaim": "Ready to Claim",
-    "expired": "Expired"
-  },
-  "time": {
-    "days": "{{count}}d",
-    "expired": "Expired"
+  "minersPage": {
+    "title": "Power Center",
+    "subtitle": "Acquire modules to increase your GH/s.",
+    "noMinersAvailable": "No modules available.",
+    "error": "Error loading market."
   },
   "tasksPage": {
-    "title": "Task Center",
-    "description": "Complete tasks to earn additional rewards and accelerate your progress."
+    "title": "Missions",
+    "description": "Complete strategic objectives and unlock USDT rewards."
   },
   "tasks": {
-    "claimed": "Claimed",
-    "claim": "Claim",
-    "pending": "In Progress",
-    "locked": "Locked",
-    "progress": "Progress",
-    "noTasks": "No tasks available at the moment.",
+    "noTasks": "No missions available at the moment.",
     "toasts": {
       "claimSuccess": "Reward claimed!"
     },
-    "INVITE_1": { "title": "First Steps", "description": "Invite 1 friend to your team." },
-    "INVITE_2": { "title": "Network Builder", "description": "Invite 3 friends to your team." },
-    "INVITE_3": { "title": "Community Leader", "description": "Invite 5 friends to your team." },
-    "INVITE_4": { "title": "Social Connector", "description": "Invite 10 friends to your team." },
-    "INVITE_5": { "title": "Influencer", "description": "Invite 20 friends to your team." },
-    "INVITE_6": { "title": "Ambassador", "description": "Invite 50 friends to your team." },
-    "INVITE_7": { "title": "Silver Partner", "description": "Invite 100 friends to your team." },
-    "INVITE_8": { "title": "Gold Partner", "description": "Invite 150 friends to your team." },
-    "INVITE_9": { "title": "Platinum Partner", "description": "Invite 200 friends to your team." },
-    "INVITE_10": { "title": "Network Tycoon", "description": "Invite 300 friends to your team." },
-    "INVITE_11": { "title": "Global Visionary", "description": "Invite 500 friends to your team." },
-    "INVITE_12": { "title": "Network Legend", "description": "Invite 1000 friends to your team." }
+    "REF_DEP_50": { "title": "Network Starter", "description": "Invite a friend who deposits 50 USDT." },
+    "REF_DEP_100": { "title": "Business Mentor", "description": "Invite a friend who deposits 100 USDT." },
+    "REF_DEP_200": { "title": "Expansion Leader", "description": "Invite a friend who deposits 200 USDT." },
+    "REF_DEP_500": { "title": "Strategic Partner", "description": "Invite a friend who deposits 500 USDT." },
+    "OWN_DEP_10": { "title": "Account Activation", "description": "Make your first deposit of 10 USDT." },
+    "INVITE_10": { "title": "Social Connector", "description": "Invite 10 users to the platform." },
+    "INVITE_50": { "title": "Influencer", "description": "Invite 50 users to the platform." },
+    "INVITE_100": { "title": "Ambassador", "description": "Invite 100 users to the platform." },
+    "INVITE_200": { "title": "NovMining Legend", "description": "Invite 200 users to the platform." }
   },
   "deposit": {
-    "selectNetwork": {
-      "title": "Select Network",
-      "warning": "Choose the correct network to deposit your assets. Sending to the wrong network can result in the permanent loss of your funds."
-    },
     "address": {
-      "generating": "Generating Address...",
-      "title": "Deposit {{currency}}",
-      "sendOnly": "Send only {{currency}} via the {{network}} network",
-      "copied": "Address copied to clipboard",
-      "staticNotice": "Transfers on this network may take 5 to 10 minutes to be credited after confirmation.",
-      "confirmationNotice": "Funds will be credited after network confirmations.",
-      "noNetworkSelected": "No network selected.",
-      "notConfigured": "Address not configured."
+      "title": "{{currency}} Deposit",
+      "sendOnly": "Send only {{currency}} via the {{network}} network.",
+      "copied": "Address copied!",
+      "warningTitle": "Important!",
+      "warningBody": "Ensure the network matches. Errors are irreversible.",
+      "autoTitle": "Automatic System",
+      "autoBody": "Fast credit after network confirmation.",
+      "manualTitle": "Network Validation",
+      "manualBody": "Monitored deposit. May take 5-15 mins."
     }
   },
   "faqPage": {
-  "title": "Frequently Asked Questions",
-  "q1": "What is Hash Power Bot?",
-  "a1": "Hash Power Bot is an economic simulation platform where you can acquire virtual Chips that automatically generate passive income in USDT.",
-  "q2": "How do I start earning?",
-  "a2": "Simply acquire a Chip from our shop. Once purchased, it will start producing USDT every 24 hours, which you can claim directly to your main balance.",
-  "q3": "How can I withdraw my earnings?",
-  "a3": "You can request a withdrawal from your profile. Make sure you have set up your withdrawal password and meet the minimum required amount.",
-  "q4": "Is it safe to invest here?",
-  "a4": "We use standard security protocols to protect your account and funds. However, as with any income platform, please participate responsibly."
-}
+    "title": "Frequently Asked Questions",
+    "q1": "What is NovMining?",
+    "a1": "NovMining is a next-gen cloud mining platform that allows you to rent hash power (GH/s) to generate USDT daily.",
+    "q2": "How does the 12H Cycle work?",
+    "a2": "Your earnings accumulate in real-time. Every 12 hours, the system releases the generated amount to your withdrawable balance in Profile.",
+    "q3": "How do I withdraw my earnings?",
+    "a3": "Go to Profile > Withdraw. You must set up your wallet and security PIN before requesting.",
+    "q4": "Which network should I use?",
+    "a4": "We recommend USDT on the BEP20 (BSC) network for low fees and automatic crediting. TRC20 is also supported."
+  }
 }
