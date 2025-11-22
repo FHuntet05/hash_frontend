@@ -11,6 +11,7 @@ const PowerDashboard = ({ user }) => {
   // --- 1. CÁLCULOS DE POTENCIA ---
   const purchasedMiners = user?.purchasedMiners || [];
   
+  // Producción Diaria Total (Solo de items vigentes)
   const totalDailyProduction = purchasedMiners.reduce((acc, curr) => {
     const now = new Date();
     const expiry = new Date(curr.expiryDate);
@@ -18,104 +19,115 @@ const PowerDashboard = ({ user }) => {
     return acc + (curr.miner?.dailyProduction || 0);
   }, 0);
 
+  // Conversión: 1 USDT = 100 GH/s visuales
   const totalHashPower = totalDailyProduction * 100; 
   const productionPerSecond = totalDailyProduction / 86400;
 
-  // --- 2. LÓGICA DE CONTADOR DE MINADO ---
+  // --- 2. CONTADOR DE GENERACIÓN (CICLO ACTUAL) ---
   const [minedAmount, setMinedAmount] = useState(0);
 
   useEffect(() => {
-    const calculatePendingRewards = () => {
+    // Calcula cuánto dinero se ha generado matemáticamente desde el último 'lastClaim'
+    const calculatePending = () => {
         const now = Date.now();
-        let totalPending = 0;
+        let total = 0;
 
         purchasedMiners.forEach(pm => {
-            const expiry = new Date(pm.expiryDate).getTime();
+            if (new Date(pm.expiryDate) < now) return;
+            
             const lastClaim = new Date(pm.lastClaim).getTime();
+            const elapsedSec = (now - lastClaim) / 1000;
             
-            if (lastClaim >= expiry) return;
-
-            const effectiveNow = Math.min(now, expiry);
-            const elapsedSeconds = (effectiveNow - lastClaim) / 1000;
-            
-            if (elapsedSeconds > 0) {
-                const minerDaily = pm.miner?.dailyProduction || 0;
-                const minerPerSecond = minerDaily / 86400;
-                const maxCycleReward = minerDaily / 2;
-                const calculated = elapsedSeconds * minerPerSecond;
-                totalPending += Math.min(calculated, maxCycleReward);
+            if (elapsedSec > 0) {
+                const daily = pm.miner?.dailyProduction || 0;
+                const perSec = daily / 86400;
+                
+                // TOPE DE 12 HORAS: El contador nunca muestra más del 50% diario
+                const maxCycleReward = daily / 2; 
+                
+                const currentGenerated = elapsedSec * perSec;
+                total += Math.min(currentGenerated, maxCycleReward);
             }
         });
-
-        setMinedAmount(totalPending);
+        setMinedAmount(total);
     };
 
-    calculatePendingRewards();
+    calculatePending(); // Cálculo inicial
 
-    if (totalDailyProduction === 0) return;
-
-    const interval = setInterval(() => {
-        setMinedAmount(prev => prev + (productionPerSecond * 0.1));
-    }, 100);
-
-    return () => clearInterval(interval);
+    // Animación en tiempo real si hay potencia
+    if (totalDailyProduction > 0) {
+        const interval = setInterval(() => {
+            // Incrementamos visualmente (limitado por la lógica anterior al recargar)
+            setMinedAmount(prev => {
+                const maxTotalLimit = totalDailyProduction / 2; 
+                const nextVal = prev + (productionPerSecond * 0.1);
+                return Math.min(nextVal, maxTotalLimit);
+            });
+        }, 100);
+        return () => clearInterval(interval);
+    }
   }, [purchasedMiners, totalDailyProduction, productionPerSecond]);
 
-  // --- 3. LÓGICA CICLO 12H ---
-  const [timeLeft, setTimeLeft] = useState('00:00:00');
+  // --- 3. LÓGICA VISUAL DEL CICLO (TIMER DE 12H) ---
+  const [timeLeft, setTimeLeft] = useState('12:00:00');
   const [progressPercent, setProgressPercent] = useState(0);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     if (cardRef.current) {
-      setDimensions({ width: cardRef.current.offsetWidth, height: cardRef.current.offsetHeight });
+        setDimensions({ width: cardRef.current.offsetWidth, height: cardRef.current.offsetHeight });
     }
   }, []);
 
   useEffect(() => {
-    const updateCycle = () => {
+    const updateTimer = () => {
       if (purchasedMiners.length === 0) {
           setTimeLeft('00:00:00');
           setProgressPercent(0);
           return;
       }
 
+      // Tomamos como referencia el reclamo más reciente
       const latestClaimTime = Math.max(...purchasedMiners.map(m => new Date(m.lastClaim).getTime()));
       const now = Date.now();
-      const cycleDuration = 12 * 60 * 60 * 1000; 
+      const cycleDuration = 12 * 60 * 60 * 1000; // 12 Horas
       
-      const nextClaimTime = latestClaimTime + cycleDuration;
-      let msRemaining = nextClaimTime - now;
+      const targetTime = latestClaimTime + cycleDuration;
+      let msRemaining = targetTime - now;
 
-      if (msRemaining < 0) msRemaining = 0;
+      // Calcular porcentajes para el borde
+      if (msRemaining <= 0) {
+          msRemaining = 0;
+          setProgressPercent(100);
+      } else {
+          const timePassed = now - latestClaimTime;
+          let pct = (timePassed / cycleDuration) * 100;
+          setProgressPercent(Math.min(pct, 100));
+      }
 
-      const elapsed = now - latestClaimTime;
-      let percent = (elapsed / cycleDuration) * 100;
-      if (percent > 100) percent = 100;
-      setProgressPercent(percent);
-
-      const hours = Math.floor((msRemaining / (1000 * 60 * 60)));
-      const minutes = Math.floor((msRemaining % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((msRemaining % (1000 * 60)) / 1000);
+      // Formateo HH:MM:SS
+      const h = Math.floor((msRemaining / (1000 * 60 * 60)));
+      const m = Math.floor((msRemaining % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((msRemaining % (1000 * 60)) / 1000);
       
-      setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      setTimeLeft(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
     };
 
-    const timer = setInterval(updateCycle, 1000);
-    updateCycle();
+    const timer = setInterval(updateTimer, 1000);
+    updateTimer();
     return () => clearInterval(timer);
   }, [purchasedMiners]);
 
+  // Cálculo del borde SVG
   const perimeter = 2 * (dimensions.width + dimensions.height);
   const strokeDashoffset = perimeter - (progressPercent / 100) * perimeter;
 
   return (
     <div className="relative w-full" ref={cardRef}>
       
-      {/* CAPA 1: FONDO (Z-0) */}
+      {/* --- CAPAS VISUALES --- */}
       <div className="absolute inset-0 bg-surface rounded-3xl z-0 shadow-2xl border border-border"></div>
 
-      {/* CAPA 2: BORDE SVG (Z-10) - Ahora está DETRÁS del contenido interactivo */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 rounded-3xl overflow-visible">
         <rect x="0" y="0" width="100%" height="100%" rx="24" ry="24" fill="none" stroke="transparent" strokeWidth="0" />
         <rect
@@ -128,10 +140,7 @@ const PowerDashboard = ({ user }) => {
         />
       </svg>
 
-      {/* CAPA 3: CONTENIDO INTERACTIVO (Z-20) - Click garantizado */}
       <div className="relative z-20 p-6 overflow-hidden rounded-3xl">
-        
-        {/* Decoración interna */}
         <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F97316 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
 
         {/* Header */}
@@ -142,7 +151,7 @@ const PowerDashboard = ({ user }) => {
             </p>
             <div className="flex items-end gap-2">
                 <h2 className="text-3xl font-bold text-white font-mono tracking-tight">{timeLeft}</h2>
-                <span className="text-[10px] text-text-secondary mb-1.5">hasta liberación</span>
+                <span className="text-[10px] text-text-secondary mb-1.5">para liberación</span>
             </div>
           </div>
           <div className="bg-background/60 backdrop-blur-sm p-2 rounded-lg border border-white/5 text-center min-w-[80px]">
@@ -160,7 +169,7 @@ const PowerDashboard = ({ user }) => {
              </div>
         </div>
 
-        {/* Stats Grid */}
+        {/* Stats */}
         <div className="grid grid-cols-2 gap-3 mt-6 relative">
             <div className="bg-background/40 border border-white/5 p-3 rounded-xl flex flex-col">
                 <div className="flex items-center gap-2 text-text-secondary text-[10px] uppercase mb-1">
@@ -176,17 +185,15 @@ const PowerDashboard = ({ user }) => {
                     <HiBolt /> Rendimiento
                 </div>
                 <div className="text-xl font-bold text-white flex items-baseline gap-1">
+                    {/* Muestra Ganancia Por HORA (Diario / 24) */}
                     {(totalDailyProduction / 24).toFixed(4)} <span className="text-xs font-normal text-text-secondary">/h</span>
                 </div>
             </div>
         </div>
 
-        {/* BOTÓN DE ACCIÓN (Z-30 explícito por seguridad) */}
+        {/* BOTÓN: Navega al mercado (z-30 para asegurar el click) */}
         <button 
-            onClick={() => {
-                console.log("Navegando al mercado..."); // Log para depuración
-                navigate('/market');
-            }}
+            onClick={() => navigate('/market')}
             className="w-full mt-6 py-3.5 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl shadow-lg shadow-accent/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-sm uppercase tracking-wide relative z-30 cursor-pointer"
         >
             <HiBolt className="w-5 h-5" />

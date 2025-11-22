@@ -33,7 +33,7 @@ const Sidebar = ({ onLinkClick = () => {} }) => {
       <aside className="w-64 bg-dark-secondary p-4 flex flex-col border-r border-white/10 h-full">
         <div className="text-center py-4 mb-4">
           {/* CAMBIO: El título del panel se actualiza a la nueva marca. */}
-          <h1 className="text-2xl font-bold text-accent-start">MEGA MINERÍA</h1>
+          <h1 className="text-2xl font-bold text-accent-start">Nov Mining Bot</h1>
           <p className="text-sm text-text-secondary">Admin Panel</p>
         </div>
         <nav className="flex flex-col gap-2">

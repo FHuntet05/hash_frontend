@@ -14,7 +14,7 @@ const TaskCenter = () => {
   if (!tasks || tasks.length === 0) {
       return (
           <div className="bg-surface/50 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-border border-dashed">
-              <p>{t('tasks.noTasks', 'No hay misiones disponibles por ahora.')}</p>
+              <p>{t('tasks.noTasks', 'No hay misiones disponibles.')}</p>
           </div>
       );
   }
@@ -27,10 +27,11 @@ const TaskCenter = () => {
       transition={{ staggerChildren: 0.1 }}
     >
       {tasks.map(task => {
+        // Traducción dinámica
         const translatedTask = {
           ...task,
-          title: t(`tasks.${task.taskId}.title`), 
-          description: t(`tasks.${task.taskId}.description`, { count: task.target }),
+          title: t(`tasks.${task.taskId}.title`) !== `tasks.${task.taskId}.title` ? t(`tasks.${task.taskId}.title`) : task.taskId, 
+          description: t(`tasks.${task.taskId}.description`, { count: task.target }) !== `tasks.${task.taskId}.description` ? t(`tasks.${task.taskId}.description`, { count: task.target }) : '...',
         };
         
         return (

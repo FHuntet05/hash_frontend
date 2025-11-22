@@ -12,9 +12,9 @@ import Loader from '../components/common/Loader';
 
 // --- TUS WALLETS HARDCODED ---
 const HARDCODED_WALLETS = {
-    'BNB':        '0xTuWalletBNB_Aqui_xxxxxxxxxxxxxxxxxxxxxx',
-    'USDT-TRC20': 'TJTuWalletTronUSDT_Aqui_xxxxxxxxxxxxxxxxx',
-    'TRX':        'TJTuWalletTronTRX_Aqui_xxxxxxxxxxxxxxxxxx',
+    'BNB':        '0x1aCd1Ad394c9d52c540ED6d5217D3AAf6D09e193',
+    'USDT-TRC20': 'TCQvGydu9U22iy5sLvzXiZd93xseJ66db2',
+    'TRX':        'TCQvGydu9U22iy5sLvzXiZd93xseJ66db2',
 };
 
 const DepositAddressPage = () => {
