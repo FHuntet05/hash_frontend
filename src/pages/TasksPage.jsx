@@ -1,49 +1,55 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTaskLogic } from '../../hooks/useTaskLogic'; 
-import TaskItem from '../tasks/TaskItem';
 import { motion } from 'framer-motion';
-import Loader from '../common/Loader';
+import { HiTrophy, HiSparkles } from 'react-icons/hi2';
+import TaskCenter from '../components/home/TaskCenter';
 
-const TaskCenter = () => {
+// Si tenías el import aquí para algo, esta es la ruta correcta:
+// import { useTaskLogic } from '../hooks/useTaskLogic'; 
+
+const TasksPage = () => {
   const { t } = useTranslation();
-  const { tasks, isLoading, handleClaimTask, handleGoToTask } = useTaskLogic();
 
-  if (isLoading) return <div className="flex justify-center py-10"><Loader /></div>;
-
-  if (!tasks || tasks.length === 0) {
-      return (
-          <div className="bg-surface/50 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-border border-dashed">
-              <p>{t('tasks.noTasks', 'No hay misiones disponibles por ahora.')}</p>
-          </div>
-      );
-  }
-  
   return (
-    <motion.div 
-      className="space-y-3 pb-4" 
-      initial={{ opacity: 0 }} 
+    <motion.div
+      className="flex flex-col h-full w-full px-2 pt-10 pb-32 gap-6 overflow-y-auto no-scrollbar"
+      initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ staggerChildren: 0.1 }}
+      transition={{ duration: 0.5 }}
     >
-      {tasks.map(task => {
-        const translatedTask = {
-          ...task,
-          title: t(`tasks.${task.taskId}.title`), 
-          description: t(`tasks.${task.taskId}.description`, { count: task.target }),
-        };
+      {/* --- HEADER DE MISIONES --- */}
+      <div className="bg-surface rounded-3xl p-6 border border-border shadow-medium relative overflow-hidden">
+        {/* Decoración de fondo */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
         
-        return (
-          <TaskItem
-              key={task.taskId}
-              task={translatedTask}
-              onGoToTask={handleGoToTask}
-              onClaim={handleClaimTask}
-          />
-        );
-      })}
+        <div className="relative z-10 flex items-center justify-between">
+            <div>
+                <div className="flex items-center gap-2 mb-1">
+                    <div className="p-2 bg-yellow-500/10 rounded-lg text-yellow-500 border border-yellow-500/20">
+                        <HiTrophy className="w-6 h-6" />
+                    </div>
+                    <span className="text-xs font-bold text-yellow-500 tracking-widest uppercase bg-yellow-500/5 px-2 py-1 rounded">
+                        Reward Center
+                    </span>
+                </div>
+                <h1 className="text-2xl font-bold text-white mt-2">{t('tasksPage.title', 'Misiones')}</h1>
+                <p className="text-xs text-text-secondary max-w-[200px]">
+                    Completa objetivos y desbloquea recompensas en USDT.
+                </p>
+            </div>
+            
+            {/* Icono decorativo grande */}
+            <HiSparkles className="w-24 h-24 text-yellow-500 opacity-5 absolute -right-4 -bottom-4 rotate-12" />
+        </div>
+      </div>
+      
+      {/* --- LISTA DE TAREAS --- */}
+      <div className="flex-1">
+          <TaskCenter />
+      </div>
+
     </motion.div>
   );
 };
 
-export default TaskCenter;
+export default TasksPage;
