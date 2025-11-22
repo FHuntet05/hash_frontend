@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import useUserStore from '../store/userStore';
 import api from '../api/axiosConfig';
 import { motion } from 'framer-motion';
-// CORRECCIÓN: Usamos el icono correcto de la librería v2
 import { HiOutlineClipboardDocumentList } from 'react-icons/hi2';
 
 import PowerDashboard from '../components/home/PowerDashboard';
@@ -12,16 +11,25 @@ import Loader from '../components/common/Loader';
 
 const HomePage = () => {
     const { t } = useTranslation();
-    const user = useUserStore(state => state.user);
+    // Obtenemos refreshUserData del store para invocar el Lazy Claim
+    const { user, refreshUserData } = useUserStore();
     
     const [history, setHistory] = useState([]);
     const [loadingHistory, setLoadingHistory] = useState(true);
 
+    // EFECTO DE INICIO: TRIGGER DE AUTOCLAIM Y CARGA DE HISTORIAL
     useEffect(() => {
+        // 1. Llamar al endpoint /profile para que el backend procese ganancias pendientes
+        // Esto es vital para que el usuario vea su saldo actualizado al abrir la app
+        if (user) {
+            refreshUserData().catch(err => console.error("Error auto-claim:", err));
+        }
+
+        // 2. Cargar Historial de Transacciones
         const fetchHistory = async () => {
             try {
                 const response = await api.get('/wallet/history');
-                // Filtramos depósitos y retiros
+                // Filtrar visualmente solo depósitos y retiros
                 const filtered = response.data.filter(tx => 
                     ['deposit', 'withdrawal'].includes(tx.type)
                 ).slice(0, 10); 
@@ -36,7 +44,7 @@ const HomePage = () => {
         if (user) {
             fetchHistory();
         }
-    }, [user]);
+    }, [user?.telegramId]); // Dependencia en ID para asegurar ejecución una vez logueado
 
     if (!user) {
         return <div className="flex items-center justify-center h-full"><Loader /></div>;
@@ -49,10 +57,10 @@ const HomePage = () => {
             animate={{ opacity: 1 }} 
             transition={{ duration: 0.5 }}
         >
-            {/* Componente HUD Industrial */}
+            {/* DASHBOARD DE POTENCIA (CON BUCLE VISUAL DE 12H) */}
             <PowerDashboard user={user} />
 
-            {/* Historial Integrado */}
+            {/* HISTORIAL (DEPÓSITOS/RETIROS) */}
             <div className="mt-2">
                 <div className="flex items-center gap-2 mb-4 px-1">
                     <HiOutlineClipboardDocumentList className="text-accent w-5 h-5" />
