@@ -1,3 +1,5 @@
+// RUTA: frontend/src/pages/TeamPage.jsx
+
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useUserStore from '../store/userStore';
@@ -18,16 +20,12 @@ const TeamPage = () => {
   const { t } = useTranslation();
   const { user } = useUserStore();
   
-  // Estados
   const [summary, setSummary] = useState(null);
   const [activeTab, setActiveTab] = useState(1);
   const [levelDetails, setLevelDetails] = useState([]);
   const [loadingDetails, setLoadingDetails] = useState(false);
-  
-  // Estado de carga inicial de datos
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  // Cargar Datos Generales
   useEffect(() => {
     const fetchData = async () => {
         try {
@@ -42,7 +40,6 @@ const TeamPage = () => {
     if (user) fetchData();
   }, [user]);
 
-  // Cargar Detalles por Nivel cuando cambia la pestaña
   useEffect(() => {
       const fetchLevelDetails = async () => {
           setLoadingDetails(true);
@@ -58,7 +55,6 @@ const TeamPage = () => {
       fetchLevelDetails();
   }, [activeTab]);
 
-  // Lógica de copiado
   const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
   const referralLink = user?.referralCode ? `https://t.me/${botUsername}?start=${user.referralCode}` : '';
   
@@ -67,7 +63,6 @@ const TeamPage = () => {
     toast.success('¡Enlace copiado!');
   };
 
-  // Componente de Tab (Pestaña)
   const TabButton = ({ level, label }) => {
       const isActive = activeTab === level;
       return (
@@ -93,14 +88,16 @@ const TeamPage = () => {
 
   return (
     <motion.div 
-        // CORRECCIÓN AQUÍ: Cambiado pt-6 a pt-10 para evitar el corte superior
-        className="flex flex-col h-full p-4 pt-10 pb-32 gap-6 overflow-y-auto no-scrollbar"
+        // --- CAMBIO CRÍTICO AQUÍ ---
+        // 1. 'w-full': Fuerza a usar todo el ancho disponible.
+        // 2. 'px-2': Reduce el margen lateral al mínimo estético (8px) para que la tarjeta se vea ancha.
+        // 3. 'pt-10': Mantiene el espacio arriba para que no se corte.
+        className="flex flex-col h-full w-full px-2 pt-10 pb-32 gap-6 overflow-y-auto no-scrollbar"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
     >
-      {/* --- SECCIÓN SUPERIOR: CARD DE INVITACIÓN --- */}
-      <div className="bg-surface rounded-3xl p-6 border border-border shadow-medium relative overflow-hidden">
-        {/* Decoración de fondo */}
+      {/* --- CARD DE INVITACIÓN (Ahora ocupará casi todo el ancho) --- */}
+      <div className="bg-surface rounded-3xl p-6 border border-border shadow-medium relative overflow-hidden w-full">
         <div className="absolute top-0 right-0 w-24 h-24 bg-accent/10 rounded-bl-full -mr-6 -mt-6 blur-md"></div>
         <div className="absolute bottom-0 left-0 w-20 h-20 bg-blue-500/5 rounded-tr-full -ml-5 -mb-5 blur-md"></div>
 
@@ -115,7 +112,6 @@ const TeamPage = () => {
                 </div>
             </div>
             
-            {/* Input de Enlace con estilo Neon */}
             <div className="flex items-center bg-background rounded-xl p-1.5 border border-white/10 group focus-within:border-accent/50 transition-colors shadow-inner">
                 <div className="flex-1 px-3 py-2 overflow-hidden">
                      <p className="text-[10px] text-text-secondary uppercase font-bold mb-0.5 tracking-wider">Tu Enlace Único</p>
@@ -134,15 +130,14 @@ const TeamPage = () => {
                 </button>
             </div>
 
-            {/* Social Share */}
             <div className="mt-5 pt-4 border-t border-white/5">
                  <SocialShare referralLink={referralLink} />
             </div>
         </div>
       </div>
 
-      {/* --- STATS GRID (Resumen) --- */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* --- STATS GRID --- */}
+      <div className="grid grid-cols-2 gap-2 w-full">
         <TeamStatCard 
             title="Miembros" 
             value={summary?.totalTeamMembers || 0} 
@@ -157,8 +152,8 @@ const TeamPage = () => {
         />
       </div>
 
-      {/* --- SECCIÓN INFERIOR: TABS Y LISTA --- */}
-      <div className="flex-1 flex flex-col">
+      {/* --- SECCIÓN INFERIOR --- */}
+      <div className="flex-1 flex flex-col w-full">
           <div className="flex items-center justify-between mb-3 px-1">
             <h2 className="text-lg font-bold text-white">Tu Red</h2>
             {levelDetails.length > 0 && (
@@ -168,15 +163,13 @@ const TeamPage = () => {
             )}
           </div>
           
-          {/* Tab Bar (Estilo Segmented Control) */}
-          <div className="flex gap-1 p-1 bg-background/50 rounded-xl border border-white/5 mb-4 backdrop-blur-sm">
+          <div className="flex gap-1 p-1 bg-background/50 rounded-xl border border-white/5 mb-4 backdrop-blur-sm w-full">
               <TabButton level={1} label="Nivel 1" />
               <TabButton level={2} label="Nivel 2" />
               <TabButton level={3} label="Nivel 3" />
           </div>
 
-          {/* Lista de Miembros */}
-          <div className="bg-surface flex-1 rounded-2xl border border-border overflow-hidden min-h-[300px] relative shadow-lg">
+          <div className="bg-surface flex-1 rounded-2xl border border-border overflow-hidden min-h-[300px] relative shadow-lg w-full">
               {loadingDetails ? (
                   <div className="absolute inset-0 flex items-center justify-center"><Loader /></div>
               ) : levelDetails.length > 0 ? (
@@ -192,7 +185,6 @@ const TeamPage = () => {
                               <div className="flex items-center gap-3">
                                   <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center border border-white/10 text-text-secondary relative shrink-0">
                                       <HiUserCircle className="w-6 h-6" />
-                                      {/* Indicador de estado activo */}
                                       <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full"></div>
                                   </div>
                                   <div className="min-w-0">
