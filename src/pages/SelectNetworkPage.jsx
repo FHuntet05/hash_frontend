@@ -1,32 +1,34 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { HiGlobeAlt, HiLightningBolt, HiShieldCheck, HiChevronRight } from 'react-icons/hi2';
+// CORRECCIÓN: Se cambia HiLightningBolt por HiBolt
+import { HiGlobeAlt, HiBolt, HiShieldCheck, HiChevronRight, HiCube } from 'react-icons/hi2';
 
-const NetworkCard = ({ name, protocol, fee, color, delay, onClick }) => (
+const NetworkCard = ({ name, protocol, fee, color, icon: Icon, delay, onClick }) => (
   <motion.button
     whileTap={{ scale: 0.98 }}
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
     onClick={onClick}
-    className="w-full bg-surface p-5 rounded-2xl border border-white/5 hover:border-accent/50 transition-all group relative overflow-hidden flex items-center justify-between mb-4"
+    className="w-full bg-surface p-4 rounded-2xl border border-white/5 hover:border-accent/50 transition-all group relative overflow-hidden flex items-center justify-between mb-3"
   >
     {/* Efecto Hover de Fondo */}
     <div className={`absolute inset-0 bg-gradient-to-r ${color} opacity-0 group-hover:opacity-5 transition-opacity`} />
 
     <div className="flex items-center gap-4 relative z-10">
         <div className={`p-3 rounded-xl bg-background border border-white/10 ${color.replace('from-', 'text-').split(' ')[0]}`}>
-            <HiGlobeAlt className="w-6 h-6" />
+            <Icon className="w-6 h-6" />
         </div>
         <div className="text-left">
             <h3 className="text-lg font-bold text-white">{name}</h3>
-            <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs font-mono text-text-secondary bg-white/5 px-1.5 py-0.5 rounded border border-white/5">
+            <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-[10px] font-mono text-text-secondary bg-white/5 px-1.5 py-0.5 rounded border border-white/5 uppercase tracking-wider">
                     {protocol}
                 </span>
-                <span className="text-[10px] text-green-400 flex items-center gap-1">
-                    <HiLightningBolt /> {fee}
+                <span className="text-[10px] text-green-400 flex items-center gap-1 font-bold">
+                    {/* CORRECCIÓN: Uso del nuevo nombre del icono */}
+                    <HiBolt className="w-3 h-3" /> {fee}
                 </span>
             </div>
         </div>
@@ -41,51 +43,73 @@ const NetworkCard = ({ name, protocol, fee, color, delay, onClick }) => (
 const SelectNetworkPage = () => {
   const navigate = useNavigate();
 
-  const handleSelect = (networkId, protocol) => {
-    // Pasamos el protocolo como estado a la siguiente página
-    navigate('/deposit/address', { state: { networkId, protocol } });
+  const handleSelect = (protocol) => {
+    navigate('/deposit/address', { state: { protocol } });
   };
 
   return (
     <div className="flex flex-col h-full p-4 pt-10 pb-20 overflow-y-auto no-scrollbar">
         
         {/* Header */}
-        <div className="mb-8">
-            <h1 className="text-2xl font-bold text-white mb-2">Elegir Red</h1>
-            <p className="text-sm text-text-secondary">Selecciona la red blockchain para realizar tu depósito.</p>
+        <div className="mb-6">
+            <h1 className="text-2xl font-bold text-white mb-1">Seleccionar Activo</h1>
+            <p className="text-sm text-text-secondary">Elige la criptomoneda y red para depositar.</p>
         </div>
 
         {/* Lista de Redes */}
-        <div className="flex-1">
+        <div className="flex-1 space-y-2">
             
-            {/* OPCIÓN 1: BNB Smart Chain (Dinámica) */}
+            {/* 1. USDT BEP20 (Dinámica) */}
             <NetworkCard 
                 name="USDT (Tether)"
-                protocol="BEP20 (BSC)"
-                fee="Gas Bajo"
+                protocol="BSC (BEP20)"
+                fee="Automático"
                 color="from-yellow-500 to-orange-500"
+                icon={HiGlobeAlt}
                 delay={0.1}
-                onClick={() => handleSelect('usdt_bep20', 'BEP20')}
+                onClick={() => handleSelect('USDT-BEP20')}
             />
 
-            {/* OPCIÓN 2: TRON (Hardcoded) */}
+            {/* 2. BNB (Hardcoded) */}
+            <NetworkCard 
+                name="BNB (Smart Chain)"
+                protocol="BNB (BEP20)"
+                fee="Gas Nativo"
+                color="from-yellow-400 to-yellow-600"
+                icon={HiCube}
+                delay={0.15}
+                onClick={() => handleSelect('BNB')}
+            />
+
+            {/* 3. USDT TRC20 (Hardcoded) */}
             <NetworkCard 
                 name="USDT (Tether)"
-                protocol="TRC20 (Tron)"
+                protocol="Tron (TRC20)"
                 fee="Rápido"
                 color="from-red-500 to-rose-600"
+                icon={HiGlobeAlt}
                 delay={0.2}
-                onClick={() => handleSelect('usdt_trc20', 'TRC20')}
+                onClick={() => handleSelect('USDT-TRC20')}
             />
 
-            {/* Más opciones si quisieras */}
+            {/* 4. TRX (Hardcoded) */}
+            <NetworkCard 
+                name="TRX (Tron)"
+                protocol="TRON (Native)"
+                fee="Gas Nativo"
+                color="from-red-400 to-red-600"
+                icon={HiCube}
+                delay={0.25}
+                onClick={() => handleSelect('TRX')}
+            />
+
         </div>
 
         {/* Footer Info */}
-        <div className="mt-auto p-4 bg-blue-500/10 rounded-xl border border-blue-500/20 flex gap-3">
+        <div className="mt-4 p-4 bg-blue-500/10 rounded-xl border border-blue-500/20 flex gap-3">
             <HiShieldCheck className="w-6 h-6 text-blue-400 shrink-0" />
-            <p className="text-xs text-blue-200/80 leading-relaxed">
-                Asegúrate de seleccionar la red correcta en tu billetera de origen. Los fondos enviados a redes incorrectas no se pueden recuperar.
+            <p className="text-[10px] text-blue-200/80 leading-relaxed">
+                Verifica cuidadosamente la red seleccionada en tu billetera de origen. Los envíos cruzados (ej: enviar BEP20 a una dirección TRC20) resultarán en pérdida de fondos.
             </p>
         </div>
     </div>
