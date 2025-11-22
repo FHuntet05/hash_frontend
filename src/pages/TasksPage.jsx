@@ -1,34 +1,49 @@
-// --- START OF FILE TasksPage.jsx ---
-
-// RUTA: frontend/src/pages/TasksPage.jsx (NUEVA PÁGINA)
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTaskLogic } from '../../hooks/useTaskLogic'; 
+import TaskItem from '../tasks/TaskItem';
 import { motion } from 'framer-motion';
-import TaskCenter from '../components/home/TaskCenter'; // Reutilizamos el componente TaskCenter
+import Loader from '../common/Loader';
 
-const TasksPage = () => {
+const TaskCenter = () => {
   const { t } = useTranslation();
+  const { tasks, isLoading, handleClaimTask, handleGoToTask } = useTaskLogic();
 
+  if (isLoading) return <div className="flex justify-center py-10"><Loader /></div>;
+
+  if (!tasks || tasks.length === 0) {
+      return (
+          <div className="bg-surface/50 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-border border-dashed">
+              <p>{t('tasks.noTasks', 'No hay misiones disponibles por ahora.')}</p>
+          </div>
+      );
+  }
+  
   return (
-    <motion.div
-      className="flex flex-col gap-6 p-4 pt-6 pb-28"
-      initial={{ opacity: 0 }}
+    <motion.div 
+      className="space-y-3 pb-4" 
+      initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ staggerChildren: 0.1 }}
     >
-      <div>
-        <h1 className="text-2xl font-bold text-text-primary mb-4">{t('tasksPage.title', 'Centro de Tareas')}</h1>
-        <p className="text-text-secondary text-sm">{t('tasksPage.description', 'Completa tareas para ganar recompensas adicionales y acelerar tu progreso.')}</p>
-      </div>
-      
-      {/* El TaskCenter ahora vive aquí, en su propia página dedicada. */}
-      <TaskCenter />
-
+      {tasks.map(task => {
+        const translatedTask = {
+          ...task,
+          title: t(`tasks.${task.taskId}.title`), 
+          description: t(`tasks.${task.taskId}.description`, { count: task.target }),
+        };
+        
+        return (
+          <TaskItem
+              key={task.taskId}
+              task={translatedTask}
+              onGoToTask={handleGoToTask}
+              onClaim={handleClaimTask}
+          />
+        );
+      })}
     </motion.div>
   );
 };
 
-export default TasksPage;
-
-// --- END OF FILE TasksPage.jsx ---
+export default TaskCenter;
