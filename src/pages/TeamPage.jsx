@@ -1,5 +1,3 @@
-// RUTA: frontend/src/pages/TeamPage.jsx
-
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useUserStore from '../store/userStore';
@@ -88,49 +86,56 @@ const TeamPage = () => {
 
   return (
     <motion.div 
-        // --- CAMBIO CRÍTICO AQUÍ ---
-        // 1. 'w-full': Fuerza a usar todo el ancho disponible.
-        // 2. 'px-2': Reduce el margen lateral al mínimo estético (8px) para que la tarjeta se vea ancha.
-        // 3. 'pt-10': Mantiene el espacio arriba para que no se corte.
         className="flex flex-col h-full w-full px-2 pt-10 pb-32 gap-6 overflow-y-auto no-scrollbar"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
     >
-      {/* --- CARD DE INVITACIÓN (Ahora ocupará casi todo el ancho) --- */}
-      <div className="bg-surface rounded-3xl p-6 border border-border shadow-medium relative overflow-hidden w-full">
-        <div className="absolute top-0 right-0 w-24 h-24 bg-accent/10 rounded-bl-full -mr-6 -mt-6 blur-md"></div>
-        <div className="absolute bottom-0 left-0 w-20 h-20 bg-blue-500/5 rounded-tr-full -ml-5 -mb-5 blur-md"></div>
+      {/* --- CARD DE INVITACIÓN (MODIFICADO PARA MÁS ALTURA) --- */}
+      {/* 
+          CAMBIOS REALIZADOS:
+          1. px-6 py-10: Aumenta el relleno vertical significativamente.
+          2. flex flex-col justify-center gap-8: Fuerza espacio extra entre el título, el input y los botones sociales.
+          3. min-h-[340px]: Asegura una altura mínima bastante alta.
+      */}
+      <div className="bg-surface rounded-3xl px-6 py-10 border border-border shadow-medium relative overflow-hidden w-full flex flex-col justify-center gap-8 min-h-[320px]">
+        
+        {/* Decoración de fondo */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-bl-full -mr-8 -mt-8 blur-xl"></div>
+        <div className="absolute bottom-0 left-0 w-28 h-28 bg-blue-500/5 rounded-tr-full -ml-6 -mb-6 blur-xl"></div>
 
-        <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-4">
-                <div className="p-2.5 bg-accent/10 rounded-xl text-accent border border-accent/20">
-                    <HiShare className="w-6 h-6" />
+        <div className="relative z-10 flex flex-col gap-6">
+            {/* Header de la tarjeta */}
+            <div className="flex items-center gap-4">
+                <div className="p-3 bg-accent/10 rounded-2xl text-accent border border-accent/20 shadow-[0_0_15px_rgba(249,115,22,0.15)]">
+                    <HiShare className="w-8 h-8" />
                 </div>
                 <div>
-                    <h1 className="text-xl font-bold text-white leading-tight">{t('teamPage.title', 'Invita a tus Amigos')}</h1>
-                    <p className="text-xs text-text-secondary mt-0.5">Expande tu red y gana comisiones.</p>
+                    <h1 className="text-2xl font-bold text-white leading-tight">{t('teamPage.title', 'Invita a tus Amigos')}</h1>
+                    <p className="text-sm text-text-secondary mt-1">Expande tu red y gana comisiones.</p>
                 </div>
             </div>
             
-            <div className="flex items-center bg-background rounded-xl p-1.5 border border-white/10 group focus-within:border-accent/50 transition-colors shadow-inner">
-                <div className="flex-1 px-3 py-2 overflow-hidden">
-                     <p className="text-[10px] text-text-secondary uppercase font-bold mb-0.5 tracking-wider">Tu Enlace Único</p>
+            {/* Input de Enlace con estilo más grande */}
+            <div className="flex items-center bg-background rounded-2xl p-2 border border-white/10 group focus-within:border-accent/50 transition-colors shadow-inner">
+                <div className="flex-1 px-4 py-3 overflow-hidden">
+                     <p className="text-[10px] text-text-secondary uppercase font-bold mb-1 tracking-wider">Tu Enlace Único</p>
                      <input 
                         type="text" 
                         value={referralLink} 
                         readOnly 
-                        className="w-full bg-transparent text-white text-xs font-mono outline-none truncate" 
+                        className="w-full bg-transparent text-white text-sm font-mono outline-none truncate" 
                      />
                 </div>
                 <button 
                     onClick={copyToClipboard} 
-                    className="p-3 bg-accent text-white rounded-lg hover:bg-accent-hover active:scale-95 transition-all shadow-lg shadow-accent/20"
+                    className="p-4 bg-accent text-white rounded-xl hover:bg-accent-hover active:scale-95 transition-all shadow-lg shadow-accent/20"
                 >
-                    <HiOutlineClipboardDocument className="w-5 h-5" />
+                    <HiOutlineClipboardDocument className="w-6 h-6" />
                 </button>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-white/5">
+            {/* Social Share con más espacio arriba */}
+            <div className="pt-2 border-t border-white/5">
                  <SocialShare referralLink={referralLink} />
             </div>
         </div>
@@ -152,7 +157,7 @@ const TeamPage = () => {
         />
       </div>
 
-      {/* --- SECCIÓN INFERIOR --- */}
+      {/* --- SECCIÓN INFERIOR: TABS Y LISTA --- */}
       <div className="flex-1 flex flex-col w-full">
           <div className="flex items-center justify-between mb-3 px-1">
             <h2 className="text-lg font-bold text-white">Tu Red</h2>
