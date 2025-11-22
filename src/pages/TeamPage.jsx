@@ -1,148 +1,183 @@
-// RUTA: frontend/src/pages/TeamPage.jsx (v3.5 - MODO DE DEPURACIÓN PROFUNDA)
-
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useUserStore from '../store/userStore';
 import api from '../api/axiosConfig';
 import toast from 'react-hot-toast';
-import { motion } from 'framer-motion';
-import { HiOutlineUserGroup, HiOutlineBanknotes, HiOutlineClipboardDocument, HiOutlineExclamationTriangle } from 'react-icons/hi2';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+    HiOutlineUserGroup, HiOutlineBanknotes, 
+    HiOutlineClipboardDocument, HiUserCircle 
+} from 'react-icons/hi2';
 
 import TeamStatCard from '../components/team/TeamStatCard';
-import TeamLevelCard from '../components/team/TeamLevelCard';
-import Loader from '../components/common/Loader';
 import SocialShare from '../components/team/SocialShare';
-
-const POLLING_INTERVAL = 20000;
+import Loader from '../components/common/Loader';
 
 const TeamPage = () => {
   const { t } = useTranslation();
-  const { user, refreshUserData } = useUserStore();
-  const [teamData, setTeamData] = useState(null);
-  const [initialLoading, setInitialLoading] = useState(true);
+  const { user } = useUserStore();
+  
+  // Estados
+  const [summary, setSummary] = useState(null);
+  const [activeTab, setActiveTab] = useState(1); // Pestaña activa (1, 2, 3)
+  const [levelDetails, setLevelDetails] = useState([]); // Lista de usuarios del nivel actual
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [loadingSummary, setLoadingSummary] = useState(true);
 
-  const fetchAllData = useCallback(async (isInitialLoad = false) => {
-    try {
-      const [teamResponse] = await Promise.all([
-        api.get('/team/summary'),
-        refreshUserData()
-      ]);
-
-      // --- LOG DE DEPURACIÓN 1: ¿QUÉ DATOS LLEGAN DE LA API? ---
-      console.log('[DEBUG] Respuesta de la API /team/summary:', teamResponse.data);
-
-      setTeamData(teamResponse.data);
-    } catch (error) {
-      if (isInitialLoad) {
-        toast.error(t('teamPage.toasts.fetchError', 'Error al cargar datos del equipo'));
-      }
-      console.error("Error en polling de TeamPage:", error);
-    } finally {
-      if (isInitialLoad) {
-        setInitialLoading(false);
-      }
-    }
-  }, [t, refreshUserData]);
-
+  // 1. Cargar Resumen General (Cabecera)
   useEffect(() => {
-    if (user) {
-      fetchAllData(true);
-      const intervalId = setInterval(() => fetchAllData(false), POLLING_INTERVAL);
-      return () => clearInterval(intervalId);
-    } else {
-      setInitialLoading(false);
-    }
-  }, [user, fetchAllData]);
+    const fetchSummary = async () => {
+        try {
+            const response = await api.get('/team/summary');
+            setSummary(response.data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingSummary(false);
+        }
+    };
+    if (user) fetchSummary();
+  }, [user]);
 
-  // --- LOG DE DEPURACIÓN 2: ¿QUÉ HAY EN EL ESTADO ANTES DE RENDERIZAR? ---
-  console.log('[DEBUG] Estado `teamData` antes de renderizar:', teamData);
+  // 2. Cargar Detalles cuando cambia la Pestaña
+  useEffect(() => {
+      const fetchLevelDetails = async () => {
+          setLoadingDetails(true);
+          try {
+              // Llamamos al endpoint específico por nivel
+              const response = await api.get(`/team/level-details/${activeTab}`);
+              // Asumiendo que el backend devuelve { members: [...] }
+              setLevelDetails(response.data.members || []);
+          } catch (error) {
+              console.error("Error cargando detalles de nivel:", error);
+              setLevelDetails([]);
+          } finally {
+              setLoadingDetails(false);
+          }
+      };
+      fetchLevelDetails();
+  }, [activeTab]);
 
+  // Lógica de copiado
   const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
-  const isEnvVarMissing = !botUsername;
-  const referralLink = !isEnvVarMissing && user?.referralCode ? `https://t.me/${botUsername}?start=${user.referralCode}` : '';
+  const referralLink = user?.referralCode ? `https://t.me/${botUsername}?start=${user.referralCode}` : '';
   
   const copyToClipboard = () => {
-    if (isEnvVarMissing || !referralLink) {
-        toast.error(t('teamPage.toasts.linkError', 'Error de configuración: no se pudo generar el enlace.'));
-        return;
-    }
     navigator.clipboard.writeText(referralLink);
-    toast.success(t('teamPage.toasts.linkCopied', '¡Enlace de invitación copiado!'));
+    toast.success('¡Enlace copiado!');
   };
 
-  if (initialLoading) {
-    return <div className="flex items-center justify-center h-full pt-16"><Loader /></div>;
-  }
+  if (loadingSummary) return <div className="flex justify-center pt-20"><Loader /></div>;
 
-  const totalMembers = teamData?.totalTeamMembers || 0;
-  const totalCommission = teamData?.totalCommission || 0;
-  const levels = teamData?.levels || [];
-  
-  const stats = [
-    { title: t('teamPage.stats.members', 'Miembros Totales'), value: totalMembers, icon: HiOutlineUserGroup, color: "text-accent-primary" },
-    { title: t('teamPage.stats.commission', 'Comisión Total'), value: totalCommission.toFixed(2), icon: HiOutlineBanknotes, color: "text-accent-secondary" },
-  ];
+  // Componente de Pestaña
+  const TabButton = ({ level, label }) => (
+      <button
+          onClick={() => setActiveTab(level)}
+          className={`
+              flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-200
+              ${activeTab === level 
+                  ? 'bg-accent text-white shadow-lg shadow-accent/20' 
+                  : 'bg-surface text-text-secondary hover:bg-surface/80'
+              }
+          `}
+      >
+          {label}
+      </button>
+  );
 
   return (
     <motion.div 
-        className="flex flex-col gap-8 p-4 pt-6 pb-28"
+        className="flex flex-col h-full p-4 pt-6 pb-28 gap-6 overflow-y-auto no-scrollbar"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
     >
-      <div className="bg-card/70 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-medium text-center">
-        <h1 className="text-xl font-bold text-text-primary">{t('teamPage.title', 'Invita a tus Amigos')}</h1>
-        <p className="text-text-secondary text-sm mt-2 mb-4">{t('teamPage.description', 'Comparte tu enlace y gana comisiones por cada miembro de tu equipo.')}</p>
+      {/* --- SECCIÓN SUPERIOR: ENLACE Y ESTADÍSTICAS --- */}
+      <div className="bg-surface rounded-2xl p-5 border border-border shadow-medium">
+        <h1 className="text-xl font-bold text-white mb-2">{t('teamPage.title', 'Equipo')}</h1>
+        <p className="text-xs text-text-secondary mb-4">Gestiona tu red de referidos y comisiones.</p>
         
-        {isEnvVarMissing ? (
-          <div className="flex items-center gap-2 bg-status-danger/10 p-3 rounded-lg text-status-danger text-sm">
-            <HiOutlineExclamationTriangle className="w-6 h-6 flex-shrink-0" />
-            <span>Error de configuración del administrador: El nombre de usuario del bot no está definido.</span>
-          </div>
-        ) : (
-          <div className="flex items-center bg-background/50 rounded-lg p-2 border border-border">
-            <input type="text" value={referralLink} readOnly className="w-full bg-transparent text-text-secondary text-sm outline-none" />
-            <button onClick={copyToClipboard} className="ml-2 p-2 rounded-md bg-accent-primary hover:bg-accent-primary-hover active:scale-95 text-white transition-colors">
-              <HiOutlineClipboardDocument className="w-5 h-5" />
+        {/* Input de Enlace */}
+        <div className="flex items-center bg-background rounded-xl p-2 border border-border mb-4">
+            <input type="text" value={referralLink} readOnly className="w-full bg-transparent text-text-secondary text-xs outline-none px-2 font-mono" />
+            <button onClick={copyToClipboard} className="p-2 bg-accent/10 text-accent rounded-lg hover:bg-accent hover:text-white transition-colors">
+                <HiOutlineClipboardDocument className="w-5 h-5" />
             </button>
-          </div>
-        )}
-        
+        </div>
         <SocialShare referralLink={referralLink} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {stats.map(stat => (
-          <TeamStatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} colorClass={stat.color} />
-        ))}
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 gap-3">
+        <TeamStatCard 
+            title="Miembros" 
+            value={summary?.totalTeamMembers || 0} 
+            icon={HiOutlineUserGroup} 
+            colorClass="text-blue-400" 
+        />
+        <TeamStatCard 
+            title="Comisiones" 
+            value={(summary?.totalCommission || 0).toFixed(2)} 
+            icon={HiOutlineBanknotes} 
+            colorClass="text-green-400" 
+        />
       </div>
 
+      {/* --- SECCIÓN INFERIOR: PESTAÑAS Y LISTA --- */}
       <div>
-        <h2 className="text-lg font-semibold text-text-primary mb-4">{t('teamPage.levelsTitle', 'Niveles del Equipo')}</h2>
-        {levels.length > 0 ? (
-          <div className="space-y-3">
-            {levels.map(levelData => {
-              // --- LOG DE DEPURACIÓN 3: ¿QUÉ PROPS SE ESTÁN PASANDO A CADA TARJETA? ---
-              console.log(`[DEBUG] Props para TeamLevelCard Nivel ${levelData.level}:`, {
-                members: levelData.totalMembers,
-                totalCommission: levelData.totalCommission,
-              });
-              return (
-                <TeamLevelCard 
-                  key={levelData.level} 
-                  level={levelData.level} 
-                  members={levelData.totalMembers}
-                  totalCommission={levelData.totalCommission}
-                />
-              );
-            })}
+          <h2 className="text-lg font-bold text-white mb-3">Detalles por Nivel</h2>
+          
+          {/* Tab Bar */}
+          <div className="flex gap-2 mb-4 bg-background p-1 rounded-2xl border border-border">
+              <TabButton level={1} label="Nivel 1" />
+              <TabButton level={2} label="Nivel 2" />
+              <TabButton level={3} label="Nivel 3" />
           </div>
-        ) : (
-          <div className="bg-card/70 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-white/20 shadow-subtle">
-            <p>{t('teamPage.noLevelsData', 'Aún no tienes miembros en tu equipo. ¡Empieza a invitar!')}</p>
+
+          {/* Lista de Miembros */}
+          <div className="bg-surface rounded-2xl border border-border overflow-hidden min-h-[200px]">
+              {loadingDetails ? (
+                  <div className="flex justify-center py-10"><Loader /></div>
+              ) : levelDetails.length > 0 ? (
+                  <div className="divide-y divide-border">
+                      {levelDetails.map((member, index) => (
+                          <motion.div 
+                            key={index}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+                          >
+                              <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center border border-border text-text-secondary">
+                                      <HiUserCircle className="w-6 h-6" />
+                                  </div>
+                                  <div>
+                                      <p className="text-sm font-bold text-white">
+                                          {member.username || `Usuario ${member.telegramId?.substring(0,5)}...`}
+                                      </p>
+                                      <p className="text-[10px] text-text-secondary">
+                                          Unido: {new Date(member.createdAt).toLocaleDateString()}
+                                      </p>
+                                  </div>
+                              </div>
+                              <div className="text-right">
+                                  <p className="text-xs text-text-secondary">Comisión</p>
+                                  <p className="text-sm font-bold text-accent">
+                                      +{member.commissionGenerated?.toFixed(4) || '0.00'}
+                                  </p>
+                              </div>
+                          </motion.div>
+                      ))}
+                  </div>
+              ) : (
+                  <div className="flex flex-col items-center justify-center py-10 text-text-secondary">
+                      <HiOutlineUserGroup className="w-10 h-10 mb-2 opacity-20" />
+                      <p className="text-sm">No hay miembros en este nivel.</p>
+                  </div>
+              )}
           </div>
-        )}
       </div>
+
     </motion.div>
   );
 };
