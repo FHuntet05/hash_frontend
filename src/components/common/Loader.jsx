@@ -1,48 +1,68 @@
-// RUTA: frontend/src/components/common/Loader.jsx (v2.0 - ANIMACIÓN DE PUNTOS PULSANTES)
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { HiBolt } from 'react-icons/hi2';
 
-const BouncingDotsLoader = () => {
-  const bounceTransition = {
-    y: {
-      duration: 0.4,
-      repeat: Infinity,
-      repeatType: 'reverse',
-      ease: 'easeOut',
-    },
-  };
-
+const LightningLoader = () => {
   return (
-    <motion.div
-      className="flex justify-around items-end w-16 h-8"
-      transition={{ staggerChildren: 0.1 }}
-      initial="initial"
-      animate="animate"
-    >
-      <motion.span
-        className="block w-3 h-3 bg-text-secondary rounded-full"
-        variants={{ initial: { y: "0%" }, animate: { y: "-100%" } }}
-        transition={bounceTransition}
+    <div className="relative flex items-center justify-center w-20 h-20">
+      
+      {/* ONDA EXPANSIVA 1 (Círculo de Energía) */}
+      <motion.div
+        className="absolute w-full h-full rounded-full border border-accent opacity-0"
+        animate={{
+          scale: [0.5, 1.5],
+          opacity: [0.8, 0],
+        }}
+        transition={{
+          duration: 1.5,
+          repeat: Infinity,
+          ease: "easeOut",
+        }}
       />
-      <motion.span
-        className="block w-3 h-3 bg-accent rounded-full"
-        variants={{ initial: { y: "0%" }, animate: { y: "-100%" } }}
-        transition={bounceTransition}
+
+      {/* ONDA EXPANSIVA 2 (Retrasada) */}
+      <motion.div
+        className="absolute w-full h-full rounded-full border border-accent opacity-0"
+        animate={{
+          scale: [0.5, 1.5],
+          opacity: [0.8, 0],
+        }}
+        transition={{
+          duration: 1.5,
+          repeat: Infinity,
+          ease: "easeOut",
+          delay: 0.5
+        }}
       />
-      <motion.span
-        className="block w-3 h-3 bg-text-secondary rounded-full"
-        variants={{ initial: { y: "0%" }, animate: { y: "-100%" } }}
-        transition={bounceTransition}
-      />
-    </motion.div>
+
+      {/* NÚCLEO DEL RAYO (Hexágono o Círculo contenedor) */}
+      <div className="relative z-10 bg-surface rounded-full p-4 border border-accent/30 shadow-[0_0_20px_rgba(249,115,22,0.4)]">
+        
+        {/* EL RAYO (Animación de pálpito eléctrico) */}
+        <motion.div
+          animate={{ 
+            scale: [1, 1.2, 1],
+            opacity: [0.8, 1, 0.8],
+            filter: ["drop-shadow(0 0 2px rgba(249,115,22,0.5))", "drop-shadow(0 0 10px rgba(249,115,22,1))", "drop-shadow(0 0 2px rgba(249,115,22,0.5))"]
+          }}
+          transition={{
+            duration: 0.8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <HiBolt className="w-8 h-8 text-accent" />
+        </motion.div>
+
+      </div>
+    </div>
   );
 };
 
 const Loader = ({ text }) => {
   const { t } = useTranslation();
-  const displayText = text || t('common.loading', 'Cargando...');
+  const displayText = text || t('common.loading', 'Iniciando sistemas...');
 
   return (
     <motion.div
@@ -50,13 +70,20 @@ const Loader = ({ text }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col items-center justify-center"
+      className="flex flex-col items-center justify-center h-full w-full min-h-[200px]"
     >
-      <div 
-        className="bg-surface/50 backdrop-blur-md p-6 rounded-2xl flex flex-col items-center justify-center gap-4 border border-border shadow-medium"
-      >
-        <BouncingDotsLoader />
-        {displayText && <p className="text-text-primary text-sm font-semibold mt-2">{displayText}</p>}
+      <div className="flex flex-col items-center justify-center gap-6">
+        <LightningLoader />
+        {displayText && (
+          <motion.p 
+            initial={{ opacity: 0.5 }}
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="text-accent font-bold text-sm tracking-widest uppercase"
+          >
+            {displayText}
+          </motion.p>
+        )}
       </div>
     </motion.div>
   );

@@ -1,16 +1,15 @@
 // --- START OF FILE AboutPage.jsx ---
 
-// RUTA: frontend/src/pages/AboutPage.jsx (v3.0 - "QUANTUM LEAP": CONTENIDO Y DISEÑO ACTUALIZADO)
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import StaticPageLayout from '../components/layout/StaticPageLayout';
+import { HiCheckCircle } from 'react-icons/hi2';
 
-// Componente interno para los elementos de la lista, para un estilo consistente
+// Componente interno para listas
 const ListItem = ({ children }) => (
-  <li className="flex items-start gap-3">
-    <span className="text-accent mt-1">🔷</span>
-    <span className="flex-1">{children}</span>
+  <li className="flex items-start gap-3 mb-2">
+    <HiCheckCircle className="text-accent mt-0.5 w-5 h-5 flex-shrink-0" />
+    <span className="flex-1 text-text-secondary text-sm leading-relaxed">{children}</span>
   </li>
 );
 
@@ -19,78 +18,73 @@ const AboutPage = () => {
 
   return (
     <StaticPageLayout title={t('aboutPage.title', 'Sobre Nosotros')}>
-      <div className="bg-surface p-6 sm:p-8 rounded-2xl border border-border shadow-subtle text-text-secondary">
+      <div className="bg-surface p-6 sm:p-8 rounded-3xl border border-border shadow-medium text-text-primary relative overflow-hidden">
         
-        <h2 className="text-2xl font-bold text-accent text-center mb-6">
-          🔷 HASH POWERBOT — SOBRE NOSOTROS 🔷
+        {/* Fondo decorativo */}
+        <div className="absolute top-0 right-0 w-40 h-40 bg-accent/5 rounded-bl-full -mr-10 -mt-10 pointer-events-none"></div>
+
+        <h2 className="text-2xl font-bold text-white text-center mb-6 flex items-center justify-center gap-2">
+          📌 Sobre Nosotros <span className="text-accent">NovMining</span>
         </h2>
 
-        <div className="space-y-6 text-sm leading-relaxed">
-          <p>
-            Hash PowerBot es una plataforma de minería en la nube diseñada para ofrecer a los usuarios acceso sencillo y seguro a la minería de criptomonedas sin necesidad de contar con hardware propio. Nuestro objetivo es democratizar el acceso a la minería, permitiendo que cualquier persona pueda participar y monitorear su actividad desde el bot.
+        <div className="space-y-8">
+          
+          {/* INTRO */}
+          <p className="text-sm text-text-secondary leading-relaxed">
+            En <strong>NovMining</strong> somos una plataforma especializada en minería de criptomonedas y gestión de inversiones digitales. Nuestro objetivo es ofrecer a cada usuario un sistema transparente, seguro y altamente rentable, respaldado por la tecnología blockchain.
           </p>
 
+          {/* SECCIÓN 1: CÓMO FUNCIONA */}
+          <div className="bg-background/50 p-5 rounded-2xl border border-white/5">
+            <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+              ⚙️ ¿Cómo generamos las ganancias?
+            </h3>
+            <p className="text-sm text-text-secondary leading-relaxed mb-4">
+              Las inversiones realizadas por nuestros usuarios se integran directamente en procesos de minería y cuantificación digital. Cada depósito se procesa en tiempo real dentro de la blockchain, garantizando trazabilidad y seguridad absoluta. Los fondos invertidos comienzan a trabajar de inmediato, generando rendimientos que oscilan entre un <strong>10% y 30%</strong>, dependiendo del monto y la estrategia de inversión aplicada.
+            </p>
+            
+            <div className="pl-2 border-l-2 border-accent/30 mt-4">
+              <p className="text-sm text-text-secondary font-semibold mb-2">Sistema de Multiplicación:</p>
+              <ul className="space-y-2">
+                <li className="text-xs text-text-secondary flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                  Comisiones desde 8% hasta 1%, según nivel de depósito.
+                </li>
+                <li className="text-xs text-text-secondary flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                  Bonificaciones escalonadas por expansión de red.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* SECCIÓN 2: BENEFICIOS */}
           <div>
-            <h3 className="text-xl font-semibold text-text-primary mb-3">¿Cómo funciona?</h3>
-            <ul className="space-y-3">
-              <ListItem><strong>Compra de potencia (hash power):</strong> los usuarios adquieren paquetes de potencia que se asignan a pools y operaciones de minería profesional.</ListItem>
-              <ListItem><strong>Minería gestionada:</strong> nuestro equipo técnico administra los equipos y la infraestructura (pools, refrigeración, mantenimiento y optimización) para maximizar la eficiencia.</ListItem>
-              <ListItem><strong>Reparto de ingresos:</strong> las recompensas minadas se distribuyen periódicamente entre los participantes según la potencia contratada, descontando comisiones operativas y de mantenimiento.</ListItem>
-              <ListItem><strong>Pagos automáticos:</strong> las ganancias se acreditan en la cuenta del usuario en intervalos regulares y pueden retirarse según las condiciones y límites establecidos.</ListItem>
+            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              💼 Beneficios otorgados:
+            </h3>
+            <ul className="space-y-1">
+              <ListItem><strong>Transparencia total:</strong> cada movimiento queda registrado en la blockchain.</ListItem>
+              <ListItem><strong>Pagos constantes:</strong> tus ganancias se acreditan de forma puntual y verificada.</ListItem>
+              <ListItem><strong>Seguridad garantizada:</strong> fondos protegidos por infraestructura descentralizada.</ListItem>
+              <ListItem><strong>Escalabilidad:</strong> cuanto mayor sea tu inversión, mayor será tu rendimiento.</ListItem>
+              <ListItem><strong>Comunidad activa:</strong> acceso a líderes y grupos de apoyo que fortalecen tu experiencia.</ListItem>
             </ul>
           </div>
 
-          <div>
-            <h3 className="text-xl font-semibold text-text-primary mb-3">¿Por qué elegir Hash PowerBot?</h3>
-            <ul className="space-y-3">
-              <ListItem><strong>Acceso sencillo:</strong> sin instalar ni configurar hardware; todo se administra desde el bot.</ListItem>
-              <ListItem><strong>Infraestructura profesional:</strong> operamos rigs y pools con monitoreo 24/7 y mantenimiento especializado.</ListItem>
-              <ListItem><strong>Transparencia:</strong> publicamos direcciones de pago, informes periódicos de rendimiento y avisos sobre mantenimiento.</ListItem>
-              <ListItem><strong>Seguridad:</strong> usamos conexiones cifradas (SSL/TLS), almacenamiento seguro de fondos y prácticas de seguridad estándar en la industria.</ListItem>
-              <ListItem><strong>Soporte al cliente:</strong> atención a través del canal oficial para resolver dudas y guiar en procesos de depósito y retiro.</ListItem>
-            </ul>
+          <hr className="border-white/10" />
+
+          {/* OUTRO */}
+          <div className="text-center bg-gradient-to-r from-accent/10 to-transparent p-4 rounded-xl border border-accent/20">
+            <p className="text-sm font-medium text-white">
+              🚀 En <strong>NovMining</strong> creemos que la minería digital no es solo una inversión, sino una oportunidad de crecimiento colectivo.
+            </p>
+            <p className="text-xs text-text-secondary mt-2">
+              Nuestro compromiso es que cada usuario recupere su inversión y obtenga beneficios adicionales, construyendo confianza y estabilidad.
+            </p>
           </div>
 
-          <div>
-            <h3 className="text-xl font-semibold text-text-primary mb-3">Transparencia y auditoría</h3>
-            <ul className="space-y-3">
-              <ListItem>Publicamos reportes de actividad y disponemos (cuando sea aplicable) de comprobantes on-chain para validar movimientos.</ListItem>
-              <ListItem>Recomendamos revisar nuestras políticas y reportes antes de invertir.</ListItem>
-            </ul>
-          </div>
-
-          <div className="bg-status-danger/10 border border-status-danger/20 rounded-lg p-4">
-            <h3 className="text-xl font-semibold text-status-danger mb-3">Aviso de riesgos (muy importante)</h3>
-            <ul className="space-y-3">
-              <ListItem>La minería de criptomonedas implica riesgos de mercado y operativos. Los rendimientos pueden variar según el precio de la criptomoneda, la dificultad de la red, costes de operación y otros factores.</ListItem>
-              <ListItem>todas las inversiones están garantizadas. ofrecemos rentabilidades fijas y garantías de capital.</ListItem>
-              <ListItem>Antes de invertir, lea los términos y condiciones, la política y consulte con un asesor si lo considera necesario.</ListItem>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-semibold text-text-primary mb-3">Requisitos y cumplimiento</h3>
-            <ul className="space-y-3">
-              <ListItem>Implementamos procesos KYC/AML para cumplir con normativas y proteger a la comunidad.</ListItem>
-              <ListItem>Algunas funciones (retiros, compras avanzadas) requieren verificación completa.</ListItem>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-semibold text-text-primary mb-3">Contacto y soporte</h3>
-            <ul className="space-y-3">
-              <ListItem>Soporte en el canal oficial: <a href="https://t.me/HashPowerSupport1" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">https://t.me/HashPowerSupport1</a></ListItem>
-              <ListItem>Horario de atención: 24/7 (respuestas escaladas según prioridad)</ListItem>
-            </ul>
-          </div>
-
-          <hr className="my-6 border-border opacity-50" />
-
-          <p className="text-center font-semibold">
-            📌 Nota final: Hash PowerBot facilita acceso profesional a minería en la nube, pero siempre recomendamos operar con responsabilidad.
-          </p>
         </div>
-
       </div>
     </StaticPageLayout>
   );

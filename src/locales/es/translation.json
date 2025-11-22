@@ -108,6 +108,8 @@
     "toasts": {
       "claimSuccess": "¡Recompensa reclamada!"
     },
+    "JOIN_CHANNEL": { "title": "Únete al Canal", "description": "Entérate de las noticias." },
+    "JOIN_GROUP": { "title": "Comunidad Oficial", "description": "Únete al grupo de soporte." },
     "REF_DEP_50": { "title": "Iniciador de Red", "description": "Invita a un amigo que deposite 50 USDT." },
     "REF_DEP_100": { "title": "Mentor de Negocios", "description": "Invita a un amigo que deposite 100 USDT." },
     "REF_DEP_200": { "title": "Líder de Expansión", "description": "Invita a un amigo que deposite 200 USDT." },
