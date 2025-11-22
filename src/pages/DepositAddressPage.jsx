@@ -1,135 +1,90 @@
-// --- START OF FILE DepositAddressPage.jsx ---
-
-// RUTA: frontend/src/pages/DepositAddressPage.jsx (v2.1 - SINCRONIZADO CON depositConfig.js)
-
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { QRCodeSVG } from 'qrcode.react';
-import toast from 'react-hot-toast';
-import { HiArrowLeft, HiOutlineClipboardDocument, HiOutlineInformationCircle } from 'react-icons/hi2';
-
 import api from '../api/axiosConfig';
+import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
+import QRCode from 'react-qr-code';
+import { HiOutlineClipboardDocument, HiShieldCheck, HiExclamationTriangle, HiQrCode } from 'react-icons/hi2';
 import Loader from '../components/common/Loader';
-import { STATIC_DEPOSIT_ADDRESSES } from '../config/depositConfig';
 
 const DepositAddressPage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { network } = location.state || {};
-
-  const [paymentInfo, setPaymentInfo] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [addressData, setAddressData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!network) {
-      toast.error(t('deposit.address.noNetworkSelected', 'No se ha seleccionado ninguna red.'));
-      navigate(-1);
-      return;
-    }
-
-    const generateAddress = async () => {
+    const generate = async () => {
       try {
-        if (network.type === 'dynamic') { // Solo USDT BEP20 es dinámico
-          const response = await api.post('/wallet/create-deposit-address');
-          setPaymentInfo(response.data);
-        } else { // El resto son estáticos y usan la nueva configuración
-          
-          // --- INICIO DE MODIFICACIÓN CRÍTICA ---
-          // Se reemplaza la lógica de construcción de claves por un mapeo directo y robusto.
-          let addressKey;
-          switch (network.id) {
-            case 'usdt-trc20':
-              addressKey = 'USDT-TRC20';
-              break;
-            case 'bnb-bep20':
-              addressKey = 'BNB';
-              break;
-            case 'tron-trc20':
-              addressKey = 'TRON';
-              break;
-            default:
-              throw new Error(t('deposit.address.unknownNetwork', 'Red desconocida.'));
-          }
-          // --- FIN DE MODIFICACIÓN CRÍTICA ---
-
-          const staticAddress = STATIC_DEPOSIT_ADDRESSES[addressKey];
-          
-          if (staticAddress) {
-            setPaymentInfo({ 
-              paymentAddress: staticAddress, 
-              currency: network.name, 
-              network: network.network,
-              isStatic: true
-            });
-          } else {
-            throw new Error(t('deposit.address.notConfigured', 'Dirección no configurada.'));
-          }
-        }
+        // Asumimos que este endpoint devuelve o genera la wallet BSC
+        const { data } = await api.post('/payment/generate-address', { chain: 'BSC' });
+        setAddressData(data);
       } catch (error) {
-        toast.error(error.message || t('common.error'));
-        navigate(-1);
+        toast.error('Error generando dirección');
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
-    generateAddress();
-  }, [network, navigate, t]);
+    generate();
+  }, []);
 
-  const handleCopy = () => {
-    if (!paymentInfo?.paymentAddress) return;
-    navigator.clipboard.writeText(paymentInfo.paymentAddress);
-    toast.success(t('deposit.address.copied', 'Dirección copiada al portapapeles'));
+  const copyToClipboard = () => {
+    if (addressData?.address) {
+      navigator.clipboard.writeText(addressData.address);
+      toast.success('¡Dirección copiada!');
+    }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col h-full p-4 pt-6">
-        <header className="flex-shrink-0 flex items-center">
-          <button onClick={() => navigate(-1)} className="p-2 mr-2"><HiArrowLeft className="w-6 h-6" /></button>
-          <h1 className="text-xl font-bold">{t('deposit.address.generating', 'Generando Dirección...')}</h1>
-        </header>
-        <div className="flex-grow flex items-center justify-center"><Loader /></div>
-      </div>
-    );
-  }
+  if (loading) return <div className="h-full flex items-center justify-center"><Loader text="Generando Bóveda..." /></div>;
 
   return (
-    <div className="flex flex-col h-full p-4 pt-6 gap-6">
-      <header className="flex-shrink-0 flex items-center">
-        <button onClick={() => navigate(-1)} className="p-2 mr-2"><HiArrowLeft className="w-6 h-6" /></button>
-        <h1 className="text-xl font-bold">{t('deposit.address.title', 'Depositar {{currency}}', { currency: paymentInfo.currency })}</h1>
-      </header>
+    <div className="flex flex-col h-full p-4 pt-8 pb-20 overflow-y-auto no-scrollbar">
+      <h1 className="text-2xl font-bold text-white mb-2">Recargar Saldo</h1>
+      <p className="text-sm text-text-secondary mb-6">Envía USDT (Red BEP20) para obtener potencia.</p>
 
-      <main className="flex-grow flex flex-col items-center justify-center text-center gap-6">
-        <div className="bg-white p-4 rounded-xl border-4 border-accent">
-          <QRCodeSVG value={paymentInfo.paymentAddress} size={200} />
-        </div>
+      {/* TARJETA PRINCIPAL */}
+      <motion.div 
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="bg-surface rounded-3xl p-6 border border-border shadow-2xl relative overflow-hidden"
+      >
+        {/* Decoración QR de fondo */}
+        <HiQrCode className="absolute -top-10 -right-10 w-40 h-40 text-white/5 rotate-12" />
 
-        <div className="w-full">
-          <p className="text-sm text-text-secondary mb-2">{t('deposit.address.sendOnly', 'Enviar solo {{currency}} a través de la red {{network}}', { currency: paymentInfo.currency, network: paymentInfo.network })}</p>
-          <div className="bg-surface p-3 rounded-xl border border-border flex items-center justify-between gap-2">
-            <p className="font-mono text-sm text-text-primary break-all flex-1 text-left">{paymentInfo.paymentAddress}</p>
-            <button onClick={handleCopy} className="p-2 text-accent flex-shrink-0"><HiOutlineClipboardDocument className="w-6 h-6" /></button>
-          </div>
-        </div>
-
-        {paymentInfo.isStatic && (
-            <div className="w-full bg-amber-500/10 text-amber-400 text-xs rounded-lg p-3 flex items-start gap-2 border border-amber-500/20">
-                <HiOutlineInformationCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                <p>{t('deposit.address.staticNotice', 'Las transferencias en esta red pueden tardar de 3 a 5 minutos en acreditarse después de ser confirmadas.')}</p>
+        <div className="flex flex-col items-center relative z-10">
+            <div className="bg-white p-4 rounded-2xl shadow-lg mb-6">
+                <QRCode value={addressData?.address || ''} size={180} />
             </div>
-        )}
-      </main>
 
-      <footer className="text-center text-xs text-text-secondary">
-        <p>{t('deposit.address.confirmationNotice', 'Los fondos serán acreditados tras las confirmaciones de la red.')}</p>
-      </footer>
+            <div className="w-full">
+                <p className="text-[10px] text-text-secondary uppercase font-bold mb-2 tracking-widest text-center">Tu Dirección BEP20 (BSC)</p>
+                <div onClick={copyToClipboard} className="bg-background/80 p-4 rounded-xl border border-accent/30 flex items-center justify-between gap-3 cursor-pointer group hover:bg-background transition-colors">
+                    <p className="text-xs font-mono text-white break-all text-center flex-1">
+                        {addressData?.address}
+                    </p>
+                    <HiOutlineClipboardDocument className="w-5 h-5 text-accent group-hover:scale-110 transition-transform" />
+                </div>
+            </div>
+        </div>
+      </motion.div>
+
+      {/* ADVERTENCIAS */}
+      <div className="mt-6 space-y-3">
+        <div className="flex items-start gap-3 p-4 bg-yellow-500/10 rounded-xl border border-yellow-500/20">
+            <HiExclamationTriangle className="w-6 h-6 text-yellow-500 shrink-0" />
+            <p className="text-xs text-yellow-200/80">
+                <strong className="text-yellow-500 block mb-1">Solo Red BSC (BEP20)</strong>
+                Enviar USDT por otra red (como TRC20 o Ethereum) resultará en la pérdida permanente de los fondos.
+            </p>
+        </div>
+        <div className="flex items-center gap-3 p-4 bg-green-500/10 rounded-xl border border-green-500/20">
+            <HiShieldCheck className="w-6 h-6 text-green-500 shrink-0" />
+            <p className="text-xs text-green-200/80">
+                Depósito seguro. Acreditación automática tras 1 confirmación de red.
+            </p>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default DepositAddressPage;
-
-// --- END OF FILE DepositAddressPage.jsx ---
