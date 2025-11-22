@@ -1,80 +1,88 @@
-// --- START OF FILE HomePage.jsx ---
-
-// RUTA: frontend/src/pages/HomePage.jsx (v4.2 - "QUANTUM LEAP": TASK CENTER ELIMINADO)
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import useUserStore from '../store/userStore';
 import api from '../api/axiosConfig';
-import toast from 'react-hot-toast';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { HiOutlineClipboardList } from 'react-icons/hi2';
 
-import HomeBalanceOverview from '../components/home/HomeBalanceOverview';
-import WithdrawalModal from '../components/modals/WithdrawalModal';
-import PurchasedMinerItem from '../components/miners/PurchasedMinerItem';
+import PowerDashboard from '../components/home/PowerDashboard';
+import TransactionItem from '../components/history/TransactionItem';
 import Loader from '../components/common/Loader';
-
-const MinerAnimation = () => {
-    const { t } = useTranslation();
-    const [isVideoLoading, setVideoLoading] = React.useState(true);
-    return (
-        <div className="relative w-full max-w-sm mx-auto aspect-square rounded-3xl overflow-hidden bg-black/20 border border-border shadow-medium">
-            {isVideoLoading && <div className="absolute inset-0 flex items-center justify-center"><Loader text={t('homePage.loadingAnimation', 'Cargando animación...')} /></div>}
-            <video src="/animations/mineranimated.mp4" autoPlay loop muted playsInline onLoadedData={() => setVideoLoading(false)} className={`w-full h-full object-cover transition-opacity duration-500 ${isVideoLoading ? 'opacity-0' : 'opacity-100'}`} />
-        </div>
-    );
-};
 
 const HomePage = () => {
     const { t } = useTranslation();
     const user = useUserStore(state => state.user);
-    const setUser = useUserStore(state => state.setUser);
-    const [isWithdrawalModalOpen, setWithdrawalModalOpen] = useState(false);
+    
+    // Estado para el historial integrado
+    const [history, setHistory] = useState([]);
+    const [loadingHistory, setLoadingHistory] = useState(true);
 
-    const handleClaim = async (purchasedMinerId) => {
-        toast.loading(t('homePage.toasts.claiming', 'Reclamando...'), { id: 'claim_request' });
-        try {
-            const response = await api.post('/wallet/claim-miner', { purchasedFactoryId: purchasedMinerId });
-            setUser(response.data.user);
-            toast.success(response.data.message, { id: 'claim_request' });
-        } catch (error) {
-            toast.error(error.response?.data?.message || t('common.error'), { id: 'claim_request' });
+    // Cargar historial filtrado (Solo Depósitos y Retiros como solicitaste)
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                const response = await api.get('/wallet/history');
+                // Filtramos en el cliente para mostrar solo movimientos de fondos externos
+                const filtered = response.data.filter(tx => 
+                    ['deposit', 'withdrawal'].includes(tx.type)
+                ).slice(0, 10); // Mostramos solo los últimos 10 para no saturar el home
+                setHistory(filtered);
+            } catch (error) {
+                console.error("Error cargando historial en home:", error);
+            } finally {
+                setLoadingHistory(false);
+            }
+        };
+
+        if (user) {
+            fetchHistory();
         }
-    };
+    }, [user]);
 
     if (!user) {
-        return <div className="flex items-center justify-center h-full"><Loader text={t('common.loadingUser', "Cargando usuario...")} /></div>;
+        return <div className="flex items-center justify-center h-full"><Loader /></div>;
     }
-
-    const purchasedMiners = user?.purchasedMiners || [];
     
     return (
-        <>
-            <motion.div className="flex flex-col gap-6 p-4 pt-6 pb-28" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-                <MinerAnimation />
-                <HomeBalanceOverview onWithdrawClick={() => setWithdrawalModalOpen(true)} />
-                <div>
-                    <h2 className="text-xl font-bold text-text-primary mb-3">{t('homePage.myMiners', 'Mis Mineros')}</h2>
-                    {purchasedMiners.length > 0 ? (
-                        <div className="space-y-4">
-                            {purchasedMiners.map(pm => <PurchasedMinerItem key={pm._id} purchasedMiner={pm} onClaim={handleClaim} />)}
-                        </div>
-                    ) : (
-                        <div className="bg-surface/50 backdrop-blur-md rounded-2xl p-8 text-center text-text-secondary border border-border shadow-medium">
-                            <p>{t('homePage.noMiners', 'No tienes mineros activos.')}</p>
-                            <p className="text-sm mt-2">{t('homePage.goToMarket', 'Visita el mercado para empezar a producir.')}</p>
-                        </div>
-                    )}
+        <motion.div 
+            className="flex flex-col gap-6 p-4 pt-6 pb-28" 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ duration: 0.5 }}
+        >
+            {/* 1. El Nuevo Dashboard de Potencia */}
+            <PowerDashboard user={user} />
+
+            {/* 2. Sección de Historial Integrado */}
+            <div className="mt-2">
+                <div className="flex items-center gap-2 mb-4 px-1">
+                    <HiOutlineClipboardList className="text-accent w-5 h-5" />
+                    <h2 className="text-lg font-bold text-text-primary">
+                        {t('homePage.recentActivity', 'Actividad Reciente')}
+                    </h2>
                 </div>
-                {/* --- SECCIÓN DE TAREAS ELIMINADA DE AQUÍ --- */}
-            </motion.div>
-            <AnimatePresence>
-                {isWithdrawalModalOpen && <WithdrawalModal onClose={() => setWithdrawalModalOpen(false)} />}
-            </AnimatePresence>
-        </>
+
+                {loadingHistory ? (
+                    <div className="space-y-3">
+                        <div className="h-16 bg-surface rounded-xl animate-pulse" />
+                        <div className="h-16 bg-surface rounded-xl animate-pulse" />
+                    </div>
+                ) : history.length > 0 ? (
+                    <div className="space-y-3">
+                        {history.map(tx => (
+                            <TransactionItem key={tx._id} transaction={tx} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="bg-surface/50 border border-border border-dashed rounded-xl p-8 text-center">
+                        <p className="text-text-secondary text-sm">
+                            {t('homePage.noActivity', 'Aún no hay depósitos o retiros registrados.')}
+                        </p>
+                    </div>
+                )}
+            </div>
+        </motion.div>
     );
 };
 
 export default HomePage;
-
-// --- END OF FILE HomePage.jsx ---
