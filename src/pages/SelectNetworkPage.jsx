@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { HiLightningBolt, HiShieldCheck, HiChevronRight } from 'react-icons/hi2';
+// CORRECCIÓN: Importamos HiBolt en lugar de HiLightningBolt
+import { HiBolt, HiShieldCheck, HiChevronRight } from 'react-icons/hi2';
 
 // Componente de Tarjeta con Imagen
 const NetworkCard = ({ name, protocol, fee, color, imageSrc, delay, onClick }) => (
@@ -23,7 +24,7 @@ const NetworkCard = ({ name, protocol, fee, color, imageSrc, delay, onClick }) =
                 src={imageSrc} 
                 alt={protocol} 
                 className="w-8 h-8 object-contain"
-                onError={(e) => { e.target.style.display = 'none'; }} // Ocultar si falla
+                onError={(e) => { e.target.style.display = 'none'; }} // Ocultar si falla la carga
             />
         </div>
         
@@ -34,7 +35,8 @@ const NetworkCard = ({ name, protocol, fee, color, imageSrc, delay, onClick }) =
                     {protocol}
                 </span>
                 <span className="text-[10px] text-green-400 flex items-center gap-1 font-bold">
-                    <HiLightningBolt className="w-3 h-3" /> {fee}
+                    {/* CORRECCIÓN: Usamos HiBolt aquí */}
+                    <HiBolt className="w-3 h-3" /> {fee}
                 </span>
             </div>
         </div>
@@ -71,7 +73,7 @@ const SelectNetworkPage = () => {
                 protocol="BSC (BEP20)"
                 fee="Rápido"
                 color="from-yellow-500 to-orange-500"
-                imageSrc="/assets/images/networks/bep20-usdt.png" // Asegúrate de que esta ruta exista
+                imageSrc="/assets/images/networks/bep20-usdt.png"
                 delay={0.1}
                 onClick={() => handleSelect('USDT-BEP20')}
             />
