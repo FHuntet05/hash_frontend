@@ -202,11 +202,13 @@ const TeamPage = () => {
                                   </div>
                               </div>
                               <div className="text-right shrink-0">
-                                  <p className="text-[10px] text-text-secondary uppercase tracking-wide">Comisión</p>
-                                  <p className="text-sm font-bold text-accent font-mono">
-                                      +{member.commissionGenerated?.toFixed(2) || '0.00'}
-                                  </p>
-                              </div>
+    {/* Cambiamos etiqueta visual */}
+    <p className="text-[10px] text-text-secondary uppercase tracking-wide">Recargado</p>
+    <p className="text-sm font-bold text-white font-mono">
+        {/* Mostramos totalRecharge en lugar de comisión si no la tenemos calculada */}
+        {member.totalRecharge ? member.totalRecharge.toFixed(2) : '0.00'} USDT
+    </p>
+</div>
                           </motion.div>
                       ))}
                   </div>
