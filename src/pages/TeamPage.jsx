@@ -11,7 +11,7 @@ import {
 } from 'react-icons/hi2';
 
 import TeamStatCard from '../components/team/TeamStatCard';
-import SocialShare from '../components/team/SocialShare'; // Asegúrate de que este componente use los estilos heredados o adáptalo
+import SocialShare from '../components/team/SocialShare';
 import Loader from '../components/common/Loader';
 
 const TeamPage = () => {
@@ -24,10 +24,10 @@ const TeamPage = () => {
   const [levelDetails, setLevelDetails] = useState([]);
   const [loadingDetails, setLoadingDetails] = useState(false);
   
-  // Ya no bloqueamos toda la página con un loading global, solo las partes dinámicas
+  // Estado de carga inicial de datos
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  // Cargar Datos
+  // Cargar Datos Generales
   useEffect(() => {
     const fetchData = async () => {
         try {
@@ -42,7 +42,7 @@ const TeamPage = () => {
     if (user) fetchData();
   }, [user]);
 
-  // Cargar Detalles por Nivel
+  // Cargar Detalles por Nivel cuando cambia la pestaña
   useEffect(() => {
       const fetchLevelDetails = async () => {
           setLoadingDetails(true);
@@ -93,51 +93,55 @@ const TeamPage = () => {
 
   return (
     <motion.div 
-        className="flex flex-col h-full p-4 pt-6 pb-32 gap-6 overflow-y-auto no-scrollbar"
+        // CORRECCIÓN AQUÍ: Cambiado pt-6 a pt-10 para evitar el corte superior
+        className="flex flex-col h-full p-4 pt-10 pb-32 gap-6 overflow-y-auto no-scrollbar"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
     >
-      {/* --- SECCIÓN SUPERIOR: ENLACE Y SOCIAL --- */}
+      {/* --- SECCIÓN SUPERIOR: CARD DE INVITACIÓN --- */}
       <div className="bg-surface rounded-3xl p-6 border border-border shadow-medium relative overflow-hidden">
         {/* Decoración de fondo */}
-        <div className="absolute top-0 right-0 w-20 h-20 bg-accent/10 rounded-bl-full -mr-5 -mt-5"></div>
+        <div className="absolute top-0 right-0 w-24 h-24 bg-accent/10 rounded-bl-full -mr-6 -mt-6 blur-md"></div>
+        <div className="absolute bottom-0 left-0 w-20 h-20 bg-blue-500/5 rounded-tr-full -ml-5 -mb-5 blur-md"></div>
 
-        <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-accent/10 rounded-lg text-accent">
-                <HiShare className="w-6 h-6" />
+        <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-4">
+                <div className="p-2.5 bg-accent/10 rounded-xl text-accent border border-accent/20">
+                    <HiShare className="w-6 h-6" />
+                </div>
+                <div>
+                    <h1 className="text-xl font-bold text-white leading-tight">{t('teamPage.title', 'Invita a tus Amigos')}</h1>
+                    <p className="text-xs text-text-secondary mt-0.5">Expande tu red y gana comisiones.</p>
+                </div>
             </div>
-            <div>
-                <h1 className="text-xl font-bold text-white">{t('teamPage.title', 'Invita a tus Amigos')}</h1>
-                <p className="text-xs text-text-secondary">Gana comisiones de hasta 3 niveles.</p>
+            
+            {/* Input de Enlace con estilo Neon */}
+            <div className="flex items-center bg-background rounded-xl p-1.5 border border-white/10 group focus-within:border-accent/50 transition-colors shadow-inner">
+                <div className="flex-1 px-3 py-2 overflow-hidden">
+                     <p className="text-[10px] text-text-secondary uppercase font-bold mb-0.5 tracking-wider">Tu Enlace Único</p>
+                     <input 
+                        type="text" 
+                        value={referralLink} 
+                        readOnly 
+                        className="w-full bg-transparent text-white text-xs font-mono outline-none truncate" 
+                     />
+                </div>
+                <button 
+                    onClick={copyToClipboard} 
+                    className="p-3 bg-accent text-white rounded-lg hover:bg-accent-hover active:scale-95 transition-all shadow-lg shadow-accent/20"
+                >
+                    <HiOutlineClipboardDocument className="w-5 h-5" />
+                </button>
             </div>
-        </div>
-        
-        {/* Input de Enlace con estilo Neon */}
-        <div className="flex items-center bg-background rounded-xl p-1.5 border border-white/10 mt-4 group focus-within:border-accent/50 transition-colors">
-            <div className="flex-1 px-3 py-2 overflow-hidden">
-                 <p className="text-[10px] text-text-secondary uppercase font-bold mb-0.5">Tu Enlace Único</p>
-                 <input 
-                    type="text" 
-                    value={referralLink} 
-                    readOnly 
-                    className="w-full bg-transparent text-white text-xs font-mono outline-none truncate" 
-                 />
-            </div>
-            <button 
-                onClick={copyToClipboard} 
-                className="p-3 bg-accent text-white rounded-lg hover:bg-accent-hover active:scale-95 transition-all shadow-lg shadow-accent/20"
-            >
-                <HiOutlineClipboardDocument className="w-5 h-5" />
-            </button>
-        </div>
 
-        {/* Componente Social Share (Asegúrate de que sus iconos se vean bien sobre fondo oscuro) */}
-        <div className="mt-4 pt-4 border-t border-white/5">
-             <SocialShare referralLink={referralLink} />
+            {/* Social Share */}
+            <div className="mt-5 pt-4 border-t border-white/5">
+                 <SocialShare referralLink={referralLink} />
+            </div>
         </div>
       </div>
 
-      {/* --- STATS GRID --- */}
+      {/* --- STATS GRID (Resumen) --- */}
       <div className="grid grid-cols-2 gap-3">
         <TeamStatCard 
             title="Miembros" 
@@ -153,18 +157,18 @@ const TeamPage = () => {
         />
       </div>
 
-      {/* --- SECCIÓN DE TABS Y LISTA --- */}
+      {/* --- SECCIÓN INFERIOR: TABS Y LISTA --- */}
       <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-between mb-3 px-1">
             <h2 className="text-lg font-bold text-white">Tu Red</h2>
             {levelDetails.length > 0 && (
-                <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded-full border border-accent/20">
+                <span className="text-xs font-mono text-accent bg-accent/10 px-2 py-0.5 rounded-full border border-accent/20">
                     {levelDetails.length} Activos
                 </span>
             )}
           </div>
           
-          {/* Tab Bar */}
+          {/* Tab Bar (Estilo Segmented Control) */}
           <div className="flex gap-1 p-1 bg-background/50 rounded-xl border border-white/5 mb-4 backdrop-blur-sm">
               <TabButton level={1} label="Nivel 1" />
               <TabButton level={2} label="Nivel 2" />
@@ -172,27 +176,27 @@ const TeamPage = () => {
           </div>
 
           {/* Lista de Miembros */}
-          <div className="bg-surface flex-1 rounded-2xl border border-border overflow-hidden min-h-[250px] relative">
+          <div className="bg-surface flex-1 rounded-2xl border border-border overflow-hidden min-h-[300px] relative shadow-lg">
               {loadingDetails ? (
                   <div className="absolute inset-0 flex items-center justify-center"><Loader /></div>
               ) : levelDetails.length > 0 ? (
-                  <div className="divide-y divide-white/5 overflow-y-auto absolute inset-0 no-scrollbar">
+                  <div className="divide-y divide-white/5 overflow-y-auto absolute inset-0 no-scrollbar p-1">
                       {levelDetails.map((member, index) => (
                           <motion.div 
                             key={index}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+                            className="p-3 flex items-center justify-between hover:bg-white/5 rounded-xl transition-colors mb-1"
                           >
                               <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center border border-white/10 text-text-secondary relative">
+                                  <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center border border-white/10 text-text-secondary relative shrink-0">
                                       <HiUserCircle className="w-6 h-6" />
-                                      {/* Indicador de estado (simulado) */}
+                                      {/* Indicador de estado activo */}
                                       <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full"></div>
                                   </div>
-                                  <div>
-                                      <p className="text-sm font-bold text-white">
+                                  <div className="min-w-0">
+                                      <p className="text-sm font-bold text-white truncate max-w-[120px]">
                                           {member.username || `ID: ${member.telegramId}`}
                                       </p>
                                       <p className="text-[10px] text-text-secondary">
@@ -200,8 +204,8 @@ const TeamPage = () => {
                                       </p>
                                   </div>
                               </div>
-                              <div className="text-right">
-                                  <p className="text-[10px] text-text-secondary uppercase">Comisión</p>
+                              <div className="text-right shrink-0">
+                                  <p className="text-[10px] text-text-secondary uppercase tracking-wide">Comisión</p>
                                   <p className="text-sm font-bold text-accent font-mono">
                                       +{member.commissionGenerated?.toFixed(2) || '0.00'}
                                   </p>
@@ -210,9 +214,12 @@ const TeamPage = () => {
                       ))}
                   </div>
               ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-text-secondary opacity-50">
-                      <HiOutlineUserGroup className="w-12 h-12 mb-2 stroke-1" />
-                      <p className="text-sm">Sin miembros en este nivel</p>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-text-secondary opacity-50 p-6 text-center">
+                      <div className="bg-background p-4 rounded-full mb-3 border border-white/5">
+                          <HiOutlineUserGroup className="w-8 h-8 stroke-1" />
+                      </div>
+                      <p className="text-sm font-medium">Sin miembros en este nivel</p>
+                      <p className="text-xs mt-1">Comparte tu enlace para crecer.</p>
                   </div>
               )}
           </div>
