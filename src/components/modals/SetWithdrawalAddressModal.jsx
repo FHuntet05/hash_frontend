@@ -1,5 +1,3 @@
-// RUTA: frontend/src/components/modals/SetWithdrawalAddressModal.jsx (NUEVO COMPONENTE PARA FEATURE-001)
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -7,13 +5,6 @@ import { HiXMark, HiOutlineWallet, HiCheckCircle } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 import useUserStore from '../../store/userStore';
 import api from '../../api/axiosConfig';
-
-const backdropVariants = { visible: { opacity: 1 }, hidden: { opacity: 0 } };
-const modalVariants = {
-  hidden: { scale: 0.9, opacity: 0 },
-  visible: { scale: 1, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 30 } },
-  exit: { scale: 0.9, opacity: 0, transition: { duration: 0.2 } },
-};
 
 const SetWithdrawalAddressModal = ({ onClose }) => {
   const { t } = useTranslation();
@@ -25,88 +16,83 @@ const SetWithdrawalAddressModal = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validación básica Frontend
     if (!address) {
-      return toast.error(t('setWithdrawalAddressModal.toasts.addressRequired', 'La dirección de la billetera es requerida.'));
+      return toast.error('La dirección es requerida.');
+    }
+    if (address.length < 25) { // Longitud mínima segura para evitar errores de dedo
+      return toast.error('Dirección demasiado corta para ser válida.');
     }
 
     setIsProcessing(true);
-    // Llama al nuevo endpoint del backend
+    
+    // Usamos api.put hacia /users/withdrawal-address
     const saveAddressPromise = api.put('/users/withdrawal-address', { address });
 
     toast.promise(saveAddressPromise, {
-      loading: t('setWithdrawalAddressModal.toasts.processing', 'Guardando billetera...'),
+      loading: 'Verificando y guardando...',
       success: (res) => {
-        setUser(res.data.user); // Actualiza el estado global del usuario
-        onClose(); // Cierra el modal
-        return res.data.message; // Muestra el mensaje de éxito
+        setUser(res.data.user);
+        onClose();
+        return 'Billetera vinculada exitosamente';
       },
       error: (err) => {
-        return err.response?.data?.message || t('setWithdrawalAddressModal.toasts.error', 'Error al guardar la billetera.');
+        console.error(err);
+        return err.response?.data?.message || 'Error de conexión';
       },
     }).finally(() => {
       setIsProcessing(false);
     });
   };
 
-  const isWalletAlreadySet = user?.withdrawalAddress?.isSet;
-
   return (
     <motion.div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" onClick={onClose}
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
     >
       <motion.div
-        className="relative bg-surface/80 backdrop-blur-lg rounded-2xl w-full max-w-sm text-text-primary border border-border shadow-medium flex flex-col max-h-[90vh]"
-        variants={modalVariants} onClick={(e) => e.stopPropagation()}
+        className="relative bg-surface w-full max-w-sm rounded-3xl text-white border border-white/10 shadow-2xl flex flex-col overflow-hidden"
+        initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} onClick={(e) => e.stopPropagation()}
       >
-        <header className="flex-shrink-0 p-6 pb-4">
-            <button className="absolute top-4 right-4 text-text-secondary hover:text-text-primary" onClick={onClose}><HiXMark className="w-6 h-6" /></button>
-            <h2 className="text-xl font-bold text-center">
-              {isWalletAlreadySet ? t('setWithdrawalAddressModal.titleEdit', 'Actualizar Billetera de Retiro') : t('setWithdrawalAddressModal.titleSet', 'Configurar Billetera de Retiro')}
-            </h2>
-            <p className="text-sm text-center text-text-secondary mt-1">
-              {t('setWithdrawalAddressModal.subtitle', 'Esta dirección se usará para todos tus retiros.')}
-            </p>
-        </header>
+        <div className="bg-[#111827] p-6 text-center border-b border-white/5 relative">
+            <button className="absolute top-4 right-4 text-gray-400 hover:text-white" onClick={onClose}><HiXMark className="w-6 h-6" /></button>
+            <div className="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-blue-500/20">
+              <HiOutlineWallet className="w-7 h-7 text-blue-500" />
+            </div>
+            <h2 className="text-xl font-bold">Billetera de Retiro</h2>
+            <p className="text-xs text-gray-400 mt-1">Tus fondos serán enviados aquí.</p>
+        </div>
         
-        <main className="flex-grow p-6 pt-2 overflow-y-auto no-scrollbar">
+        <main className="p-6 pt-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm text-text-secondary mb-1 block" htmlFor="walletAddress">{t('setWithdrawalAddressModal.addressLabel', 'Dirección de Billetera (USDT BEP20)')}</label>
+              <label className="text-xs font-bold text-gray-400 mb-1 block uppercase">Dirección USDT (BEP20/TRC20)</label>
               <div className="relative">
-                <HiOutlineWallet className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
-                <input 
-                  id="walletAddress"
-                  type="text" 
-                  placeholder={t('setWithdrawalAddressModal.addressPlaceholder', 'Pega tu dirección aquí')}
+                <HiOutlineWallet className="absolute left-3 top-3 text-gray-500 w-5 h-5" />
+                <textarea
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)} 
-                  className="w-full bg-background/50 p-3 pl-10 rounded-lg border border-border focus:border-accent focus:ring-accent focus:ring-1 transition-colors" 
+                  onChange={(e) => setAddress(e.target.value.trim())} 
+                  placeholder="0x..."
+                  rows={2}
+                  className="w-full bg-background border border-border rounded-xl p-3 pl-10 text-sm font-mono text-white focus:border-accent focus:outline-none transition-colors resize-none"
                 />
               </div>
             </div>
 
-            <div className="pt-2">
-              <button 
+            <button 
                 type="submit" 
                 disabled={isProcessing} 
-                className="w-full py-3 bg-accent text-white font-bold rounded-full disabled:opacity-50 hover:bg-accent-hover active:scale-95 transition-all flex items-center justify-center gap-2"
-              >
-                {isProcessing ? t('common.saving', 'Guardando...') : (
-                  <>
-                    <HiCheckCircle className="w-5 h-5" />
-                    {t('setWithdrawalAddressModal.saveButton', 'Guardar Billetera')}
-                  </>
-                )}
-              </button>
-            </div>
+                className="w-full py-3.5 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl shadow-lg disabled:opacity-50 transition-all flex items-center justify-center gap-2 mt-2"
+            >
+                {isProcessing ? 'Guardando...' : 'GUARDAR BILLETERA'}
+            </button>
           </form>
         </main>
         
-        <footer className="flex-shrink-0 p-6 pt-0">
-            <div className="text-xs text-center text-text-secondary">
-              <p>{t('setWithdrawalAddressModal.notice', 'Asegúrate de que la dirección sea correcta y pertenezca a la red BEP20.')}</p>
-            </div>
+        <footer className="p-4 pt-0 text-center">
+            <p className="text-[10px] text-gray-500">
+                Verifica bien la dirección. Los retiros a direcciones incorrectas no son recuperables.
+            </p>
         </footer>
       </motion.div>
     </motion.div>
