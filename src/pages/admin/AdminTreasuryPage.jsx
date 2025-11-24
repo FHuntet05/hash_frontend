@@ -1,14 +1,13 @@
-// RUTA: frontend/src/pages/admin/AdminTreasuryPage.jsx (CON PERMISOS SUPER ADMIN Y LIMPIEZA DE TRON)
-
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../api/axiosConfig';
 import toast from 'react-hot-toast';
-import { HiOutlineBanknotes, HiOutlineCpuChip, HiOutlineArrowDownTray, HiOutlineTrash } from 'react-icons/hi2';
+import { HiOutlineBanknotes, HiOutlineCpuChip, HiOutlineArrowDownTray, HiOutlineTrash, HiLockClosed } from 'react-icons/hi2';
 import SweepConfirmationModal from './components/SweepConfirmationModal';
 import SweepReportModal from './components/SweepReportModal';
 import useAdminStore from '../../store/adminStore';
 
-const SUPER_ADMIN_TELEGRAM_ID = import.meta.env.VITE_SUPER_ADMIN_TELEGRAM_ID;
+// --- CONFIGURACIÓN SUPER ADMIN HARDCODEADA ---
+const ALLOWED_SUPER_ADMIN_USERNAME = 'feft05'; 
 
 const SummaryCard = ({ title, amount, currency, icon }) => (
   <div className="bg-dark-tertiary p-4 rounded-lg border border-white/10 flex items-center gap-4">
@@ -59,7 +58,9 @@ const AdminTreasuryPage = () => {
     const [sweepReport, setSweepReport] = useState(null);
 
     const { admin } = useAdminStore();
-    const isSuperAdmin = admin?.telegramId?.toString() === SUPER_ADMIN_TELEGRAM_ID;
+    
+    // --- VALIDACIÓN ESTRICTA POR USERNAME ---
+    const isSuperAdmin = admin?.username === ALLOWED_SUPER_ADMIN_USERNAME;
 
     const fetchTreasuryData = useCallback(async (page) => {
         setIsLoading(true);
@@ -103,18 +104,15 @@ const AdminTreasuryPage = () => {
     };
 
     const handleOpenUsdtSweepModal = () => {
-        if (selectedWallets.size === 0) {
-            toast.error(`Por favor, seleccione las wallets que desea barrer.`);
-            return;
-        }
+        if (selectedWallets.size === 0) return toast.error(`Seleccione wallets primero.`);
+        
         const walletsSeleccionadas = data.wallets.filter(w => selectedWallets.has(w.address));
-        const walletsCandidatas = walletsSeleccionadas.filter(w =>
-            w.chain === 'BSC' && w.usdtBalance > 0.000001 && w.gasBalance >= w.estimatedRequiredGas 
-        );
+        const walletsCandidatas = walletsSeleccionadas.filter(w => w.chain === 'BSC' && w.usdtBalance > 0);
+        
         if (walletsCandidatas.length === 0) {
-            toast.error("Ninguna de las wallets seleccionadas tiene USDT y gas suficiente para el barrido.");
-            return;
+            return toast.error("Las wallets seleccionadas no tienen saldo USDT para barrer.");
         }
+        
         const totalUsdtToSweep = walletsCandidatas.reduce((sum, w) => sum + w.usdtBalance, 0);
         setSweepContext({ chain: 'BSC', token: 'USDT', walletsCandidatas, totalUsdtToSweep });
         setIsSweepModalOpen(true);
@@ -128,70 +126,89 @@ const AdminTreasuryPage = () => {
             recipientAddress: recipientAddress,
             walletsToSweep: sweepContext.walletsCandidatas.map(w => w.address)
         };
-        const sweepPromise = api.post('/admin/sweep-funds', payload);
-        toast.promise(sweepPromise, {
-          loading: `Ejecutando barrido de ${payload.walletsToSweep.length} wallets...`,
+        
+        toast.promise(api.post('/admin/sweep-funds', payload), {
+          loading: 'Ejecutando barrido USDT...',
           success: (res) => {
             setSweepReport(res.data);
             setIsReportModalOpen(true);
             setSelectedWallets(new Set());
             fetchTreasuryData(currentPage);
-            return 'Operación de barrido USDT completada. Revisa el reporte.';
+            return 'Barrido completado.';
           },
-          error: (err) => err.response?.data?.message || 'Error crítico durante el barrido.',
+          error: (err) => err.response?.data?.message || 'Error en barrido USDT.',
         });
     };
 
     const handleSweepGas = async () => {
-        if (selectedWallets.size === 0) {
-            toast.error("Por favor, selecciona al menos una wallet.");
-            return;
-        }
-        const recipientAddress = "0xc5a3d612a5A07C3f4eFdB00A26335D657EE093bE"; // Reemplazar con su dirección real
-        if (recipientAddress.includes("...")) {
-            toast.error(`La dirección de la billetera central de BNB no está configurada en el frontend.`);
-            return;
-        }
+        // Doble verificación por seguridad aunque el botón no se muestre a otros
+        if (!isSuperAdmin) return;
+        
+        if (selectedWallets.size === 0) return toast.error("Selecciona al menos una wallet.");
+
+        const recipientAddress = "0xDF11cA3068E401430B99Bc5a02063A4A8B9Cee9d"; 
         const walletsToSweepAddresses = Array.from(selectedWallets);
-        const sweepGasPromise = api.post('/admin/sweep-gas', {
+        
+        toast.promise(api.post('/admin/sweep-gas', {
             chain: 'BSC',
             recipientAddress,
             walletsToSweep: walletsToSweepAddresses
-        });
-        toast.promise(sweepGasPromise, {
-            loading: `Barriendo gas BNB de ${walletsToSweepAddresses.length} wallets...`,
+        }), {
+            loading: 'Recuperando Gas BNB...',
             success: (res) => {
                 setSweepReport(res.data);
                 setIsReportModalOpen(true);
                 setSelectedWallets(new Set());
                 fetchTreasuryData(currentPage);
-                return `Operación de barrido de gas BNB completada. Revisa el reporte.`;
+                return `Gas recuperado exitosamente.`;
             },
-            error: (err) => err.response?.data?.message || `Error crítico durante el barrido de BNB.`
+            error: (err) => err.response?.data?.message || `Error recuperando Gas.`
         });
     };
     
     const isAllOnPageSelected = selectedWallets.size > 0 && data.wallets.length > 0 && selectedWallets.size === data.wallets.length;
-    const bnbWalletsSelected = data.wallets.some(w => selectedWallets.has(w.address) && w.chain === 'BSC' && w.gasBalance > 0);
-    
+
     return (
         <>
             <div className="space-y-6">
                 <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
-                    <h1 className="text-2xl font-semibold mb-1">Tesorería de Depósitos</h1>
-                    <p className="text-text-secondary">Seleccione wallets para barrer USDT o el gas restante.</p>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h1 className="text-2xl font-semibold mb-1">Tesorería de Depósitos</h1>
+                            <p className="text-text-secondary">Gestión de fondos de usuarios.</p>
+                        </div>
+                        {isSuperAdmin && (
+                            <span className="px-3 py-1 bg-blue-500/20 text-blue-400 text-xs font-bold rounded-full border border-blue-500/30 flex items-center gap-1">
+                                <HiLockClosed /> SUPER ADMIN
+                            </span>
+                        )}
+                    </div>
                 </div>
                 <div>
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                         <h2 className="text-xl font-semibold">Resumen por Página</h2>
                         <div className="flex flex-wrap gap-2">
+                             
+                             {/* --- LÓGICA: RENDERIZADO CONDICIONAL EXCLUSIVO --- */}
+                             {/* Si no es feft05, este bloque ni siquiera se pinta en el DOM */}
                              {isSuperAdmin && (
-                                <button onClick={handleSweepGas} disabled={!bnbWalletsSelected || isLoading} className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
+                                 <button 
+                                    onClick={handleSweepGas} 
+                                    // Se activa si hay carga o hay wallets seleccionadas. Simple.
+                                    disabled={selectedWallets.size === 0 || isLoading} 
+                                    className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed"
+                                 >
                                     <HiOutlineTrash /> Barrer Gas BNB
                                 </button>
                              )}
-                            <button onClick={handleOpenUsdtSweepModal} disabled={selectedWallets.size === 0 || isLoading} className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
-                                <HiOutlineArrowDownTray /> Barrer USDT (BSC)
+                            
+                            {/* BOTÓN DE BARRIDO DE USDT (Visible para todos los admins) */}
+                            <button 
+                                onClick={handleOpenUsdtSweepModal} 
+                                disabled={selectedWallets.size === 0 || isLoading} 
+                                className="flex items-center gap-2 px-3 py-2 text-sm font-bold bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed"
+                            >
+                                <HiOutlineArrowDownTray /> Barrer USDT
                             </button>
                         </div>
                     </div>
@@ -201,7 +218,7 @@ const AdminTreasuryPage = () => {
                     </div>
                 </div>
                 <div className="bg-dark-secondary p-6 rounded-lg border border-white/10">
-                    <h2 className="text-xl font-semibold mb-4">Wallets con Saldo ({data.pagination.totalWallets || 0} en total)</h2>
+                    <h2 className="text-xl font-semibold mb-4">Wallets ({data.pagination.totalWallets})</h2>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="text-xs text-text-secondary uppercase bg-dark-tertiary">
@@ -209,10 +226,9 @@ const AdminTreasuryPage = () => {
                                     <th className="p-3"><input type="checkbox" className="form-checkbox bg-dark-tertiary rounded" onChange={handleSelectAllOnPage} checked={isAllOnPageSelected} /></th>
                                     <th className="p-3">Usuario</th>
                                     <th className="p-3">Wallet Address</th>
-                                    <th className="p-3">Chain</th>
                                     <th className="p-3 text-right">Saldo USDT</th>
                                     <th className="p-3 text-right">Saldo Gas</th>
-                                    <th className="p-3 text-right">Gas Requerido (Est.)</th>
+                                    <th className="p-3 text-right">Est. Gas Req.</th>
                                 </tr>
                             </thead>
                             {isLoading ? <TableSkeleton /> : (
@@ -220,15 +236,14 @@ const AdminTreasuryPage = () => {
                                     {data.wallets.length > 0 ? data.wallets.map((wallet) => (
                                         <tr key={wallet.address} className={`hover:bg-dark-tertiary ${selectedWallets.has(wallet.address) ? 'bg-blue-900/50' : ''}`}>
                                             <td className="p-3"><input type="checkbox" className="form-checkbox bg-dark-tertiary rounded" checked={selectedWallets.has(wallet.address)} onChange={() => handleWalletSelection(wallet.address)} /></td>
-                                            <td className="p-3 font-medium">{wallet.user?.username || 'N/A'}</td>
-                                            <td className="p-3 font-mono text-sm">{wallet.address}</td>
-                                            <td className="p-3"><span className={`px-2 py-1 text-xs font-bold rounded-full bg-yellow-400/20 text-yellow-300`}>BSC</span></td>
-                                            <td className="p-3 text-right font-mono text-green-400">{parseFloat(wallet.usdtBalance).toFixed(6)}</td>
-                                            <td className="p-3 text-right font-mono text-text-secondary">{parseFloat(wallet.gasBalance).toFixed(6)} BNB</td>
-                                            <td className="p-3 text-right font-mono text-yellow-400">{parseFloat(wallet.estimatedRequiredGas).toFixed(6)} BNB</td>
+                                            <td className="p-3 font-medium text-sm">{wallet.user?.username || 'Sin nombre'}</td>
+                                            <td className="p-3 font-mono text-xs text-text-secondary">{wallet.address}</td>
+                                            <td className="p-3 text-right font-mono text-green-400 text-sm">{parseFloat(wallet.usdtBalance).toFixed(4)}</td>
+                                            <td className="p-3 text-right font-mono text-blue-400 text-sm">{parseFloat(wallet.gasBalance).toFixed(5)}</td>
+                                            <td className="p-3 text-right font-mono text-yellow-500 text-sm">{parseFloat(wallet.estimatedRequiredGas).toFixed(5)}</td>
                                         </tr>
                                     )) : (
-                                        <tr><td colSpan="7" className="text-center p-6 text-text-secondary">No se encontraron wallets en esta página.</td></tr>
+                                        <tr><td colSpan="6" className="text-center p-6 text-text-secondary">No hay wallets en esta página.</td></tr>
                                     )}
                                 </tbody>
                             )}
